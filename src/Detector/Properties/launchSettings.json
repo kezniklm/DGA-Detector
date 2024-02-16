@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Detector": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"Ethernet 2\""
+    }
+  }
+}

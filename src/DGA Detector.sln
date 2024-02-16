@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL", "API\BL\BL.csproj", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APP", "API\APP\APP.csproj", "{8FAE6FBA-A293-4221-BC24-C434768CDD3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Detector", "Detector\Detector.csproj", "{89FCBFA4-F63D-4272-A584-40B7165F30CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Detector", "Detector\Detector.csproj", "{89FCBFA4-F63D-4272-A584-40B7165F30CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,11 @@
-﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-//
+﻿using Detector.Arguments;
+using Detector.Components;
+using Detector.Components.NetworkAnalyser;
 
-Console.WriteLine("Hello, World!");
+Arguments arguments = new(args);
+arguments.Parse();
+Data data = new();
+CancellationTokenSource cancellationToken = new();
+DnsNetworkAnalyser dnsNetworkAnalyser = new(data, arguments.Device, cancellationToken);
+
+Task.WaitAll(Task.Run(() => dnsNetworkAnalyser.SetCapture()));
