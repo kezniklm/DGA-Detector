@@ -31,4 +31,4 @@ set_target_properties(DetectorLib PROPERTIES
 add_executable(Detector "src/Detector.cpp")
 
 # Link the executable with the library
-target_link_libraries(Detector PRIVATE DetectorLib)
+target_link_libraries(Detector PRIVATE DetectorLib pcap)
