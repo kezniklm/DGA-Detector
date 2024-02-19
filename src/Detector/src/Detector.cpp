@@ -13,7 +13,16 @@ int main(const int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	unique_ptr<NetworkAnalyser> analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff, args->packet_buffer_size);
+	unique_ptr<NetworkAnalyser> analyser;
+	
+	try
+	{
+		analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff, args->packet_buffer_size);
+	}
+	catch(const runtime_error &e)
+	{
+		return EXIT_FAILURE;
+	}
 
 	analyser->start_capture();
 
