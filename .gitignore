@@ -364,3 +364,4 @@ FodyWeavers.xsd
 src/Detector/build/*
 src/Detector/lib/libDetectorLib.a
 .vscode/settings.json
+/src/Detector/lib/DetectorLib.lib

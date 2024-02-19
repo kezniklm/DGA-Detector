@@ -18,7 +18,7 @@ ResultCode arguments::parse(const int argc, const char *argv[])
 
         if (result.count("interface"))
         {
-            Interface = result["interface"].as<std::string>();
+            interface_to_sniff = result["interface"].as<std::string>();
             return ResultCode(ResultCode::Code::Success, "");
         }
         else

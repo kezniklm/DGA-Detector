@@ -13,9 +13,9 @@ int main(const int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	unique_ptr<PacketCapture> analyser = make_unique<PacketCapture>(args->Interface,1024*1024*1024); // need to add argument
+	unique_ptr<NetworkAnalyser> analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff,1024*1024*500); // need to add argument
 
-	analyser->startCapture();
+	analyser->start_capture();
 
 	return EXIT_SUCCESS;
 }
