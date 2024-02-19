@@ -3,6 +3,9 @@
 #include <pcap.h>
 #include <iostream>
 
+#include "Exceptions.hpp"
+#include "ReturnCodes.hpp"
+
 class NetworkAnalyser
 {
 public:

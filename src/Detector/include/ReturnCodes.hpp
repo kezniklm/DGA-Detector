@@ -1,0 +1,9 @@
+#pragma once
+
+enum ReturnCodes
+{
+	SUCCESS,
+	FAILURE,
+	ARGUMENT_CHECK_FAILURE,
+	NETWORK_ANALYSER_CREATION_FAILURE
+};
