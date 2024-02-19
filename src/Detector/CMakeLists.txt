@@ -1,21 +1,34 @@
-﻿# CMakeList.txt : CMake project for Detector, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.5)
 
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
+project(Detector)
 
-project ("Detector")
+# Set C++ standard/version
+set(CMAKE_CXX_STANDARD 20) 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Add source to this project's executable.
-add_executable (Detector "Detector.cpp" "Detector.h")
+add_compile_options(-pedantic -Wextra -Werror -g -fcommon)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Detector PROPERTY CXX_STANDARD 20)
-endif()
 
-# TODO: Add tests and install targets if needed.
+# Add the source files
+file(GLOB SOURCES "src/*.cpp")
+
+# Create a library from the sources
+add_library(DetectorLib STATIC ${SOURCES})
+
+# Include directories for DetectorLib
+target_include_directories(DetectorLib PUBLIC include)
+
+# Since cxxopts.hpp and MPMCQueue.hpp are directly under lib/, adjust the include path
+target_include_directories(DetectorLib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+
+# Specify the output directory for the library
+set_target_properties(DetectorLib PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+)
+
+# Add an executable
+add_executable(Detector "src/Detector.cpp")
+
+# Link the executable with the library
+target_link_libraries(Detector PRIVATE DetectorLib)
