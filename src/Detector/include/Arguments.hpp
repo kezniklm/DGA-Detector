@@ -7,10 +7,12 @@
 class arguments
 {
 public:
-	ResultCode parse(int argc, const char* argv[]);
+	ResultCode parse(int argc, const char *argv[]);
 
 	std::string interface_to_sniff;
 
+	int packet_buffer_size;
+
 private:
-	void check_rabbit_mq_connection(const std::string& rabbitMqConnectionString);
+	void check_rabbit_mq_connection(const std::string &rabbitMqConnectionString);
 };

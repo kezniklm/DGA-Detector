@@ -12,8 +12,8 @@ int main(const int argc, const char **argv)
 	{
 		return EXIT_FAILURE;
 	}
-	
-	unique_ptr<NetworkAnalyser> analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff,1024*1024*500); // need to add argument
+
+	unique_ptr<NetworkAnalyser> analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff, args->packet_buffer_size);
 
 	analyser->start_capture();
 
