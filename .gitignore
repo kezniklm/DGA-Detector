@@ -365,3 +365,5 @@ src/Detector/build/*
 src/Detector/lib/libDetectorLib.a
 .vscode/settings.json
 /src/Detector/lib/DetectorLib.lib
+/src/Detector/include/pcapplusplus
+/src/Detector/lib
