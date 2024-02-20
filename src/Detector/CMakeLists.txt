@@ -16,7 +16,7 @@ add_library(DetectorLib STATIC ${SOURCES})
 # Include directories for DetectorLib
 target_include_directories(DetectorLib PUBLIC include)
 
-# Since cxxopts.hpp and MPMCQueue.hpp are directly under lib/, adjust the include path
+# Adjust the include path for additional libraries
 target_include_directories(DetectorLib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
 # Specify the output directory for the library
@@ -44,8 +44,23 @@ endif()
 # Include the pcap directory correctly
 target_include_directories(DetectorLib PUBLIC ${PCAP_INCLUDE_DIR})
 
+# Manually specify include directory and library path for PcapPlusPlus
+include_directories(/usr/local/include/pcapplusplus)
+
+# Existing find_library calls for PcapPlusPlus libraries
+find_library(PCAPPLUSPLUS_PCAP_LIB NAME Pcap++ PATHS /usr/local/lib)
+find_library(PCAPPLUSPLUS_PACKET_LIB NAME Packet++ PATHS /usr/local/lib)
+find_library(PCAPPLUSPLUS_COMMON_LIB NAME Common++ PATHS /usr/local/lib)
+
+# Find libpcap library
+find_library(LIBPCAP_LIBRARY NAMES pcap)
+
+if(NOT LIBPCAP_LIBRARY)
+  message(FATAL_ERROR "libpcap not found. Please ensure it is installed.")
+endif()
+
 # Add an executable
 add_executable(Detector "src/Detector.cpp")
 
-# Link the executable with the library and pcap
-target_link_libraries(Detector PRIVATE DetectorLib ${PCAP_LIBRARY})
+# Link the executable with DetectorLib, PCAP library, all PcapPlusPlus libraries, and libpcap
+target_link_libraries(Detector PRIVATE DetectorLib ${PCAP_LIBRARY} ${PCAPPLUSPLUS_PCAP_LIB} ${PCAPPLUSPLUS_PACKET_LIB} ${PCAPPLUSPLUS_COMMON_LIB} ${LIBPCAP_LIBRARY} pthread)
