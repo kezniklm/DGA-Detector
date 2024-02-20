@@ -1,11 +1,11 @@
 #pragma once
 
-#include <iostream>
 #include <exception>
+#include <iostream>
 
 class DetectorException : public std::exception
 {
-protected: // Change from private to protected to allow access from derived classes
+protected:
 	std::string message_;
 	int code_;
 
@@ -19,14 +19,13 @@ public:
 		return code_;
 	}
 
-	// Override what() from std::exception
 	const char* what() const noexcept override
 	{
 		return message_.c_str();
 	}
 };
 
-class ArgumentException : public DetectorException
+class ArgumentException final : public DetectorException
 {
 public:
 	ArgumentException(const std::string& msg, const int c) : DetectorException(msg, c)
@@ -34,7 +33,7 @@ public:
 	}
 };
 
-class NetworkAnalyserException : public DetectorException
+class NetworkAnalyserException final : public DetectorException
 {
 public:
 	NetworkAnalyserException(const std::string& msg, const int c) : DetectorException(msg, c)

@@ -1,15 +1,18 @@
 #pragma once
 
-#include <pcap.h>
 #include <iostream>
+#include <pcap.h>
+
+#include "MPMCQueue.hpp"
 
 #include "Exceptions.hpp"
+#include "Packet.hpp"
 #include "ReturnCodes.hpp"
 
 class NetworkAnalyser
 {
 public:
-    explicit NetworkAnalyser(const std::string &device, int buffer_size);
+    explicit NetworkAnalyser(const std::string &device, const int buffer_size, rigtorp::MPMCQueue<Packet> *packet_queue);
 
     ~NetworkAnalyser();
 
@@ -19,6 +22,8 @@ public:
 
 private:
     pcap_t *handle_;
+
+    rigtorp::MPMCQueue<Packet> *queue_;
 
     void try_to_create_handle(const char *device);
 
