@@ -1,10 +1,12 @@
 #include "NetworkAnalyser.hpp"
 
 using namespace std;
+using namespace rigtorp;
 
-NetworkAnalyser::NetworkAnalyser(const string& device, const int buffer_size) : handle_(nullptr)
+NetworkAnalyser::NetworkAnalyser(const string& device, const int buffer_size,
+                                 MPMCQueue<Packet>* packet_queue) : handle_(nullptr), queue_(packet_queue)
 {
-	try_to_create_handle(device.c_str());
+	try_to_create_handle(device.c_str()); // delete try_to
 
 	try_to_set_buffer_size(buffer_size);
 
@@ -18,11 +20,10 @@ NetworkAnalyser::NetworkAnalyser(const string& device, const int buffer_size) : 
 
 	// Enable immediate mode, if supported
 #ifdef PCAP_IMMEDIATE_MODE
-		try_to_set_immediate_mode();
+	try_to_set_immediate_mode();
 #endif
 	try_to_set_bpf_filter();
 }
-
 
 NetworkAnalyser::~NetworkAnalyser()
 {
@@ -36,14 +37,19 @@ NetworkAnalyser::~NetworkAnalyser()
 // Static callback function to adapt pcap_loop callback signature to member function
 static void packet_handler(u_char* user, const struct pcap_pkthdr* header, const u_char* packet)
 {
-	printf("Velkost: %d\n", header->len);
+	MPMCQueue<Packet>* queue = reinterpret_cast<MPMCQueue<Packet>*>(user);
+	Packet pkt(*header, packet);
+	// Now, the Packet is constructed with its data on the stack,
+	// and you should use the queue accordingly.
+	queue->push(pkt); // Assuming your queue can handle this efficiently.
+	printf("Producer: velkost %d\n", header->len);
 }
 
 void NetworkAnalyser::start_capture() const
 {
 	if (handle_ != nullptr)
 	{
-		pcap_loop(handle_, -1, packet_handler, nullptr /*reinterpret_cast<u_char *>(this)*/);
+		pcap_loop(handle_, -1, packet_handler, reinterpret_cast<u_char*>(queue_));
 	}
 }
 
@@ -87,7 +93,9 @@ void NetworkAnalyser::set_snaplen() const
 	constexpr int PCAP_SNAPLEN = 65535;
 	if (pcap_set_snaplen(handle_, PCAP_SNAPLEN) == PCAP_ERROR_ACTIVATED)
 	{
-		throw NetworkAnalyserException("The operation pcap_set_snaplen can't be performed on already activated captures", NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(
+			"The operation pcap_set_snaplen can't be performed on already activated captures",
+			NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
@@ -96,7 +104,9 @@ void NetworkAnalyser::set_promiscuous_mode() const
 	constexpr int PROMISC_MODE = 1;
 	if (pcap_set_promisc(handle_, PROMISC_MODE) == PCAP_ERROR_ACTIVATED)
 	{
-		throw NetworkAnalyserException("The operation pcap_set_promisc() can't be performed on already activated captures", NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(
+			"The operation pcap_set_promisc() can't be performed on already activated captures",
+			NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
@@ -105,7 +115,9 @@ void NetworkAnalyser::set_timeout() const
 	constexpr int TIMEOUT_IN_MS = 1;
 	if (pcap_set_timeout(handle_, TIMEOUT_IN_MS) == PCAP_ERROR_ACTIVATED)
 	{
-		throw NetworkAnalyserException("The operation pcap_set_timeout() can't be performed on already activated captures", NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(
+			"The operation pcap_set_timeout() can't be performed on already activated captures",
+			NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
@@ -114,7 +126,8 @@ void NetworkAnalyser::try_to_activate_handle() const
 	constexpr int OK = 0;
 	if (pcap_activate(handle_) != OK)
 	{
-		throw NetworkAnalyserException(string("Could not activate pcap handle: ") + pcap_geterr(handle_), NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(string("Could not activate pcap handle: ") + pcap_geterr(handle_),
+		                               NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
@@ -123,7 +136,9 @@ void NetworkAnalyser::try_to_set_immediate_mode() const
 	constexpr int IMMEDIATE_MODE = 1;
 	if (pcap_set_immediate_mode(handle_, IMMEDIATE_MODE) == PCAP_ERROR_ACTIVATED)
 	{
-		throw NetworkAnalyserException("The operation pcap_set_immediate_mode() can't be performed on already activated captures", NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(
+			"The operation pcap_set_immediate_mode() can't be performed on already activated captures",
+			NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
@@ -135,12 +150,14 @@ void NetworkAnalyser::try_to_set_bpf_filter() const
 
 	if (pcap_compile(handle_, &fp, DNS_FILTER_EXPRESSION, 0, PCAP_NETMASK_UNKNOWN) == -1)
 	{
-		throw NetworkAnalyserException(string("Could not parse filter: ") + pcap_geterr(handle_), NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(string("Could not parse filter: ") + pcap_geterr(handle_),
+		                               NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 
 	if (pcap_setfilter(handle_, &fp) == -1)
 	{
-		throw NetworkAnalyserException(string("Could not install filter: ") + pcap_geterr(handle_), NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(string("Could not install filter: ") + pcap_geterr(handle_),
+		                               NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 
 	pcap_freecode(&fp);

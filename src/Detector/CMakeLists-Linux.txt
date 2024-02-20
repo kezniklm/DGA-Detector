@@ -63,4 +63,4 @@ endif()
 add_executable(Detector "src/Detector.cpp")
 
 # Link the executable with DetectorLib, PCAP library, all PcapPlusPlus libraries, and libpcap
-target_link_libraries(Detector PRIVATE DetectorLib ${PCAP_LIBRARY} ${PCAPPLUSPLUS_PCAP_LIB} ${PCAPPLUSPLUS_PACKET_LIB} ${PCAPPLUSPLUS_COMMON_LIB} ${LIBPCAP_LIBRARY} pthread)
+target_link_libraries(Detector PRIVATE DetectorLib ${PCAP_LIBRARY} ${PCAPPLUSPLUS_PCAP_LIB} ${PCAPPLUSPLUS_PACKET_LIB} ${PCAPPLUSPLUS_COMMON_LIB} ${LIBPCAP_LIBRARY})
