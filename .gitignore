@@ -367,3 +367,7 @@ src/Detector/lib/libDetectorLib.a
 /src/Detector/lib/DetectorLib.lib
 /src/Detector/include/pcapplusplus
 /src/Detector/lib
+src/Detector/vcpkg_installed/*
+src/Detector/CMakeFiles/*
+src/Detector/CMakeCache.txt
+.vscode/c_cpp_properties.json

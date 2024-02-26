@@ -12,7 +12,7 @@ void Arguments::Parse(const int argc, const char *argv[])
 						  "<interface name>")("s,size",
 											  "Size of memory that you allow the program to use",
 											  cxxopts::value<unsigned long long>(),
-											  "<size in bytes>")("d,database_",
+											  "<size in bytes>")("d,database",
 																 "Connection string to database_ (using appsettings.json is safer)",
 																 cxxopts::value<std::string>(),
 																 "<connection_ string>")("r,rabbitmq",
@@ -59,10 +59,12 @@ void Arguments::Parse(const int argc, const char *argv[])
 		if (kResult.count("interface"))
 		{
 			interface_to_sniff_ = kResult["interface"].as<std::string>();
-		} else if (appsettings.contains("interface"))
+		}
+		else if (appsettings.contains("interface"))
 		{
 			interface_to_sniff_ = appsettings["interface"];
-		} else
+		}
+		else
 		{
 			std::cerr << options.help({""}) << '\n';
 			throw ArgumentException("--interface option is required.", ARGUMENT_CHECK_FAILURE);
@@ -72,23 +74,27 @@ void Arguments::Parse(const int argc, const char *argv[])
 		{
 			unsigned long long size = kResult["size"].as<unsigned long long>();
 			CalculateSizes(size);
-		} else if (appsettings.contains("size"))
+		}
+		else if (appsettings.contains("size"))
 		{
 			unsigned long long size = appsettings["size"];
 			CalculateSizes(size);
-		} else
+		}
+		else
 		{
 			std::cerr << options.help({""}) << '\n';
 			throw ArgumentException("--size option is required.", ARGUMENT_CHECK_FAILURE);
 		}
 
-		if (kResult.count("database_"))
+		if (kResult.count("database"))
 		{
-			database_connection_string_ = kResult["database_"].as<std::string>();
-		} else if (appsettings.contains("database_"))
+			database_connection_string_ = kResult["database"].as<std::string>();
+		}
+		else if (appsettings.contains("database"))
 		{
-			database_connection_string_ = appsettings["database_"];
-		} else
+			database_connection_string_ = appsettings["database"];
+		}
+		else
 		{
 			std::cerr << options.help({""}) << '\n';
 			throw ArgumentException("--database_ option is required.", ARGUMENT_CHECK_FAILURE);
@@ -97,10 +103,12 @@ void Arguments::Parse(const int argc, const char *argv[])
 		if (kResult.count("rabbitmq"))
 		{
 			rabbitmq_connection_string_ = kResult["rabbitmq"].as<std::string>();
-		} else if (appsettings.contains("rabbitmq"))
+		}
+		else if (appsettings.contains("rabbitmq"))
 		{
 			rabbitmq_connection_string_ = appsettings["rabbitmq"];
-		} else
+		}
+		else
 		{
 			std::cerr << options.help({""}) << '\n';
 			throw ArgumentException("--rabbitmq option is required.", ARGUMENT_CHECK_FAILURE);
@@ -109,10 +117,12 @@ void Arguments::Parse(const int argc, const char *argv[])
 		if (kResult.count("queue"))
 		{
 			rabbitmq_queue_name_ = kResult["queue"].as<std::string>();
-		} else if (appsettings.contains("queue"))
+		}
+		else if (appsettings.contains("queue"))
 		{
 			rabbitmq_queue_name_ = appsettings["queue"];
-		} else
+		}
+		else
 		{
 			std::cerr << options.help({""}) << '\n';
 			throw ArgumentException("--rabbitmq queue name option is required.", ARGUMENT_CHECK_FAILURE);
@@ -131,7 +141,8 @@ void Arguments::CalculateSizes(const unsigned long long value)
 	if (divided_value * 4 > static_cast<unsigned long long>(std::numeric_limits<int>::max()))
 	{
 		packet_buffer_size_ = numeric_limits<int>::max();
-	} else
+	}
+	else
 	{
 		packet_buffer_size_ = static_cast<int>(divided_value * 4);
 	}
@@ -150,7 +161,8 @@ nlohmann::json Arguments::MakeKeysLowercase(const nlohmann::json &original)
 	{
 		std::string key = it.key();
 		std::transform(key.begin(), key.end(), key.begin(),
-					   [](unsigned char c) { return std::tolower(c); });
+					   [](unsigned char c)
+					   { return std::tolower(c); });
 		lowercased[key] = it.value();
 	}
 	return lowercased;

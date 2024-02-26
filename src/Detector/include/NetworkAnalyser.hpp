@@ -3,7 +3,7 @@
 #include <iostream>
 #include <pcap.h>
 
-#include "MPMCQueue.hpp"
+#include "rigtorp/MPMCQueue.h"
 
 #include "Exceptions.hpp"
 #include "Packet.hpp"

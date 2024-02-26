@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MPMCQueue.hpp"
+#include <rigtorp/MPMCQueue.h>
 #include "DNSPacketInfo.hpp"
 #include "Database.hpp"
 #include "MessagePublisher.hpp"

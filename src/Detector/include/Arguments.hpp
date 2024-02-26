@@ -4,12 +4,12 @@
 #include <fstream>
 
 #include "cxxopts.hpp"
+#include "nlohmann/json.hpp"
 
 #include "DNSPacketInfo.hpp"
 #include "Exceptions.hpp"
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
-#include "json.hpp"
 
 #undef max
 

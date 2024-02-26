@@ -17,68 +17,37 @@ target_include_directories(DetectorLib PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/Structures"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/Database"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/RabbitMQ"
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-    "/usr/local/include/mongocxx/v_noabi/"
-    "/usr/local/include/bsoncxx/v_noabi/"
-    "/usr/local/include"
 )
 
 set_target_properties(DetectorLib PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
-# Searching for required dependencies
-# Find PCAP library
-find_path(PCAP_INCLUDE_DIR NAMES pcap.h)
-find_library(PCAP_LIBRARY NAMES wpcap pcap)
+# Use vcpkg to find the necessary packages
+find_package(libuv CONFIG REQUIRED)
+find_package(bsoncxx CONFIG REQUIRED)
+find_package(mongocxx CONFIG REQUIRED)
+find_package(PcapPlusPlus CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(rmqcpp REQUIRED) 
+find_package(MPMCQueue CONFIG REQUIRED)
 
-# Find libuv library
-find_library(LIBUV_LIBRARY NAMES uv)
-
-find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(SimpleAmqpClient REQUIRED IMPORTED_TARGET libSimpleAmqpClient)
-
-# Error message if dependencies are not found
-if(NOT PCAP_INCLUDE_DIR OR NOT PCAP_LIBRARY)
-  message(FATAL_ERROR "Npcap not found. Please ensure it is installed.")
-endif()
-
-if(NOT LIBUV_LIBRARY)
-  message(FATAL_ERROR "libuv not found. Please ensure it is installed.")
-endif()
-
-# Include the pcap directory
-target_include_directories(DetectorLib PUBLIC ${PCAP_INCLUDE_DIR})
-
-# Manually specify include directory for PcapPlusPlus
-include_directories(/usr/local/include/pcapplusplus)
-
-# Find PcapPlusPlus libraries
-find_library(PCAPPLUSPLUS_PCAP_LIB NAME Pcap++ PATHS /usr/local/lib)
-find_library(PCAPPLUSPLUS_PACKET_LIB NAME Packet++ PATHS /usr/local/lib)
-find_library(PCAPPLUSPLUS_COMMON_LIB NAME Common++ PATHS /usr/local/lib)
-
-# Find libpcap library
-find_library(LIBPCAP_LIBRARY NAMES pcap)
-
-# MongoDB C++ Driver
-find_package(mongocxx REQUIRED)
-find_package(bsoncxx REQUIRED)
-
-target_include_directories(DetectorLib PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS} ${LIBBSONCXX_INCLUDE_DIRS})
-target_link_libraries(DetectorLib PUBLIC mongo::mongocxx_shared mongo::bsoncxx_shared)
+# Link the Detector library with dependencies found via vcpkg
+target_link_libraries(DetectorLib PUBLIC 
+    $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>
+    $<IF:$<TARGET_EXISTS:mongo::bsoncxx_static>,mongo::bsoncxx_static,mongo::bsoncxx_shared>
+    $<IF:$<TARGET_EXISTS:mongo::mongocxx_static>,mongo::mongocxx_static,mongo::mongocxx_shared>
+    PcapPlusPlus::Pcap++
+    PcapPlusPlus::Packet++
+    PcapPlusPlus::Common++
+    nlohmann_json::nlohmann_json
+    rmqcpp::rmq
+    MPMCQueue::MPMCQueue
+)
 
 add_executable(Detector "src/Detector.cpp")
 
 target_link_libraries(Detector PRIVATE 
-    DetectorLib 
-    ${PCAP_LIBRARY} 
-    ${PCAPPLUSPLUS_PCAP_LIB} 
-    ${PCAPPLUSPLUS_PACKET_LIB} 
-    ${PCAPPLUSPLUS_COMMON_LIB} 
-    ${LIBPCAP_LIBRARY} 
+    DetectorLib
     pthread
-    ${LIBUV_LIBRARY}
-    PkgConfig::SimpleAmqpClient
 )

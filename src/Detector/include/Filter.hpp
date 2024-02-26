@@ -6,7 +6,7 @@
 #include "DnsLayer.h"
 #include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"
-#include "MPMCQueue.hpp"
+#include "rigtorp/MPMCQueue.h"
 #include "Packet.h"
 #include "Packet.hpp"
 #include "PayloadLayer.h"

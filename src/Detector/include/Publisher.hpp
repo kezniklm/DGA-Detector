@@ -1,9 +1,10 @@
 #pragma once
 
-#include "MPMCQueue.hpp"
+#include <rigtorp/MPMCQueue.h>
 #include "MessagePublisher.hpp"
 #include "DNSPacketInfo.hpp"
-#include "json.hpp"
+
+#include "nlohmann/json.hpp"
 
 extern std::atomic<bool> cancellation_token;
 

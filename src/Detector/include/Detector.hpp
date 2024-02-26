@@ -4,7 +4,7 @@
 #include <memory>
 #include <thread>
 
-#include "MPMCQueue.hpp"
+#include <rigtorp/MPMCQueue.h>
 
 #include "Arguments.hpp"
 #include "Filter.hpp"
