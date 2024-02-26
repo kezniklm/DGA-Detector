@@ -1,0 +1,11 @@
+{
+    "name": "Detector",
+    "version-string": "1.0.0",
+    "dependencies": [
+        "pcapplusplus",
+        "libuv",
+        "simple-amqp-client",
+        "mongo-cxx-driver",
+        "rmqcpp"
+    ]
+}
