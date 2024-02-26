@@ -44,7 +44,7 @@ void Filter::ProcessDnsPacket(const Packet &custom_packet)
 		domain_names.push_back(query->getName());
 	}
 
-	int response_code = dns_layer->getDnsHeader()->responseCode;
+	const int response_code = dns_layer->getDnsHeader()->responseCode;
 
 	dns_info_queue_->emplace(DNSPacketInfo(domain_names, response_code));
 }

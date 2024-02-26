@@ -3,10 +3,10 @@
 #include <amqpcpp.h>
 #include <amqpcpp/libboostasio.h>
 #include <boost/asio.hpp>
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <thread>
-#include <chrono>
 
 class MessagePublisher
 {

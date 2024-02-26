@@ -14,7 +14,7 @@ public:
 	explicit Publisher(rigtorp::MPMCQueue<DNSPacketInfo> *publisher_queue, MessagePublisher *message_publisher)
 		: publisher_queue_(publisher_queue), message_publisher_(message_publisher) {}
 
-	void Process();
+	void Process() const;
 
 private:
 	rigtorp::MPMCQueue<DNSPacketInfo> *publisher_queue_;

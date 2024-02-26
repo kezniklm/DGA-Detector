@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pcap.h> // Make sure you have the pcap library included
 #include <cstring>
+#include <pcap.h>
 
 constexpr size_t kMaxPacketSize = 2048; // Define a maximum packet size
 

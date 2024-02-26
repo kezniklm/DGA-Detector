@@ -1,6 +1,6 @@
 #include "Publisher.hpp"
 
-void Publisher::Process()
+void Publisher::Process() const
 {
 	DNSPacketInfo packet_info;
 	while (!cancellation_token.load())

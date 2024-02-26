@@ -72,12 +72,12 @@ void Arguments::Parse(const int argc, const char *argv[])
 
 		if (kResult.count("size"))
 		{
-			unsigned long long size = kResult["size"].as<unsigned long long>();
+			const unsigned long long size = kResult["size"].as<unsigned long long>();
 			CalculateSizes(size);
 		}
 		else if (appsettings.contains("size"))
 		{
-			unsigned long long size = appsettings["size"];
+			const unsigned long long size = appsettings["size"];
 			CalculateSizes(size);
 		}
 		else
@@ -136,7 +136,7 @@ void Arguments::Parse(const int argc, const char *argv[])
 
 void Arguments::CalculateSizes(const unsigned long long value)
 {
-	unsigned long long divided_value = value / 16;
+	const unsigned long long divided_value = value / 16;
 
 	if (divided_value * 4 > static_cast<unsigned long long>(std::numeric_limits<int>::max()))
 	{

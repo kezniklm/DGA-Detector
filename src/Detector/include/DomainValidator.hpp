@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rigtorp/MPMCQueue.h>
-#include "DNSPacketInfo.hpp"
 #include "Database.hpp"
+#include "DNSPacketInfo.hpp"
 #include "MessagePublisher.hpp"
+#include <rigtorp/MPMCQueue.h>
 
 extern std::atomic<bool> cancellation_token;
 
