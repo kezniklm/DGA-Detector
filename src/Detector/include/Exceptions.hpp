@@ -14,21 +14,23 @@ public:
 	{
 	}
 
-	int get_code() const noexcept
+	int GetCode() const
+	noexcept
 	{
 		return code_;
 	}
 
-	const char* what() const noexcept override
-	{
-		return message_.c_str();
-	}
+	const char *what() const
+	noexcept override
+		{
+			return message_.c_str();
+		}
 };
 
 class ArgumentException final : public DetectorException
 {
 public:
-	ArgumentException(const std::string& msg, const int c) : DetectorException(msg, c)
+	ArgumentException(const std::string &msg, const int c) : DetectorException(msg, c)
 	{
 	}
 };
@@ -36,7 +38,15 @@ public:
 class NetworkAnalyserException final : public DetectorException
 {
 public:
-	NetworkAnalyserException(const std::string& msg, const int c) : DetectorException(msg, c)
+	NetworkAnalyserException(const std::string &msg, const int c) : DetectorException(msg, c)
+	{
+	}
+};
+
+class MessagePublisherException final : public DetectorException
+{
+public:
+	MessagePublisherException(const std::string &msg, const int c) : DetectorException(msg, c)
 	{
 	}
 };

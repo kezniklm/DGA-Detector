@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "DnsLayer.h"
+#include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"
 #include "MPMCQueue.hpp"
 #include "Packet.h"
@@ -13,18 +14,18 @@
 #include "ProtocolType.h"
 #include "UdpLayer.h"
 
-
 extern std::atomic<bool> cancellation_token;
 
 class Filter
 {
 public:
-	explicit Filter(rigtorp::MPMCQueue<Packet>* packet_queue);
+	explicit Filter(rigtorp::MPMCQueue<Packet> *packet_queue, rigtorp::MPMCQueue<DNSPacketInfo> *dns_queue);
 
-	void process_packet() const;
+	void ProcessPacket();
 
 private:
-	rigtorp::MPMCQueue<Packet>* queue_;
+	rigtorp::MPMCQueue<Packet> *packet_queue_;
+	rigtorp::MPMCQueue<DNSPacketInfo> *dns_info_queue_;
 
-	static void process_dns_packet(const Packet& custom_packet);
+	void ProcessDnsPacket(const Packet &custom_packet);
 };

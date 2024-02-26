@@ -3,26 +3,26 @@
 using namespace std;
 using namespace rigtorp;
 
-NetworkAnalyser::NetworkAnalyser(const string& device, const int buffer_size,
-                                 MPMCQueue<Packet>* packet_queue) : handle_(nullptr), queue_(packet_queue)
+NetworkAnalyser::NetworkAnalyser(const string &device, const int buffer_size,
+								 MPMCQueue<Packet> *packet_queue) : handle_(nullptr), queue_(packet_queue)
 {
-	try_to_create_handle(device.c_str()); // delete try_to
+	TryToCreateHandle(device.c_str()); // delete try_to
 
-	try_to_set_buffer_size(buffer_size);
+	TryToSetBufferSize(buffer_size);
 
-	set_snaplen();
+	SetSnaplen();
 
-	set_promiscuous_mode();
+	SetPromiscuousMode();
 
-	set_timeout();
+	SetTimeout();
 
-	try_to_activate_handle();
+	TryToActivateHandle();
 
 	// Enable immediate mode, if supported
 #ifdef PCAP_IMMEDIATE_MODE
 	try_to_set_immediate_mode();
 #endif
-	try_to_set_bpf_filter();
+	TryToSetBpfFilter();
 }
 
 NetworkAnalyser::~NetworkAnalyser()
@@ -35,25 +35,21 @@ NetworkAnalyser::~NetworkAnalyser()
 }
 
 // Static callback function to adapt pcap_loop callback signature to member function
-static void packet_handler(u_char* user, const struct pcap_pkthdr* header, const u_char* packet)
+static void PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
 {
-	MPMCQueue<Packet>* queue = reinterpret_cast<MPMCQueue<Packet>*>(user);
-	Packet pkt(*header, packet);
-	// Now, the Packet is constructed with its data on the stack,
-	// and you should use the queue accordingly.
-	queue->push(pkt); // Assuming your queue can handle this efficiently.
-	printf("Producer: velkost %d\n", header->len);
+	auto *queue = reinterpret_cast<MPMCQueue<Packet> *>(user);
+	queue->emplace(Packet(*header, packet));
 }
 
-void NetworkAnalyser::start_capture() const
+void NetworkAnalyser::StartCapture() const
 {
 	if (handle_ != nullptr)
 	{
-		pcap_loop(handle_, -1, packet_handler, reinterpret_cast<u_char*>(queue_));
+		pcap_loop(handle_, -1, PacketHandler, reinterpret_cast<u_char *>(queue_));
 	}
 }
 
-void NetworkAnalyser::stop_capture() const
+void NetworkAnalyser::StopCapture() const
 {
 	if (handle_ != nullptr)
 	{
@@ -61,7 +57,7 @@ void NetworkAnalyser::stop_capture() const
 	}
 }
 
-void NetworkAnalyser::try_to_create_handle(const char* device)
+void NetworkAnalyser::TryToCreateHandle(const char *device)
 {
 	char errbuf[PCAP_ERRBUF_SIZE];
 	handle_ = pcap_create(device, errbuf);
@@ -71,9 +67,9 @@ void NetworkAnalyser::try_to_create_handle(const char* device)
 	}
 }
 
-void NetworkAnalyser::try_to_set_buffer_size(int buffer_size) const
+void NetworkAnalyser::TryToSetBufferSize(int buffer_size) const
 {
-	constexpr uint32_t MIN_BUFFER_SIZE = 1024 * 1024; // Minimum buffer size to try is 1 MB
+	constexpr uint32_t MIN_BUFFER_SIZE = 1024 * 1024;     // Minimum buffer size to try is 1 MB
 	constexpr uint32_t DECREMENT_SIZE = 1024 * 1024 * 5; // Decrease by 5 MB on each unsuccessful attempt
 
 	while (buffer_size >= MIN_BUFFER_SIZE)
@@ -88,7 +84,7 @@ void NetworkAnalyser::try_to_set_buffer_size(int buffer_size) const
 	throw NetworkAnalyserException("Buffer size could not have been set", NETWORK_ANALYSER_CREATION_FAILURE);
 }
 
-void NetworkAnalyser::set_snaplen() const
+void NetworkAnalyser::SetSnaplen() const
 {
 	constexpr int PCAP_SNAPLEN = 65535;
 	if (pcap_set_snaplen(handle_, PCAP_SNAPLEN) == PCAP_ERROR_ACTIVATED)
@@ -99,7 +95,7 @@ void NetworkAnalyser::set_snaplen() const
 	}
 }
 
-void NetworkAnalyser::set_promiscuous_mode() const
+void NetworkAnalyser::SetPromiscuousMode() const
 {
 	constexpr int PROMISC_MODE = 1;
 	if (pcap_set_promisc(handle_, PROMISC_MODE) == PCAP_ERROR_ACTIVATED)
@@ -110,7 +106,7 @@ void NetworkAnalyser::set_promiscuous_mode() const
 	}
 }
 
-void NetworkAnalyser::set_timeout() const
+void NetworkAnalyser::SetTimeout() const
 {
 	constexpr int TIMEOUT_IN_MS = 1;
 	if (pcap_set_timeout(handle_, TIMEOUT_IN_MS) == PCAP_ERROR_ACTIVATED)
@@ -121,17 +117,17 @@ void NetworkAnalyser::set_timeout() const
 	}
 }
 
-void NetworkAnalyser::try_to_activate_handle() const
+void NetworkAnalyser::TryToActivateHandle() const
 {
 	constexpr int OK = 0;
 	if (pcap_activate(handle_) != OK)
 	{
 		throw NetworkAnalyserException(string("Could not activate pcap handle: ") + pcap_geterr(handle_),
-		                               NETWORK_ANALYSER_CREATION_FAILURE);
+									   NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 }
 
-void NetworkAnalyser::try_to_set_immediate_mode() const
+void NetworkAnalyser::TryToSetImmediateMode() const
 {
 	constexpr int IMMEDIATE_MODE = 1;
 	if (pcap_set_immediate_mode(handle_, IMMEDIATE_MODE) == PCAP_ERROR_ACTIVATED)
@@ -142,22 +138,22 @@ void NetworkAnalyser::try_to_set_immediate_mode() const
 	}
 }
 
-void NetworkAnalyser::try_to_set_bpf_filter() const
+void NetworkAnalyser::TryToSetBpfFilter() const
 {
-	bpf_program fp;
+	bpf_program fp{};
 
 	constexpr char DNS_FILTER_EXPRESSION[] = "port 53";
 
 	if (pcap_compile(handle_, &fp, DNS_FILTER_EXPRESSION, 0, PCAP_NETMASK_UNKNOWN) == -1)
 	{
-		throw NetworkAnalyserException(string("Could not parse filter: ") + pcap_geterr(handle_),
-		                               NETWORK_ANALYSER_CREATION_FAILURE);
+		throw NetworkAnalyserException(string("Could not Parse filter: ") + pcap_geterr(handle_),
+									   NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 
 	if (pcap_setfilter(handle_, &fp) == -1)
 	{
 		throw NetworkAnalyserException(string("Could not install filter: ") + pcap_geterr(handle_),
-		                               NETWORK_ANALYSER_CREATION_FAILURE);
+									   NETWORK_ANALYSER_CREATION_FAILURE);
 	}
 
 	pcap_freecode(&fp);

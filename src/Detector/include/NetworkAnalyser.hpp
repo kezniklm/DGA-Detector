@@ -12,32 +12,34 @@
 class NetworkAnalyser
 {
 public:
-    explicit NetworkAnalyser(const std::string &device, const int buffer_size, rigtorp::MPMCQueue<Packet> *packet_queue);
+	explicit NetworkAnalyser(const std::string &device,
+							 int buffer_size,
+							 rigtorp::MPMCQueue<Packet> *packet_queue);
 
-    ~NetworkAnalyser();
+	~NetworkAnalyser();
 
-    void start_capture() const;
+	void StartCapture() const;
 
-    void stop_capture() const;
+	void StopCapture() const;
 
 private:
-    pcap_t *handle_;
+	pcap_t *handle_;
 
-    rigtorp::MPMCQueue<Packet> *queue_;
+	rigtorp::MPMCQueue<Packet> *queue_;
 
-    void try_to_create_handle(const char *device);
+	void TryToCreateHandle(const char *device);
 
-    void try_to_set_buffer_size(int buffer_size) const;
+	void TryToSetBufferSize(int buffer_size) const;
 
-    void try_to_activate_handle() const;
+	void TryToActivateHandle() const;
 
-    void try_to_set_immediate_mode() const;
+	void TryToSetImmediateMode() const;
 
-    void try_to_set_bpf_filter() const;
+	void TryToSetBpfFilter() const;
 
-    void set_snaplen() const;
+	void SetSnaplen() const;
 
-    void set_promiscuous_mode() const;
+	void SetPromiscuousMode() const;
 
-    void set_timeout() const;
+	void SetTimeout() const;
 };

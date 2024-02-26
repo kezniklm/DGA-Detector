@@ -10,3 +10,9 @@
 #include "Filter.hpp"
 #include "NetworkAnalyser.hpp"
 #include "Packet.hpp"
+#include "DNSPacketInfo.hpp"
+#include "Database.hpp"
+#include "MongoDBDatabase.hpp"
+#include "MessagePublisher.hpp"
+#include <DomainValidator.hpp>
+#include <Publisher.hpp>

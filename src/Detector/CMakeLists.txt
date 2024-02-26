@@ -1,53 +1,60 @@
 ﻿cmake_minimum_required(VERSION 3.5)
-
 project(Detector)
 
-# Set C++ standard/version
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Add the source files
+# Collect all source files from the src directory
 file(GLOB SOURCES "src/*.cpp")
 
-# Create a library from the sources
+# Create a static library from the collected source files
 add_library(DetectorLib STATIC ${SOURCES})
 
-# Include directories for DetectorLib
-target_include_directories(DetectorLib PUBLIC include)
+target_include_directories(DetectorLib PUBLIC 
+    include
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/Structures"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/Database"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/Data/RabbitMQ"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+    "/usr/local/include/mongocxx/v_noabi/"
+    "/usr/local/include/bsoncxx/v_noabi/"
+    "/usr/local/include"
+)
 
-# Adjust the include path for additional libraries
-target_include_directories(DetectorLib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-
-# Specify the output directory for the library
 set_target_properties(DetectorLib PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
-# Attempt to find pcap using find_package or find_path and find_library
-find_path(PCAP_INCLUDE_DIR NAMES pcap.h 
-         PATHS 
-         "C:/Program Files/Npcap/include" # Adjusted to the base directory
-)
+# Searching for required dependencies
+# Find PCAP library
+find_path(PCAP_INCLUDE_DIR NAMES pcap.h)
+find_library(PCAP_LIBRARY NAMES wpcap pcap)
 
-find_library(PCAP_LIBRARY NAMES wpcap pcap 
-             PATHS 
-             "C:/Program Files/Npcap/lib/x64" # Adjusted for 64-bit library
-             "C:/Program Files/Npcap/lib" # Fallback
-             "C:/Program Files (x86)/Npcap/lib"
-)
+# Find libuv library
+find_library(LIBUV_LIBRARY NAMES uv)
 
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(SimpleAmqpClient REQUIRED IMPORTED_TARGET libSimpleAmqpClient)
+
+# Error message if dependencies are not found
 if(NOT PCAP_INCLUDE_DIR OR NOT PCAP_LIBRARY)
   message(FATAL_ERROR "Npcap not found. Please ensure it is installed.")
 endif()
 
-# Include the pcap directory correctly
+if(NOT LIBUV_LIBRARY)
+  message(FATAL_ERROR "libuv not found. Please ensure it is installed.")
+endif()
+
+# Include the pcap directory
 target_include_directories(DetectorLib PUBLIC ${PCAP_INCLUDE_DIR})
 
-# Manually specify include directory and library path for PcapPlusPlus
+# Manually specify include directory for PcapPlusPlus
 include_directories(/usr/local/include/pcapplusplus)
 
-# Existing find_library calls for PcapPlusPlus libraries
+# Find PcapPlusPlus libraries
 find_library(PCAPPLUSPLUS_PCAP_LIB NAME Pcap++ PATHS /usr/local/lib)
 find_library(PCAPPLUSPLUS_PACKET_LIB NAME Packet++ PATHS /usr/local/lib)
 find_library(PCAPPLUSPLUS_COMMON_LIB NAME Common++ PATHS /usr/local/lib)
@@ -55,12 +62,23 @@ find_library(PCAPPLUSPLUS_COMMON_LIB NAME Common++ PATHS /usr/local/lib)
 # Find libpcap library
 find_library(LIBPCAP_LIBRARY NAMES pcap)
 
-if(NOT LIBPCAP_LIBRARY)
-  message(FATAL_ERROR "libpcap not found. Please ensure it is installed.")
-endif()
+# MongoDB C++ Driver
+find_package(mongocxx REQUIRED)
+find_package(bsoncxx REQUIRED)
 
-# Add an executable
+target_include_directories(DetectorLib PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS} ${LIBBSONCXX_INCLUDE_DIRS})
+target_link_libraries(DetectorLib PUBLIC mongo::mongocxx_shared mongo::bsoncxx_shared)
+
 add_executable(Detector "src/Detector.cpp")
 
-# Link the executable with DetectorLib, PCAP library, all PcapPlusPlus libraries, and libpcap
-target_link_libraries(Detector PRIVATE DetectorLib ${PCAP_LIBRARY} ${PCAPPLUSPLUS_PCAP_LIB} ${PCAPPLUSPLUS_PACKET_LIB} ${PCAPPLUSPLUS_COMMON_LIB} ${LIBPCAP_LIBRARY} pthread)
+target_link_libraries(Detector PRIVATE 
+    DetectorLib 
+    ${PCAP_LIBRARY} 
+    ${PCAPPLUSPLUS_PCAP_LIB} 
+    ${PCAPPLUSPLUS_PACKET_LIB} 
+    ${PCAPPLUSPLUS_COMMON_LIB} 
+    ${LIBPCAP_LIBRARY} 
+    pthread
+    ${LIBUV_LIBRARY}
+    PkgConfig::SimpleAmqpClient
+)

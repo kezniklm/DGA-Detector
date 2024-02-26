@@ -1,26 +1,40 @@
 #pragma once
 
 #include <limits>
+#include <fstream>
 
 #include "cxxopts.hpp"
 
+#include "DNSPacketInfo.hpp"
 #include "Exceptions.hpp"
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
+#include "json.hpp"
 
 #undef max
 
-class arguments
+class Arguments
 {
 public:
-	void parse(int argc, const char *argv[]);
+	void Parse(int argc, const char *argv[]);
 
-	std::string interface_to_sniff;
+	std::string interface_to_sniff_;
 
-	int packet_buffer_size = 0;
+	std::string database_connection_string_;
 
-	size_t packet_queue_size = 0;
+	std::string rabbitmq_connection_string_;
+
+	std::string rabbitmq_queue_name_;
+
+	int packet_buffer_size_ = 0;
+
+	size_t packet_queue_size_ = 0;
+
+	size_t dns_info_queue_size_ = 0;
+
+	size_t publisher_queue_size_ = 0;
 
 private:
-	void check_rabbit_mq_connection(const std::string &rabbitMqConnectionString);
+	void CalculateSizes(unsigned long long value);
+	static nlohmann::json MakeKeysLowercase(const nlohmann::json &original);
 };
