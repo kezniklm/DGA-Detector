@@ -5,9 +5,10 @@
         "pcapplusplus",
         "libuv",
         "mongo-cxx-driver",
-        "rmqcpp",
         "nlohmann-json",
         "cxxopts",
-        "mpmcqueue"
+        "mpmcqueue",
+        "amqpcpp",
+        "boost-asio"
     ]
 }
