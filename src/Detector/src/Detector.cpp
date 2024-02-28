@@ -13,7 +13,7 @@ BOOL WINAPI console_handler(const DWORD signal)
 	if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal == CTRL_CLOSE_EVENT)
 	{
 		cancellation_token.store(true);
-		analyser_ptr->stop_capture();
+		analyser_ptr->StopCapture();
 		return TRUE;
 	}
 	return FALSE;
@@ -42,7 +42,7 @@ int main(const int argc, const char **argv)
 
 	unique_ptr<MPMCQueue<Packet>> packet_queue;
 	unique_ptr<MPMCQueue<DNSPacketInfo>> dns_info_queue;
-	unique_ptr<MPMCQueue<DNSPacketInfo>> publisher_queue;
+	unique_ptr<MPMCQueue<ValidatedDomains>> publisher_queue;
 	unique_ptr<NetworkAnalyser> analyser;
 	unique_ptr<Filter> filter;
 	unique_ptr<MongoDBDatabase> database;
@@ -62,13 +62,12 @@ int main(const int argc, const char **argv)
 		packet_queue = make_unique<MPMCQueue<Packet>>(args->packet_queue_size_);
 		printf("%ld\n", args->dns_info_queue_size_);
 		dns_info_queue = make_unique<MPMCQueue<DNSPacketInfo>>(args->dns_info_queue_size_);
-
-		publisher_queue = make_unique<MPMCQueue<DNSPacketInfo>>(args->publisher_queue_size_);
+		printf("%ld\n", args->publisher_queue_size_);
+		publisher_queue = make_unique<MPMCQueue<ValidatedDomains>>(args->publisher_queue_size_);
 
 		printf("YOU ARE NOW FREE TO DO EVERYTHING\n");
 
-		analyser =
-			make_unique<NetworkAnalyser>(args->interface_to_sniff_, args->packet_buffer_size_, packet_queue.get());
+		analyser = make_unique<NetworkAnalyser>(args->interface_to_sniff_, args->packet_buffer_size_, packet_queue.get());
 
 		analyser_ptr = analyser.get();
 
@@ -81,6 +80,14 @@ int main(const int argc, const char **argv)
 		rmq_agent = make_unique<MessagePublisher>(args->rabbitmq_connection_string_, args->rabbitmq_queue_name_);
 
 		publisher = make_unique<Publisher>(publisher_queue.get(), rmq_agent.get());
+	}
+	catch (const ArgumentException &e)
+	{
+		if (e.GetCode() != ARGUMENT_HELP)
+		{
+			cerr << "Error: " << e.what() << '\n';
+		}
+		return e.GetCode();
 	}
 	catch (const DetectorException &e)
 	{

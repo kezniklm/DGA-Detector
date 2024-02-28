@@ -9,6 +9,8 @@
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
 
+extern std::atomic<bool> cancellation_token;
+
 class NetworkAnalyser
 {
 public:

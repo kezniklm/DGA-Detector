@@ -29,8 +29,8 @@ find_package(bsoncxx CONFIG REQUIRED)
 find_package(mongocxx CONFIG REQUIRED)
 find_package(PcapPlusPlus CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(amqpcpp CONFIG REQUIRED)
 find_package(MPMCQueue CONFIG REQUIRED)
+find_package(rabbitmq-c CONFIG REQUIRED)
 
 # Link the Detector library with dependencies found via vcpkg
 target_link_libraries(DetectorLib PUBLIC 
@@ -41,8 +41,8 @@ target_link_libraries(DetectorLib PUBLIC
     PcapPlusPlus::Packet++
     PcapPlusPlus::Common++
     nlohmann_json::nlohmann_json
-    amqpcpp
     MPMCQueue::MPMCQueue
+    rabbitmq::rabbitmq-static
 )
 
 add_executable(Detector "src/Detector.cpp")

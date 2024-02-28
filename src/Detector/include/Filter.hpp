@@ -1,8 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <memory>
-
 #include "DnsLayer.h"
 #include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"

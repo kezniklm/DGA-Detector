@@ -2,12 +2,12 @@
 
 void Publisher::Process()
 {
-	DNSPacketInfo packet_info;
+	ValidatedDomains domains;
 	while (!cancellation_token.load())
 	{
-		if (publisher_queue_->try_pop(packet_info))
+		if (publisher_queue_->try_pop(domains))
 		{
-			nlohmann::json json_packet = ToJson(packet_info);
+			nlohmann::json json_packet = ToJson(domains.domain_return_code_pairs_);
 
 			std::string message_to_send = json_packet.dump(4);
 
@@ -16,10 +16,13 @@ void Publisher::Process()
 	}
 }
 
-nlohmann::json Publisher::ToJson(const DNSPacketInfo &packet_info)
+nlohmann::json Publisher::ToJson(const std::unordered_map<std::string, int> &domain_return_code_pairs)
 {
-	nlohmann::json j;
-	j["domain_names"] = packet_info.domain_names;
-	j["response_code"] = packet_info.response_code;
-	return j;
+	nlohmann::json output_json;
+	for (const auto &pair : domain_return_code_pairs)
+	{
+		// Each domain and its return code is added as a new entry in the JSON object.
+		output_json["domains"][pair.first] = pair.second;
+	}
+	return output_json;
 }
