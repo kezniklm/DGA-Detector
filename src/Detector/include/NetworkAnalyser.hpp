@@ -24,7 +24,7 @@
 
 #include "rigtorp/MPMCQueue.h"
 
-#include "Exceptions.hpp"
+#include "NetworkAnalyserException.hpp"
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
 
@@ -140,5 +140,5 @@ private:
      * @param header Packet header.
      * @param packet Packet data.
      */
-    static void PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
+    static void PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet);
 };

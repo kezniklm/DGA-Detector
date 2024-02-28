@@ -10,6 +10,7 @@ target_include_directories(DetectorLib PUBLIC
     "${PROJECT_SOURCE_DIR}/include/Data/Structures"
     "${PROJECT_SOURCE_DIR}/include/Data/Database"
     "${PROJECT_SOURCE_DIR}/include/Data/RabbitMQ"
+    "${PROJECT_SOURCE_DIR}/include/Exceptions"
 )
 
 set_target_properties(DetectorLib PROPERTIES

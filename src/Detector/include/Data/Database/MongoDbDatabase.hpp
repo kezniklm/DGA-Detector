@@ -124,83 +124,83 @@ private:
 
         return PerformWithRetries(query_func, 3, 1000); // 3 retries, 1000ms delay
     }
-};
 
-/**
- * @brief Checks the connection to the MongoDB server.
- * @throws std::runtime_error if the ping to the MongoDB server fails.
- */
-void CheckConnection()
-{
-    try
-    {
-        auto admin = connection_["admin"];
-        const auto kCommand = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
-        admin.run_command(kCommand.view());
-    }
-    catch (const mongocxx::exception &e)
-    {
-        throw std::runtime_error(std::string("Failed to ping MongoDB server: ") + e.what());
-    }
-}
-
-/**
- * @brief Performs a query with retries in case of failure.
- * @param query_func The function representing the query.
- * @param max_retries The maximum number of retries.
- * @param retry_delay_ms The delay between retries in milliseconds.
- * @return The result of the query function.
- * @throws std::runtime_error if the query fails after all retries.
- */
-template <typename Func>
-auto PerformWithRetries(Func query_func, int max_retries, int retry_delay_ms) -> decltype(query_func())
-{
-    for (int attempt = 0; attempt < max_retries; ++attempt)
+    /**
+     * @brief Checks the connection to the MongoDB server.
+     * @throws std::runtime_error if the ping to the MongoDB server fails.
+     */
+    void CheckConnection()
     {
         try
         {
-            return query_func(); // Attempt the function and return result directly if successful
+            auto admin = connection_["admin"];
+            const auto kCommand = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
+            admin.run_command(kCommand.view());
         }
         catch (const mongocxx::exception &e)
         {
-            std::cerr << "MongoDB query failed: " << e.what();
-            if (attempt < max_retries - 1)
-            {
-                std::cerr << " - Retrying..." << std::endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(retry_delay_ms));
-            }
-            else
-            {
-                std::cerr << " - All retries exhausted." << std::endl;
-                throw; // Rethrow the last exception
-            }
+            throw std::runtime_error(std::string("Failed to ping MongoDB server: ") + e.what());
         }
     }
-    throw std::runtime_error("Failed after retries");
-}
 
-/**
- * @brief Handles a hit in the blacklist by inserting the element and timestamp into the "Results" collection.
- * @param element The element that hit the blacklist.
- */
-void HandleBlacklistHit(const std::string &element) override
-{
-    const auto kNow = std::chrono::system_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(kNow.time_since_epoch()).count();
+    /**
+     * @brief Performs a query with retries in case of failure.
+     * @param query_func The function representing the query.
+     * @param max_retries The maximum number of retries.
+     * @param retry_delay_ms The delay between retries in milliseconds.
+     * @return The result of the query function.
+     * @throws std::runtime_error if the query fails after all retries.
+     */
+    template <typename Func>
+    auto PerformWithRetries(Func query_func, int max_retries, int retry_delay_ms) -> decltype(query_func())
+    {
+        for (int attempt = 0; attempt < max_retries; ++attempt)
+        {
+            try
+            {
+                return query_func(); // Attempt the function and return result directly if successful
+            }
+            catch (const mongocxx::exception &e)
+            {
+                std::cerr << "MongoDB query failed: " << e.what();
+                if (attempt < max_retries - 1)
+                {
+                    std::cerr << " - Retrying..." << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(retry_delay_ms));
+                }
+                else
+                {
+                    std::cerr << " - All retries exhausted." << std::endl;
+                    throw; // Rethrow the last exception
+                }
+            }
+        }
+        throw std::runtime_error("Failed after retries");
+    }
 
-    auto collection = db_["Results"];
-    bsoncxx::builder::basic::document document{};
-    document.append(bsoncxx::builder::basic::kvp("element", element),
-                    bsoncxx::builder::basic::kvp("timestamp", static_cast<int64_t>(timestamp)));
+    /**
+     * @brief Handles a hit in the blacklist by inserting the element and timestamp into the "Results" collection.
+     * @param element The element that hit the blacklist.
+     */
+    void HandleBlacklistHit(const std::string &element) override
+    {
+        const auto kNow = std::chrono::system_clock::now();
+        auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(kNow.time_since_epoch()).count();
 
-    collection.insert_one(document.view());
-}
+        auto collection = db_["Results"];
+        bsoncxx::builder::basic::document document{};
+        document.append(bsoncxx::builder::basic::kvp("element", element),
+                        bsoncxx::builder::basic::kvp("timestamp", static_cast<int64_t>(timestamp)));
 
-/** MongoDB driver instance */
-mongocxx::instance instance_{};
+        collection.insert_one(document.view());
+    }
 
-/** MongoDB connection */
-mongocxx::client connection_;
+    /** MongoDB driver instance */
+    mongocxx::instance instance_{};
 
-/** Database reference */
-mongocxx::database db_;
+    /** MongoDB connection */
+    mongocxx::client connection_;
+
+    /** Database reference */
+    mongocxx::database db_;
+};

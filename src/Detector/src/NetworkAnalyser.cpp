@@ -95,7 +95,7 @@ NetworkAnalyser::~NetworkAnalyser()
  * @param header Packet header.
  * @param packet Packet data.
  */
-static void PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
+void NetworkAnalyser::PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
 {
     auto *queue = reinterpret_cast<MPMCQueue<Packet> *>(user);
     queue->emplace(Packet(*header, packet));

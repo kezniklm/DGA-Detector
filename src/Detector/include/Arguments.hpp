@@ -27,8 +27,8 @@
 #include "cxxopts.hpp"
 #include "nlohmann/json.hpp"
 
+#include "ArgumentException.hpp"
 #include "DNSPacketInfo.hpp"
-#include "Exceptions.hpp"
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
 
