@@ -1,8 +1,27 @@
+/**
+ * @file Arguments.hpp
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Declaration of classes and functions for handling command line arguments.
+ *
+ * This header file declares the Arguments class, which provides functionalities for parsing and storing command line arguments used by the application. It defines various member functions to parse command line arguments, load application settings, validate options, and calculate sizes of buffers and queues based on input values.
+ *
+ * The main components of this file include:
+ * - Declaration of the Arguments class, which encapsulates the logic for handling command line arguments.
+ * - Declaration of member variables to store command line options such as interface, memory size, database connection string, RabbitMQ connection string, and queue name.
+ * - Declaration of member functions for parsing command line arguments, loading application settings, configuring options, and setting option values.
+ * - Declaration of helper functions for calculating buffer and queue sizes and converting keys in loaded JSON settings to lowercase.
+ *
+ * @version 1.0
+ * @date 2024-02-28
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #pragma once
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <limits>
 
 #include "cxxopts.hpp"
@@ -17,40 +36,138 @@
 #undef max
 #endif
 
+/**
+ * A class to handle parsing and storing command line arguments.
+ */
 class Arguments
 {
 public:
-	void Parse(const int argc, const char *argv[]);
+    /**
+     * Parses the command line arguments and loads application settings.
+     *
+     * @param argc The number of command line arguments.
+     * @param argv An array of C-strings containing the command line arguments.
+     *
+     * @throws ArgumentException if there is an issue with the arguments.
+     *
+     * @returns None
+     */
+    void Parse(const int argc, const char *argv[]);
 
-	std::string interface_to_sniff_;
+    /**
+     * A string variable representing the interface to sniff.
+     */
+    std::string interface_to_sniff_;
 
-	unsigned long long memory_size_;
+    /**
+     * Represents the size of memory in bytes as an unsigned long long integer.
+     */
+    unsigned long long memory_size_;
 
-	std::string database_connection_string_;
+    /**
+     * A string variable to store the connection string for the database.
+     */
+    std::string database_connection_string_;
 
-	std::string rabbitmq_connection_string_;
+    /**
+     * The connection string for RabbitMQ.
+     */
+    std::string rabbitmq_connection_string_;
 
-	std::string rabbitmq_queue_name_;
+    /**
+     * The name of the RabbitMQ queue.
+     */
+    std::string rabbitmq_queue_name_;
 
-	int packet_buffer_size_;
+    /**
+     * Size of the packet buffer.
+     */
+    int packet_buffer_size_;
 
-	size_t packet_queue_size_;
+    /**
+     * The size of the packet queue.
+     */
+    size_t packet_queue_size_;
 
-	size_t dns_info_queue_size_;
+    /**
+     * The size of the DNS information queue.
+     */
+    size_t dns_info_queue_size_;
 
-	size_t publisher_queue_size_;
+    /**
+     * The size of the queue used by the publisher.
+     */
+    size_t publisher_queue_size_;
 
 private:
-	void ConfigureOptions(cxxopts::Options &options);
+    /**
+     * Configures command line options for the program using cxxopts library.
+     *
+     * @param options Reference to the cxxopts::Options object to which the options will be added.
+     *
+     * @returns None
+     */
+    void ConfigureOptions(cxxopts::Options &options);
 
-	nlohmann::json LoadAppSettings();
+    /**
+     * Loads application settings from a JSON file named "appsettings.json".
+     *
+     * @return A JSON object containing the loaded application settings with keys converted to lowercase.
+     */
+    nlohmann::json LoadAppSettings();
 
-	void ValidateAndSetOptions(const cxxopts::ParseResult &result, const nlohmann::json &appsettings, const cxxopts::Options &options);
+    /**
+     * Validates and sets the options based on the provided arguments and application settings.
+     *
+     * @param result The parsed command-line arguments.
+     * @param appsettings The application settings in JSON format.
+     * @param options The options for the command-line parser.
+     *
+     * @throws ArgumentException if there is an issue with the arguments or settings.
+     *
+     * @returns None
+     */
+    void ValidateAndSetOptions(const cxxopts::ParseResult &result,
+                               const nlohmann::json &appsettings,
+                               const cxxopts::Options &options);
 
-	template <typename T>
-	void SetOption(const std::string &key, T &value, const cxxopts::ParseResult &result, const nlohmann::json &appsettings, bool required, const cxxopts::Options &options);
+    /**
+     * Sets the option value based on the provided key and conditions.
+     *
+     * @param key The key corresponding to the option.
+     * @param value The reference to the variable where the option value will be stored.
+     * @param result The parsed command-line arguments.
+     * @param appsettings The JSON object containing application settings.
+     * @param required Flag indicating if the option is required.
+     * @param options The options object containing help information.
+     *
+     * @returns None
+     *
+     * @throws ArgumentException if a required option is missing.
+     */
+    template <typename T>
+    void SetOption(const std::string &key,
+                   T &value,
+                   const cxxopts::ParseResult &result,
+                   const nlohmann::json &appsettings,
+                   bool required,
+                   const cxxopts::Options &options);
 
-	void CalculateSizes(const unsigned long long value);
+    /**
+     * Calculates sizes of buffers and queues based on the input value.
+     *
+     * @param value The input value used for calculations.
+     *
+     * @returns None
+     */
+    void CalculateSizes(const unsigned long long value);
 
-	nlohmann::json MakeKeysLowercase(const nlohmann::json &original);
+    /**
+     * Creates a new JSON object with all keys converted to lowercase.
+     *
+     * @param original The original JSON object.
+     *
+     * @returns A new JSON object with lowercase keys.
+     */
+    nlohmann::json MakeKeysLowercase(const nlohmann::json &original);
 };

@@ -1,19 +1,134 @@
-﻿#pragma once
+﻿/**
+ * @file Detector.hpp
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Declaration of the Detector class for monitoring and analyzing network traffic.
+ *
+ * This header file declares the Detector class, which is responsible for orchestrating the monitoring of network traffic, filtering packets, validating domains, and publishing messages. It also includes declarations for signal handling setup and external variables used for cancellation and global network analyser pointer.
+ *
+ * The main functionalities of this file include:
+ * - Declaration of the Detector class with its constructor and member functions.
+ * - Declaration of signal handling functions.
+ * - Declaration of external variables for cancellation and global network analyser pointer.
+ *
+ * @version 1.0
+ * @date 2024-02-28
+ * @copyright Copyright (c) 2024
+ * 
+ */
 
+#pragma once
+
+#include <csignal>
 #include <iostream>
 #include <memory>
 #include <thread>
 #include <unordered_set>
 
-#include <rigtorp/MPMCQueue.h>
+#include "rigtorp/MPMCQueue.h"
 
 #include "Arguments.hpp"
 #include "Database.hpp"
 #include "DNSPacketInfo.hpp"
+#include "DomainValidator.hpp"
 #include "Filter.hpp"
 #include "MessagePublisher.hpp"
-#include "MongoDBDatabase.hpp"
+#include "MongoDbDatabase.hpp"
 #include "NetworkAnalyser.hpp"
 #include "Packet.hpp"
-#include <DomainValidator.hpp>
-#include <Publisher.hpp>
+#include "Publisher.hpp"
+
+/** Atomic boolean flag for cancellation. */
+extern std::atomic<bool> cancellation_token;
+
+/** Pointer to the global NetworkAnalyser instance. */
+extern NetworkAnalyser *global_analyser_ptr;
+
+/**
+ * @brief The Detector class orchestrates the monitoring of network traffic, filtering packets, validating domains, and publishing messages.
+ */
+class Detector
+{
+public:
+    /**
+     * @brief Constructs a Detector object and initializes its components.
+     *
+     * This constructor initializes signal handling, then initializes the components of the Detector class by parsing command-line arguments and setting up queues, network analyser, filter, database, domain validator, and message publisher.
+     *
+     * @param argc The number of command-line arguments.
+     * @param argv An array of C-style strings containing the command-line arguments.
+     * @throws ArgumentException if there is an issue with the arguments.
+     * @throws DetectorException if there is an error during initialization.
+     * @throws std::bad_alloc if memory allocation fails.
+     * @returns None
+     */
+    Detector(const int argc, const char **argv);
+
+    /**
+     * @brief Starts monitoring network traffic and processing packets.
+     *
+     * This function starts the monitoring of network traffic by launching multiple threads for capturing packets, filtering packets, validating domains, and publishing messages.
+     *
+     * @returns None
+     */
+    void Run();
+
+private:
+    /**
+     * @brief Initializes the components required for network traffic monitoring.
+     *
+     * Initializes the components required for network traffic monitoring, including parsing command-line arguments, setting up queues, network analyser, filter, database, domain validator, and message publisher.
+     *
+     * @param argc The number of command-line arguments.
+     * @param argv An array of C-style strings containing the command-line arguments.
+     * @throws ArgumentException if there is an issue with the arguments.
+     * @throws DetectorException if there is an error during initialization.
+     * @throws std::bad_alloc if memory allocation fails.
+     */
+    void InitializeComponents(const int argc, const char **argv);
+
+    /**
+     * @brief Signal handler for SIGINT and SIGTERM signals.
+     *
+     * This function handles SIGINT and SIGTERM signals by setting the cancellation token to true and stopping the network capture if a global network analyser pointer is set.
+     *
+     * @param signum The signal number.
+     * @returns None
+     */
+    static void SignalHandler(int signum);
+
+    /**
+     * @brief Sets up signal handling for graceful termination of the program.
+     *
+     * This function sets up signal handlers to capture signals such as SIGINT and SIGTERM for terminating the program gracefully. On Windows, it uses SetConsoleCtrlHandler, while on Unix-like systems, it uses signal() to register signal handlers.
+     *
+     * @returns None
+     */
+    static void SetupSignalHandling();
+
+    /** Queue for packets */
+    std::unique_ptr<rigtorp::MPMCQueue<Packet>> packet_queue_;
+
+    /** Queue for DNS packet information */
+    std::unique_ptr<rigtorp::MPMCQueue<DNSPacketInfo>> dns_info_queue_;
+
+    /** Queue for validated domains */
+    std::unique_ptr<rigtorp::MPMCQueue<ValidatedDomains>> publisher_queue_;
+
+    /** Network analyser instance */
+    std::unique_ptr<NetworkAnalyser> analyser_;
+
+    /** Packet filter instance */
+    std::unique_ptr<Filter> filter_;
+
+    /** MongoDB database instance */
+    std::unique_ptr<MongoDbDatabase> database_;
+
+    /** Domain validator instance */
+    std::unique_ptr<DomainValidator> validator_;
+
+    /** Message publisher instance */
+    std::unique_ptr<MessagePublisher> message_publisher_;
+
+    /** Publisher instance */
+    std::unique_ptr<Publisher> publisher_;
+};
