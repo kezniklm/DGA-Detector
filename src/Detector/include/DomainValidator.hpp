@@ -10,7 +10,6 @@
 #include <rigtorp/MPMCQueue.h>
 
 #include "DNSPacketInfo.hpp"
-#include "Database.hpp"
 #include "MessagePublisher.hpp"
 #include "ValidatedDomains.hpp"
 

@@ -1,6 +1,6 @@
 #include "Publisher.hpp"
 
-void Publisher::Process()
+void Publisher::Process() const
 {
 	ValidatedDomains domains;
 	while (!cancellation_token.load())

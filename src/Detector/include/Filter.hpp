@@ -3,12 +3,12 @@
 #include "DnsLayer.h"
 #include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"
-#include "rigtorp/MPMCQueue.h"
 #include "Packet.h"
 #include "Packet.hpp"
 #include "PayloadLayer.h"
 #include "PcapPlusPlusVersion.h"
 #include "ProtocolType.h"
+#include "rigtorp/MPMCQueue.h"
 #include "UdpLayer.h"
 
 extern std::atomic<bool> cancellation_token;

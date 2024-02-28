@@ -1,6 +1,10 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+
 #include <mongocxx/client.hpp>
+#include <mongocxx/exception/exception.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/exception.hpp>
@@ -27,7 +31,7 @@ private:
 		try
 		{
 			auto admin = connection_["admin"];
-			auto command = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
+			const auto command = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
 			admin.run_command(command.view());
 		}
 		catch (const mongocxx::exception &e)
@@ -65,7 +69,7 @@ private:
 
 	void HandleBlacklistHit(const std::string &element) override
 	{
-		auto now = std::chrono::system_clock::now();
+		const auto now = std::chrono::system_clock::now();
 		auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
 		auto collection = db_["Results"];
