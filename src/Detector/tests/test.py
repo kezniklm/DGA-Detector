@@ -2,10 +2,19 @@ import multiprocessing
 import random
 import socket
 import time
+import uuid
 
 
 def generate_dns_response():
     ip_address = '.'.join(str(random.randint(0, 255)) for _ in range(4))
+
+    # Generate a UUID-based domain name
+    domain_name = str(uuid.uuid4()).replace('-', '')[:16] + ".example.com"
+    domain_name_parts = [part.encode() for part in domain_name.split('.')]
+    dns_question = b''.join(bytes([len(part)]) + part for part in domain_name_parts)
+    dns_question += b'\x00'  # End of domain name
+    dns_question += b'\x00\x01'  # QTYPE: A (IPv4 address)
+    dns_question += b'\x00\x01'  # QCLASS: IN (Internet)
 
     dns_header = bytes.fromhex(
         '00 01' +  # Transaction ID
@@ -15,8 +24,6 @@ def generate_dns_response():
         '00 00' +  # Authority RRs
         '00 00'  # Additional RRs
     )
-
-    dns_question = b'\x03' + b'www' + b'\x06' + b'example' + b'\x03' + b'com' + b'\x00' + b'\x00\x01' + b'\x00\x01'
 
     # Increase the size of the answer section to make the packet larger
     dns_answer = b'\xc0\x0c' + b'\x00\x01' + b'\x00\x01' + b'\x00\x00\x0e\x10' + b'\x00\x04' + bytes(

@@ -8,6 +8,7 @@
         "nlohmann-json",
         "cxxopts",
         "mpmcqueue",
-        "librabbitmq"
+        "librabbitmq",
+        "gtest"
     ]
 }
