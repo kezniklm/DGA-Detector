@@ -42,7 +42,7 @@ target_link_libraries(DetectorLib PUBLIC
     PcapPlusPlus::Common++
     nlohmann_json::nlohmann_json
     MPMCQueue::MPMCQueue
-    rabbitmq::rabbitmq-static
+    $<IF:$<TARGET_EXISTS:rabbitmq::rabbitmq-static>,rabbitmq::rabbitmq-static,rabbitmq::rabbitmq>
 )
 
 add_executable(Detector "src/Detector.cpp")
