@@ -36,19 +36,24 @@ using json = nlohmann::json;
 void Arguments::Parse(const int argc, const char *argv[])
 {
     cxxopts::Options options("Detector", "Detector of DNS responses in the DGA Detector system");
-    ConfigureOptions(options);
-
-    const json appsettings = LoadAppSettings();
 
     try
     {
+        ConfigureOptions(options);
+
+        const json appsettings = LoadAppSettings();
+
         const auto result = options.parse(argc, argv);
 
         ValidateAndSetOptions(result, appsettings, options);
     }
-    catch (const ArgumentException)
+    catch (const ArgumentException &e)
     {
         cout << options.help() << '\n';
+        if (e.GetCode() != ARGUMENT_HELP)
+        {
+            cerr << "Error: " << e.what() << '\n';
+        }
         throw;
     }
     catch (const exception &e)
@@ -113,7 +118,7 @@ void Arguments::ValidateAndSetOptions(const cxxopts::ParseResult &result,
 {
     if (result.count("help"))
     {
-        throw ArgumentException(options.help(), ARGUMENT_HELP);
+        throw ArgumentException("", ARGUMENT_HELP);
     }
 
     try
@@ -127,7 +132,6 @@ void Arguments::ValidateAndSetOptions(const cxxopts::ParseResult &result,
     }
     catch (const std::exception &e)
     {
-        cout << options.help() << '\n';
         throw ArgumentException(e.what(), ARGUMENT_CHECK_FAILURE);
     }
 }
@@ -164,8 +168,13 @@ void Arguments::SetOption(const string &key,
     }
     else if (required)
     {
-        cout << options.help() << '\n';
         throw ArgumentException("Missing required option: --" + key, ARGUMENT_CHECK_FAILURE);
+    }
+
+    // Trim quotes for string values
+    if constexpr (std::is_same_v<T, std::string>)
+    {
+        value = TrimQuotes(value);
     }
 }
 
@@ -206,6 +215,20 @@ json Arguments::MakeKeysLowercase(const json &original)
 }
 
 /**
+ * Removes surrounding quotes from a string, if present.
+ * @param input The input string potentially enclosed in quotes.
+ * @returns The string without surrounding quotes.
+ */
+std::string Arguments::TrimQuotes(const std::string &input)
+{
+    if (input.length() >= 2 && (input.front() == '\"' && input.back() == '\"') || (input.front() == '\'' && input.back() == '\''))
+    {
+        return input.substr(1, input.length() - 2);
+    }
+    return input;
+}
+
+/**
  * Sets an option of type std::string in the Arguments object.
  *
  * @param key The key corresponding to the option.
@@ -242,3 +265,165 @@ template void Arguments::SetOption<unsigned long long>(const std::string &key,
                                                        const json &appsettings,
                                                        bool required,
                                                        const cxxopts::Options &options);
+
+/**
+ * Gets the network interface name for sniffing.
+ * @return The interface name.
+ */
+std::string Arguments::GetInterfaceToSniff() const
+{
+    return this->interface_to_sniff_;
+}
+
+/**
+ * Gets the allocated memory size for processing.
+ * @return The memory size in bytes.
+ */
+unsigned long long Arguments::GetMemorySize() const
+{
+    return this->memory_size_;
+}
+
+/**
+ * Gets the database connection string.
+ * @return The connection string for the database.
+ */
+std::string Arguments::GetDatabaseConnectionString() const
+{
+    return this->database_connection_string_;
+}
+
+/**
+ * Gets the RabbitMQ connection string.
+ * @return The connection string for RabbitMQ.
+ */
+std::string Arguments::GetRabbitMQConnectionString() const
+{
+    return this->rabbitmq_connection_string_;
+}
+
+/**
+ * Gets the RabbitMQ queue name.
+ * @return The name of the RabbitMQ queue.
+ */
+std::string Arguments::GetRabbitMQQueueName() const
+{
+    return this->rabbitmq_queue_name_;
+}
+
+/**
+ * Gets the packet buffer size.
+ * @return The size of the packet buffer.
+ */
+int Arguments::GetPacketBufferSize() const
+{
+    return this->packet_buffer_size_;
+}
+
+/**
+ * Gets the packet queue size.
+ * @return The size of the packet queue.
+ */
+size_t Arguments::GetPacketQueueSize() const
+{
+    return this->packet_queue_size_;
+}
+
+/**
+ * Gets the DNS information queue size.
+ * @return The size of the DNS information queue.
+ */
+size_t Arguments::GetDNSInfoQueueSize() const
+{
+    return this->dns_info_queue_size_;
+}
+
+/**
+ * Gets the publisher queue size.
+ * @return The size of the publisher queue.
+ */
+size_t Arguments::GetPublisherQueueSize() const
+{
+    return this->publisher_queue_size_;
+}
+
+/**
+ * Sets the network interface name to be used for sniffing.
+ * @param value The interface name.
+ */
+void Arguments::SetInterfaceToSniff(const std::string &value)
+{
+    this->interface_to_sniff_ = value;
+}
+
+/**
+ * Sets the memory size allocated for processing.
+ * @param value The memory size in bytes.
+ */
+void Arguments::SetMemorySize(const unsigned long long value)
+{
+    this->memory_size_ = value;
+}
+
+/**
+ * Sets the database connection string.
+ * @param value The connection string for the database.
+ */
+void Arguments::SetDatabaseConnectionString(const std::string &value)
+{
+    this->database_connection_string_ = value;
+}
+
+/**
+ * Sets the RabbitMQ connection string.
+ * @param value The connection string for RabbitMQ.
+ */
+void Arguments::SetRabbitMQConnectionString(const std::string &value)
+{
+    this->rabbitmq_connection_string_ = value;
+}
+
+/**
+ * Sets the RabbitMQ queue name.
+ * @param value The name of the RabbitMQ queue.
+ */
+void Arguments::SetRabbitMQQueueName(const std::string &value)
+{
+    this->rabbitmq_queue_name_ = value;
+}
+
+/**
+ * Sets the packet buffer size.
+ * @param value The size of the packet buffer.
+ */
+void Arguments::SetPacketBufferSize(const int value)
+{
+    this->packet_buffer_size_ = value;
+}
+
+/**
+ * Sets the packet queue size.
+ * @param value The size of the packet queue.
+ */
+void Arguments::SetPacketQueueSize(const size_t value)
+{
+    this->packet_queue_size_ = value;
+}
+
+/**
+ * Sets the DNS information queue size.
+ * @param value The size of the DNS information queue.
+ */
+void Arguments::SetDNSInfoQueueSize(const size_t value)
+{
+    this->dns_info_queue_size_ = value;
+}
+
+/**
+ * Sets the publisher queue size.
+ * @param value The size of the publisher queue.
+ */
+void Arguments::SetPublisherQueueSize(const size_t value)
+{
+    this->publisher_queue_size_ = value;
+}

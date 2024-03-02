@@ -55,49 +55,112 @@ public:
     void Parse(const int argc, const char *argv[]);
 
     /**
-     * A string variable representing the interface to sniff.
+     * Gets the network interface name for sniffing.
+     * @return The interface name.
      */
-    std::string interface_to_sniff_;
+    std::string GetInterfaceToSniff() const;
 
     /**
-     * Represents the size of memory in bytes as an unsigned long long integer.
+     * Gets the allocated memory size for processing.
+     * @return The memory size in bytes.
      */
-    unsigned long long memory_size_;
+    unsigned long long GetMemorySize() const;
 
     /**
-     * A string variable to store the connection string for the database.
+     * Gets the database connection string.
+     * @return The connection string for the database.
      */
-    std::string database_connection_string_;
+    std::string GetDatabaseConnectionString() const;
 
     /**
-     * The connection string for RabbitMQ.
+     * Gets the RabbitMQ connection string.
+     * @return The connection string for RabbitMQ.
      */
-    std::string rabbitmq_connection_string_;
+    std::string GetRabbitMQConnectionString() const;
 
     /**
-     * The name of the RabbitMQ queue.
+     * Gets the RabbitMQ queue name.
+     * @return The name of the RabbitMQ queue.
      */
-    std::string rabbitmq_queue_name_;
+    std::string GetRabbitMQQueueName() const;
 
     /**
-     * Size of the packet buffer.
+     * Gets the packet buffer size.
+     * @return The size of the packet buffer.
      */
-    int packet_buffer_size_;
+    int GetPacketBufferSize() const;
 
     /**
-     * The size of the packet queue.
+     * Gets the packet queue size.
+     * @return The size of the packet queue.
      */
-    size_t packet_queue_size_;
+    size_t GetPacketQueueSize() const;
 
     /**
-     * The size of the DNS information queue.
+     * Gets the DNS information queue size.
+     * @return The size of the DNS information queue.
      */
-    size_t dns_info_queue_size_;
+    size_t GetDNSInfoQueueSize() const;
 
     /**
-     * The size of the queue used by the publisher.
+     * Gets the publisher queue size.
+     * @return The size of the publisher queue.
      */
-    size_t publisher_queue_size_;
+    size_t GetPublisherQueueSize() const;
+
+    /**
+     * Sets the network interface name to be used for sniffing.
+     * @param value The interface name.
+     */
+    void SetInterfaceToSniff(const std::string &value);
+
+    /**
+     * Sets the memory size allocated for processing.
+     * @param value The memory size in bytes.
+     */
+    void SetMemorySize(const unsigned long long value);
+
+    /**
+     * Sets the database connection string.
+     * @param value The connection string for the database.
+     */
+    void SetDatabaseConnectionString(const std::string &value);
+
+    /**
+     * Sets the RabbitMQ connection string.
+     * @param value The connection string for RabbitMQ.
+     */
+    void SetRabbitMQConnectionString(const std::string &value);
+
+    /**
+     * Sets the RabbitMQ queue name.
+     * @param value The name of the RabbitMQ queue.
+     */
+    void SetRabbitMQQueueName(const std::string &value);
+
+    /**
+     * Sets the packet buffer size.
+     * @param value The size of the packet buffer.
+     */
+    void SetPacketBufferSize(const int value);
+
+    /**
+     * Sets the packet queue size.
+     * @param value The size of the packet queue.
+     */
+    void SetPacketQueueSize(const size_t value);
+
+    /**
+     * Sets the DNS information queue size.
+     * @param value The size of the DNS information queue.
+     */
+    void SetDNSInfoQueueSize(const size_t value);
+
+    /**
+     * Sets the publisher queue size.
+     * @param value The size of the publisher queue.
+     */
+    void SetPublisherQueueSize(const size_t value);
 
 private:
     /**
@@ -169,5 +232,57 @@ private:
      *
      * @returns A new JSON object with lowercase keys.
      */
-    nlohmann::json MakeKeysLowercase(const nlohmann::json &original);
+    static nlohmann::json MakeKeysLowercase(const nlohmann::json &original);
+
+    /**
+     * Removes surrounding quotes from a string, if present.
+     * @param input The input string potentially enclosed in quotes.
+     * @returns The string without surrounding quotes.
+     */
+    static std::string TrimQuotes(const std::string &input);
+
+    /**
+     * A string variable representing the interface to sniff.
+     */
+    std::string interface_to_sniff_;
+
+    /**
+     * Represents the size of memory in bytes as an unsigned long long integer.
+     */
+    unsigned long long memory_size_;
+
+    /**
+     * A string variable to store the connection string for the database.
+     */
+    std::string database_connection_string_;
+
+    /**
+     * The connection string for RabbitMQ.
+     */
+    std::string rabbitmq_connection_string_;
+
+    /**
+     * The name of the RabbitMQ queue.
+     */
+    std::string rabbitmq_queue_name_;
+
+    /**
+     * Size of the packet buffer.
+     */
+    int packet_buffer_size_;
+
+    /**
+     * The size of the packet queue.
+     */
+    size_t packet_queue_size_;
+
+    /**
+     * The size of the DNS information queue.
+     */
+    size_t dns_info_queue_size_;
+
+    /**
+     * The size of the queue used by the publisher.
+     */
+    size_t publisher_queue_size_;
 };

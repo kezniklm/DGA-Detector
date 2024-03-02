@@ -14,7 +14,7 @@
  * @version 1.0
  * @date 2024-02-28
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "Detector.hpp"
@@ -134,26 +134,22 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         const auto args = make_unique<Arguments>();
         args->Parse(argc, argv);
 
-        packet_queue_ = make_unique<MPMCQueue<Packet>>(args->packet_queue_size_);
-        dns_info_queue_ = make_unique<MPMCQueue<DNSPacketInfo>>(args->dns_info_queue_size_);
-        publisher_queue_ = make_unique<MPMCQueue<ValidatedDomains>>(args->publisher_queue_size_);
+        packet_queue_ = make_unique<MPMCQueue<Packet>>(args->GetPacketQueueSize());
+        dns_info_queue_ = make_unique<MPMCQueue<DNSPacketInfo>>(args->GetDNSInfoQueueSize());
+        publisher_queue_ = make_unique<MPMCQueue<ValidatedDomains>>(args->GetPublisherQueueSize());
 
-        analyser_ = make_unique<NetworkAnalyser>(args->interface_to_sniff_, args->packet_buffer_size_, packet_queue_.get());
+        analyser_ = make_unique<NetworkAnalyser>(args->GetInterfaceToSniff(), args->GetPacketBufferSize(), packet_queue_.get());
         global_analyser_ptr = analyser_.get();
 
         filter_ = make_unique<Filter>(packet_queue_.get(), dns_info_queue_.get());
-        database_ = make_unique<MongoDbDatabase>(args->database_connection_string_, "Database");
+        database_ = make_unique<MongoDbDatabase>(args->GetDatabaseConnectionString(), "Database");
         validator_ = make_unique<DomainValidator>(dns_info_queue_.get(), publisher_queue_.get(), database_.get());
-        message_publisher_ = make_unique<MessagePublisher>(args->rabbitmq_connection_string_, args->rabbitmq_queue_name_);
+        message_publisher_ = make_unique<MessagePublisher>(args->GetRabbitMQConnectionString(), args->GetRabbitMQQueueName());
         publisher_ = make_unique<Publisher>(publisher_queue_.get(), message_publisher_.get());
         cout << "You are now free to do everything\n";
     }
     catch (const ArgumentException &e)
     {
-        if (e.GetCode() != ARGUMENT_HELP)
-        {
-            cerr << "Error: " << e.what() << '\n';
-        }
         throw;
     }
     catch (const DetectorException &e)
