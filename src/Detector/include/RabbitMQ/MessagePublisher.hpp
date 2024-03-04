@@ -48,7 +48,7 @@ public:
     /**
      * @brief Destroys the MessagePublisher object and cleans up resources.
      */
-    ~MessagePublisher()
+    ~MessagePublisher() override
     {
         Cleanup();
     }
@@ -58,7 +58,7 @@ public:
      *
      * @param message The message to publish.
      */
-    void PublishMessage(const std::string &message) const
+    void PublishMessage(const std::string &message) const override
     {
         const amqp_bytes_t message_bytes = amqp_cstring_bytes(message.c_str());
         amqp_basic_properties_t props;

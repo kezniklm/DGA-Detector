@@ -13,7 +13,6 @@
 #pragma once
 
 #include <exception>
-#include <iostream>
 
 /**
  * @brief Base class for exceptions specific to the Detector application.

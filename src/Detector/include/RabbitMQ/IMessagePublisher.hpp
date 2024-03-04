@@ -28,7 +28,7 @@ public:
     /**
      * @brief Virtual destructor to ensure proper cleanup of derived classes.
      */
-    virtual ~IMessagePublisher() {}
+    virtual ~IMessagePublisher() = default;
 
     /**
      * @brief Publishes a message to a messaging service.

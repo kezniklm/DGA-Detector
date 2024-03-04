@@ -148,7 +148,7 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         publisher_ = make_unique<Publisher>(publisher_queue_.get(), message_publisher_.get());
         cout << "You are now free to do everything\n";
     }
-    catch (const ArgumentException &e)
+    catch (const ArgumentException)
     {
         throw;
     }

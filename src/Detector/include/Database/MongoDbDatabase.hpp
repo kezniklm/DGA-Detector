@@ -16,25 +16,21 @@
 
 #pragma once
 
+#include <chrono>
 #include <iostream>
+#include <map>
 #include <string>
+#include <thread>
+#include <unordered_set>
 
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/types.hpp>
 #include <mongocxx/client.hpp>
-#include <mongocxx/exception/exception.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/exception.hpp>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <chrono>
-#include <thread>
+
 #include "IDatabase.hpp"
-#include <bsoncxx/json.hpp>
-#include <bsoncxx/types.hpp>
-#include <mongocxx/exception/query_exception.hpp>
-#include <unordered_set>
 
 /**
  * @class MongoDbDatabase
@@ -95,7 +91,7 @@ private:
                 elements_array.append(kElement);
             }
 
-            auto filter = bsoncxx::builder::basic::make_document(
+            const auto filter = bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("element",
                                              bsoncxx::builder::basic::make_document(
                                                  bsoncxx::builder::basic::kvp("$in", elements_array))));
@@ -129,7 +125,7 @@ private:
      * @brief Checks the connection to the MongoDB server.
      * @throws std::runtime_error if the ping to the MongoDB server fails.
      */
-    void CheckConnection()
+    void CheckConnection() const
     {
         try
         {
@@ -152,7 +148,7 @@ private:
      * @throws std::runtime_error if the query fails after all retries.
      */
     template <typename Func>
-    auto PerformWithRetries(Func query_func, int max_retries, int retry_delay_ms) -> decltype(query_func())
+    auto PerformWithRetries(Func query_func, const int max_retries, const int retry_delay_ms) -> decltype(query_func())
     {
         for (int attempt = 0; attempt < max_retries; ++attempt)
         {
@@ -185,7 +181,7 @@ private:
     void HandleBlacklistHit(const std::string &element) override
     {
         const auto kNow = std::chrono::system_clock::now();
-        auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(kNow.time_since_epoch()).count();
+        const auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(kNow.time_since_epoch()).count();
 
         auto collection = db_["Results"];
         bsoncxx::builder::basic::document document{};

@@ -46,7 +46,7 @@ public:
      *
      * @param dns_info_queue Pointer to the MPMCQueue containing DNS packet information.
      * @param publisher_queue Pointer to the MPMCQueue for publishing validated domains.
-     * @param db Pointer to the Database instance for blacklist and whitelist checks.
+     * @param database Pointer to the Database instance for blacklist and whitelist checks.
      */
     explicit DomainValidator(IQueue<DNSPacketInfo> *dns_info_queue,
                              IQueue<ValidatedDomains> *publisher_queue,

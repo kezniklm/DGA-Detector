@@ -22,7 +22,7 @@ class ArgumentException final : public DetectorException
 public:
     /**
      * @brief Constructs an ArgumentException object with a message and an error code.
-     * @sparam msg The error message.
+     * @param msg The error message.
      * @param c The error code.
      */
     ArgumentException(const std::string &msg, const int c) : DetectorException(msg, c) {}
