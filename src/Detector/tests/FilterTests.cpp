@@ -32,6 +32,7 @@ using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgReferee;
 
+/** External atomic bool for cancellation token */
 extern std::atomic<bool> cancellation_token;
 
 /**
