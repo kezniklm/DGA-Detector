@@ -7,11 +7,11 @@ add_library(DetectorLib STATIC ${LIB_SOURCES})
 
 target_include_directories(DetectorLib PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
-    "${PROJECT_SOURCE_DIR}/include/Data/Structures"
-    "${PROJECT_SOURCE_DIR}/include/Data/Database"
-    "${PROJECT_SOURCE_DIR}/include/Data/RabbitMQ"
+    "${PROJECT_SOURCE_DIR}/include/Structures"
+    "${PROJECT_SOURCE_DIR}/include/Database"
+    "${PROJECT_SOURCE_DIR}/include/RabbitMQ"
     "${PROJECT_SOURCE_DIR}/include/Exceptions"
-    "${PROJECT_SOURCE_DIR}/include/Data/Queue"
+    "${PROJECT_SOURCE_DIR}/include/Queue"
 )
 
 set_target_properties(DetectorLib PROPERTIES
