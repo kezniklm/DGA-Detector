@@ -32,6 +32,8 @@
 
 #include "IDatabase.hpp"
 
+#include "IDatabase.hpp"
+
 /**
  * @class MongoDbDatabase
  * @brief Interacts with MongoDB for database operations.
