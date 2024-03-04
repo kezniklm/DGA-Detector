@@ -15,14 +15,16 @@
 
 #pragma once
 
+#include <atomic>
 #include <string>
+#include <thread>
 #include <unordered_map>
 
 #include "nlohmann/json.hpp"
-#include "rigtorp/MPMCQueue.h"
 
 #include "DNSPacketInfo.hpp"
-#include "MessagePublisher.hpp"
+#include "IMessagePublisher.hpp"
+#include "IQueue.hpp"
 #include "ValidatedDomains.hpp"
 
 /** External atomic bool for cancellation token */
@@ -40,7 +42,7 @@ public:
      * @param publisher_queue The MPMCQueue for publishing validated domains.
      * @param message_publisher The message publisher for publishing messages.
      */
-    explicit Publisher(rigtorp::MPMCQueue<ValidatedDomains> *publisher_queue, MessagePublisher *message_publisher)
+    explicit Publisher(IQueue<ValidatedDomains> *publisher_queue, IMessagePublisher *message_publisher)
         : publisher_queue_(publisher_queue), message_publisher_(message_publisher) {}
 
     /**
@@ -54,8 +56,8 @@ public:
     void Process() const;
 
 private:
-    rigtorp::MPMCQueue<ValidatedDomains> *publisher_queue_;
-    MessagePublisher *message_publisher_;
+    IQueue<ValidatedDomains> *publisher_queue_;
+    IMessagePublisher *message_publisher_;
 
     /**
      * @brief Converts a map of domain-return code pairs to JSON format.

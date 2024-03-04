@@ -30,7 +30,7 @@
 #include <map>
 #include <chrono>
 #include <thread>
-#include "Database.hpp"
+#include "IDatabase.hpp"
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <mongocxx/exception/query_exception.hpp>
@@ -40,7 +40,7 @@
  * @class MongoDbDatabase
  * @brief Interacts with MongoDB for database operations.
  */
-class MongoDbDatabase : public Database
+class MongoDbDatabase : public IDatabase
 {
 public:
     /**

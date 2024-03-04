@@ -13,7 +13,7 @@
  * @version 1.0
  * @date 2024-02-28
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -24,21 +24,17 @@
 #include <thread>
 #include <unordered_set>
 
-#include "rigtorp/MPMCQueue.h"
-
 #include "Arguments.hpp"
-#include "Database.hpp"
 #include "DNSPacketInfo.hpp"
 #include "DomainValidator.hpp"
 #include "Filter.hpp"
+#include "IDatabase.hpp"
 #include "MessagePublisher.hpp"
+#include "MPMCQueueWrapper.hpp"
 #include "MongoDbDatabase.hpp"
 #include "NetworkAnalyser.hpp"
 #include "Packet.hpp"
 #include "Publisher.hpp"
-
-/** Atomic boolean flag for cancellation. */
-extern std::atomic<bool> cancellation_token;
 
 /** Pointer to the global NetworkAnalyser instance. */
 extern NetworkAnalyser *global_analyser_ptr;
@@ -71,6 +67,42 @@ public:
      * @returns None
      */
     void Run();
+
+    /**
+     * @brief Setter method for the network analyser.
+     * @param analyser Pointer to the NetworkAnalyser object.
+     */
+    void SetAnalyser(std::unique_ptr<NetworkAnalyser> analyser);
+
+    /**
+     * @brief Setter method for the message publisher.
+     * @param publisher Pointer to the Publisher object.
+     */
+    void SetPublisher(std::unique_ptr<Publisher> publisher);
+
+    /**
+     * @brief Setter method for the domain validator.
+     * @param validator Pointer to the DomainValidator object.
+     */
+    void SetValidator(std::unique_ptr<DomainValidator> validator);
+
+    /**
+     * @brief Getter method for the network analyser.
+     * @return Pointer to the NetworkAnalyser object.
+     */
+    NetworkAnalyser *GetAnalyser() const;
+
+    /**
+     * @brief Getter method for the message publisher.
+     * @return Pointer to the Publisher object.
+     */
+    Publisher *GetPublisher() const;
+
+    /**
+     * @brief Getter method for the domain validator.
+     * @return Pointer to the DomainValidator object.
+     */
+    DomainValidator *GetValidator() const;
 
 private:
     /**
@@ -106,13 +138,13 @@ private:
     static void SetupSignalHandling();
 
     /** Queue for packets */
-    std::unique_ptr<rigtorp::MPMCQueue<Packet>> packet_queue_;
+    std::unique_ptr<IQueue<Packet>> packet_queue_;
 
     /** Queue for DNS packet information */
-    std::unique_ptr<rigtorp::MPMCQueue<DNSPacketInfo>> dns_info_queue_;
+    std::unique_ptr<IQueue<DNSPacketInfo>> dns_info_queue_;
 
     /** Queue for validated domains */
-    std::unique_ptr<rigtorp::MPMCQueue<ValidatedDomains>> publisher_queue_;
+    std::unique_ptr<IQueue<ValidatedDomains>> publisher_queue_;
 
     /** Network analyser instance */
     std::unique_ptr<NetworkAnalyser> analyser_;

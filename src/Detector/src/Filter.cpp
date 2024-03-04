@@ -26,7 +26,7 @@ using namespace std;
  * @param packet_queue Pointer to the packet queue for incoming packets.
  * @param dns_queue Pointer to the DNS info queue for processed DNS packets.
  */
-Filter::Filter(rigtorp::MPMCQueue<Packet> *packet_queue, rigtorp::MPMCQueue<DNSPacketInfo> *dns_queue) : packet_queue_(packet_queue), dns_info_queue_(dns_queue)
+Filter::Filter(IQueue<Packet> *packet_queue, IQueue<DNSPacketInfo> *dns_queue) : packet_queue_(packet_queue), dns_info_queue_(dns_queue)
 {
 }
 
@@ -46,6 +46,10 @@ void Filter::ProcessPacket() const
         if (packet_queue_->try_pop(packet))
         {
             ProcessDnsPacket(packet);
+        }
+        else
+        {
+            this_thread::sleep_for(chrono::milliseconds(100)); // Add sleep to reduce CPU usage
         }
     }
 }

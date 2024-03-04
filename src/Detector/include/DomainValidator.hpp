@@ -25,10 +25,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <rigtorp/MPMCQueue.h>
-
-#include "Database.hpp"
 #include "DNSPacketInfo.hpp"
+#include "IDatabase.hpp"
+#include "IQueue.hpp"
 #include "MessagePublisher.hpp"
 #include "ValidatedDomains.hpp"
 
@@ -49,10 +48,10 @@ public:
      * @param publisher_queue Pointer to the MPMCQueue for publishing validated domains.
      * @param db Pointer to the Database instance for blacklist and whitelist checks.
      */
-    explicit DomainValidator(rigtorp::MPMCQueue<DNSPacketInfo> *dns_info_queue,
-                             rigtorp::MPMCQueue<ValidatedDomains> *publisher_queue,
-                             Database *db)
-        : dns_info_queue_(dns_info_queue), publisher_queue_(publisher_queue), database_(db) {}
+    explicit DomainValidator(IQueue<DNSPacketInfo> *dns_info_queue,
+                             IQueue<ValidatedDomains> *publisher_queue,
+                             IDatabase *database)
+        : dns_info_queue_(dns_info_queue), publisher_queue_(publisher_queue), database_(database) {}
 
     /**
      * @brief Processes domains by continuously processing DNS packet information until a cancellation token is set.
@@ -109,13 +108,13 @@ private:
                              const std::map<std::string, bool> &result_list);
 
     /** Pointer to the DNS packet information queue */
-    rigtorp::MPMCQueue<DNSPacketInfo> *dns_info_queue_;
+    IQueue<DNSPacketInfo> *dns_info_queue_;
 
     /** Pointer to the validated domains queue */
-    rigtorp::MPMCQueue<ValidatedDomains> *publisher_queue_;
+    IQueue<ValidatedDomains> *publisher_queue_;
 
     /** Pointer to the database */
-    Database *database_;
+    IDatabase *database_;
 
     static constexpr int DEFAULT_SIZE = 100000;
 

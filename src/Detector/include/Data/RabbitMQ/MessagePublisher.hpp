@@ -23,12 +23,13 @@
 #include "amqp.h"
 #include "amqp_framing.h"
 #include "amqp_tcp_socket.h"
+#include "IMessagePublisher.hpp"
 
 /**
  * @class MessagePublisher
  * @brief Publishes messages to an AMQP queue.
  */
-class MessagePublisher
+class MessagePublisher : public IMessagePublisher
 {
 public:
     /**

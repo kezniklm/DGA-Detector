@@ -19,7 +19,7 @@
  * @class Database
  * @brief Interface for handling blacklist hits and performing blacklist and whitelist checks.
  */
-class Database
+class IDatabase
 {
 public:
     /**
@@ -41,7 +41,7 @@ public:
     /**
      * @brief Destructor for the Database class.
      */
-    virtual ~Database() = default;
+    virtual ~IDatabase() = default;
 
 private:
     /**

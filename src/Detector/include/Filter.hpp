@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <atomic>
+#include <thread>
+
 #include "DnsLayer.h"
 #include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"
@@ -24,9 +27,9 @@
 #include "PayloadLayer.h"
 #include "PcapPlusPlusVersion.h"
 #include "ProtocolType.h"
-#include "rigtorp/MPMCQueue.h"
 #include "UdpLayer.h"
 
+#include "IQueue.hpp"
 #include "Packet.hpp"
 
 /** Declare external cancellation token */
@@ -49,7 +52,7 @@ public:
      * @param packet_queue Pointer to the packet queue for incoming packets.
      * @param dns_queue Pointer to the DNS info queue for processed DNS packets.
      */
-    explicit Filter(rigtorp::MPMCQueue<Packet> *packet_queue, rigtorp::MPMCQueue<DNSPacketInfo> *dns_queue);
+    explicit Filter(IQueue<Packet> *packet_queue, IQueue<DNSPacketInfo> *dns_queue);
 
     /**
      * @brief Processes packets from the packet queue.
@@ -61,10 +64,10 @@ public:
 
 private:
     /** Pointer to the packet queue */
-    rigtorp::MPMCQueue<Packet> *packet_queue_;
+    IQueue<Packet> *packet_queue_;
 
     /** Pointer to the DNS info queue */
-    rigtorp::MPMCQueue<DNSPacketInfo> *dns_info_queue_;
+    IQueue<DNSPacketInfo> *dns_info_queue_;
 
     /**
      * @brief Processes DNS packets to extract domain names and response codes.

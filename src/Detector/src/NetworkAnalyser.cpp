@@ -23,7 +23,6 @@
 #endif
 
 using namespace std;
-using namespace rigtorp;
 
 /**
  * @brief Constructs a NetworkAnalyser object.
@@ -36,7 +35,7 @@ using namespace rigtorp;
  * @param packet_queue Pointer to the packet queue for enqueuing captured packets.
  */
 NetworkAnalyser::NetworkAnalyser(const string &device, int buffer_size,
-                                 MPMCQueue<Packet> *packet_queue)
+                                 IQueue<Packet> *packet_queue)
     : handle_(nullptr), queue_(packet_queue)
 {
     CreateHandle(device.c_str());
@@ -97,7 +96,7 @@ NetworkAnalyser::~NetworkAnalyser()
  */
 void NetworkAnalyser::PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
 {
-    auto *queue = reinterpret_cast<MPMCQueue<Packet> *>(user);
+    auto *queue = reinterpret_cast<IQueue<Packet> *>(user);
     queue->emplace(Packet(*header, packet));
 }
 

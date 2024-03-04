@@ -15,6 +15,8 @@
 
 #include "Publisher.hpp"
 
+using namespace std;
+
 /**
  * @brief Processes validated domains by converting them to JSON and publishing messages.
  *
@@ -34,7 +36,14 @@ void Publisher::Process() const
 
             std::string message_to_send = json_packet.dump(4);
 
-            message_publisher_->PublishMessage(message_to_send);
+            if (message_to_send.empty() == false && message_to_send != "null")
+            {
+                message_publisher_->PublishMessage(message_to_send);
+            }
+        }
+        else
+        {
+            this_thread::sleep_for(chrono::milliseconds(100)); // Add sleep to reduce CPU usage
         }
     }
 }

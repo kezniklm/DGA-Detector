@@ -134,9 +134,9 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         const auto args = make_unique<Arguments>();
         args->Parse(argc, argv);
 
-        packet_queue_ = make_unique<MPMCQueue<Packet>>(args->GetPacketQueueSize());
-        dns_info_queue_ = make_unique<MPMCQueue<DNSPacketInfo>>(args->GetDNSInfoQueueSize());
-        publisher_queue_ = make_unique<MPMCQueue<ValidatedDomains>>(args->GetPublisherQueueSize());
+        packet_queue_ = make_unique<MPMCQueueWrapper<Packet>>(args->GetPacketQueueSize());
+        dns_info_queue_ = make_unique<MPMCQueueWrapper<DNSPacketInfo>>(args->GetDNSInfoQueueSize());
+        publisher_queue_ = make_unique<MPMCQueueWrapper<ValidatedDomains>>(args->GetPublisherQueueSize());
 
         analyser_ = make_unique<NetworkAnalyser>(args->GetInterfaceToSniff(), args->GetPacketBufferSize(), packet_queue_.get());
         global_analyser_ptr = analyser_.get();
@@ -168,4 +168,58 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         cerr << "Error: " << e.what() << '\n';
         throw;
     }
+}
+
+/**
+ * @brief Setter method for the network analyser.
+ * @param analyser Pointer to the NetworkAnalyser object.
+ */
+void Detector::SetAnalyser(std::unique_ptr<NetworkAnalyser> analyser)
+{
+    analyser_ = std::move(analyser);
+}
+
+/**
+ * @brief Setter method for the message publisher.
+ * @param publisher Pointer to the Publisher object.
+ */
+void Detector::SetPublisher(std::unique_ptr<Publisher> publisher)
+{
+    publisher_ = std::move(publisher);
+}
+
+/**
+ * @brief Setter method for the domain validator.
+ * @param validator Pointer to the DomainValidator object.
+ */
+void Detector::SetValidator(std::unique_ptr<DomainValidator> validator)
+{
+    validator_ = std::move(validator);
+}
+
+/**
+ * @brief Getter method for the network analyser.
+ * @return Pointer to the NetworkAnalyser object.
+ */
+NetworkAnalyser *Detector::GetAnalyser() const
+{
+    return analyser_.get();
+}
+
+/**
+ * @brief Getter method for the message publisher.
+ * @return Pointer to the Publisher object.
+ */
+Publisher *Detector::GetPublisher() const
+{
+    return publisher_.get();
+}
+
+/**
+ * @brief Getter method for the domain validator.
+ * @return Pointer to the DomainValidator object.
+ */
+DomainValidator *Detector::GetValidator() const
+{
+    return validator_.get();
 }

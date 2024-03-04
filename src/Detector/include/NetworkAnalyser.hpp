@@ -19,11 +19,11 @@
 
 #pragma once
 
+#include <atomic>
 #include <iostream>
 #include <pcap.h>
 
-#include "rigtorp/MPMCQueue.h"
-
+#include "IQueue.hpp"
 #include "NetworkAnalyserException.hpp"
 #include "Packet.hpp"
 #include "ReturnCodes.hpp"
@@ -49,7 +49,7 @@ public:
      */
     explicit NetworkAnalyser(const std::string &device,
                              int buffer_size,
-                             rigtorp::MPMCQueue<Packet> *packet_queue);
+                             IQueue<Packet> *packet_queue);
 
     /**
      * @brief Destroys the NetworkAnalyser object.
@@ -77,7 +77,7 @@ private:
     pcap_t *handle_;
 
     /** Pointer to the packet queue */
-    rigtorp::MPMCQueue<Packet> *queue_;
+    IQueue<Packet> *queue_;
 
     /**
      * @brief Creates a pcap handle for capturing network traffic.

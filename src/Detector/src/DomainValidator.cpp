@@ -15,12 +15,10 @@
  * @version 1.0
  * @date 2024-02-28
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "DomainValidator.hpp"
-
-#include "NetworkAnalyser.hpp"
 
 using namespace std;
 
@@ -93,7 +91,7 @@ bool DomainValidator::ShouldProcessBatch(const size_t current_batch_size,
                                          const unsigned max_batch_size,
                                          const unsigned max_cycle_count) const
 {
-    return current_batch_size >= max_batch_size || cycle_count > max_cycle_count;
+    return current_batch_size > max_batch_size || (cycle_count > max_cycle_count && current_batch_size > 0);
 }
 
 /**
@@ -117,10 +115,13 @@ void DomainValidator::ProcessBatch(std::unordered_map<std::string, int> &domain_
     RemoveListedDomains(domain_return_code_pairs, result_blacklist_check);
     RemoveListedDomains(domain_return_code_pairs, result_whitelist_check);
 
-    publisher_queue_->emplace(ValidatedDomains{
-        domain_return_code_pairs}); // Assuming ValidatedDomains can be constructed this way
+    if (!domain_return_code_pairs.empty())
+    {
+        publisher_queue_->emplace(ValidatedDomains{
+            domain_return_code_pairs}); // Assuming ValidatedDomains can be constructed this way
 
-    domain_return_code_pairs.clear();
+        domain_return_code_pairs.clear();
+    }
 }
 
 /**
