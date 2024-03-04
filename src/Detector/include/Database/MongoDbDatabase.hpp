@@ -16,25 +16,20 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include <mongocxx/client.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
-#include <mongocxx/exception/exception.hpp>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <map>
 #include <chrono>
 #include <thread>
-#include "IDatabase.hpp"
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
-#include <mongocxx/exception/query_exception.hpp>
 #include <unordered_set>
+
+#include "IDatabase.hpp"
 
 /**
  * @class MongoDbDatabase
