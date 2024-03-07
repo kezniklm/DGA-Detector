@@ -50,10 +50,6 @@ void Arguments::Parse(const int argc, const char *argv[])
     catch (const ArgumentException &e)
     {
         cout << options.help() << '\n';
-        if (e.GetCode() != ARGUMENT_HELP)
-        {
-            cerr << "Error: " << e.what() << '\n';
-        }
         throw;
     }
     catch (const exception &e)
@@ -93,7 +89,7 @@ json Arguments::LoadAppSettings()
         }
         catch (const json::parse_error &e)
         {
-            cerr << "Error parsing appsettings.json: " << e.what() << '\n';
+            throw ArgumentException(std::string("Error parsing appsettings.json: ") + e.what() + "\n", ARGUMENT_CHECK_FAILURE);
         }
         appsettings_file.close();
     }

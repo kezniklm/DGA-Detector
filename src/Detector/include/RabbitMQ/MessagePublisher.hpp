@@ -89,13 +89,13 @@ private:
         const size_t prefix_pos = connection_string.find(prefix);
         if (prefix_pos == std::string::npos)
         {
-            throw std::invalid_argument("Invalid connection string format");
+            throw std::invalid_argument("Invalid connection string format for RabbitMQ");
         }
 
         const size_t user_info_end_pos = connection_string.find('@');
         if (user_info_end_pos == std::string::npos)
         {
-            throw std::invalid_argument("Invalid connection string format: Missing user info");
+            throw std::invalid_argument("Invalid connection string format for RabbitMQ: Missing user info");
         }
 
         const size_t user_info_start_pos = prefix_pos + prefix.length();
@@ -103,7 +103,7 @@ private:
         const size_t colon_pos = user_info.find(':');
         if (colon_pos == std::string::npos)
         {
-            throw std::invalid_argument("Invalid connection string format: Missing password_");
+            throw std::invalid_argument("Invalid connection string format for RabbitMQ: Missing password_");
         }
 
         username_ = user_info.substr(0, colon_pos);
@@ -113,7 +113,7 @@ private:
         const size_t virtual_host_start_pos = connection_string.find('/', host_start_pos);
         if (virtual_host_start_pos == std::string::npos)
         {
-            throw std::invalid_argument("Invalid connection string format: Missing virtual host");
+            throw std::invalid_argument("Invalid connection string format for RabbitMQ: Missing virtual host");
         }
 
         std::string host_part = connection_string.substr(host_start_pos, virtual_host_start_pos - host_start_pos);
@@ -149,13 +149,13 @@ private:
         socket_ = amqp_tcp_socket_new(conn_);
         if (!socket_)
         {
-            throw std::runtime_error("Failed to create TCP socket_");
+            throw std::runtime_error("Failed to create TCP socket_ for RabbitMQ");
         }
 
         const int status = amqp_socket_open(socket_, hostname_.c_str(), port_);
         if (status)
         {
-            throw std::runtime_error("Failed to open TCP socket_");
+            throw std::runtime_error("Failed to open TCP socket_ for RabbitMQ");
         }
 
         amqp_maybe_release_buffers(conn_);

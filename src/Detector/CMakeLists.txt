@@ -15,6 +15,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(MPMCQueue CONFIG REQUIRED)
 find_package(rabbitmq-c CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
+find_package(Poco CONFIG REQUIRED COMPONENTS Foundation Net Util)
 
 # Include the source and tests directories
 add_subdirectory(src)

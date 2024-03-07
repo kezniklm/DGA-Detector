@@ -43,6 +43,9 @@ target_link_libraries(DetectorLib PUBLIC
     nlohmann_json::nlohmann_json
     MPMCQueue::MPMCQueue
     $<IF:$<TARGET_EXISTS:rabbitmq::rabbitmq-static>,rabbitmq::rabbitmq-static,rabbitmq::rabbitmq>
+    $<$<TARGET_EXISTS:Poco::Foundation>:Poco::Foundation>
+    $<$<TARGET_EXISTS:Poco::Net>:Poco::Net>
+    $<$<TARGET_EXISTS:Poco::Util>:Poco::Util>
 )
 
 # Add executable for the main application

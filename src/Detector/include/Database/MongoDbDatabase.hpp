@@ -31,8 +31,13 @@
 #include <mongocxx/exception/exception.hpp>
 
 #include "IDatabase.hpp"
+#include "Logger.hpp"
 
-#include "IDatabase.hpp"
+/** Declare external cancellation token */
+extern std::atomic<bool> cancellation_token;
+
+/** Declare external logger pointer */
+extern Logger *global_logger_ptr;
 
 /**
  * @class MongoDbDatabase
@@ -59,7 +64,16 @@ public:
      */
     std::map<std::string, bool> CheckInBlacklist(const std::unordered_set<std::string> &elements) override
     {
-        return CheckInList("Blacklist", elements);
+        try
+        {
+            return CheckInList("Blacklist", elements);
+        }
+        catch (const std::exception &e)
+        {
+            global_logger_ptr->critical(std::string("Error: " + std::string(e.what()) + "\n"));
+            cancellation_token.store(true);
+            return std::map<std::string, bool>{};
+        }
     }
 
     /**
@@ -69,7 +83,16 @@ public:
      */
     std::map<std::string, bool> CheckInWhitelist(const std::unordered_set<std::string> &elements) override
     {
-        return CheckInList("Whitelist", elements);
+        try
+        {
+            return CheckInList("Whitelist", elements);
+        }
+        catch (const std::exception &e)
+        {
+            global_logger_ptr->critical(std::string("Error: " + std::string(e.what()) + "\n"));
+            cancellation_token.store(true);
+            return std::map<std::string, bool>{};
+        }
     }
 
 private:

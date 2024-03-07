@@ -28,6 +28,9 @@ atomic<bool> cancellation_token(false);
 /** Global pointer alowing to break the pcap loop */
 NetworkAnalyser *global_analyser_ptr = nullptr;
 
+/** Global pointer alowing logging across the application */
+Logger *global_logger_ptr = nullptr;
+
 /**
  * @brief Sets up signal handling for graceful termination of the program.
  *
@@ -131,6 +134,10 @@ void Detector::InitializeComponents(const int argc, const char **argv)
     try
     {
         cout << "Do not interrupt program now, interruption might cause leaks\n";
+
+        logger_ = make_unique<Logger>("Detector");
+        global_logger_ptr = logger_.get();
+
         const auto args = make_unique<Arguments>();
         args->Parse(argc, argv);
 
@@ -148,24 +155,27 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         publisher_ = make_unique<Publisher>(publisher_queue_.get(), message_publisher_.get());
         cout << "You are now free to do everything\n";
     }
-    catch (const ArgumentException)
+    catch (const ArgumentException &e)
     {
+        if (e.GetCode() != ARGUMENT_HELP)
+        {
+            global_logger_ptr->error(std::string("Error: ") + e.what());
+        }
         throw;
     }
     catch (const DetectorException &e)
     {
-        cerr << "Error: " << e.what() << '\n';
+        global_logger_ptr->critical(std::string("Error: ") + e.what());
         throw;
     }
     catch (const bad_alloc &e)
     {
-        cerr << "Error: " << e.what() << '\n';
-        cerr << "The size you entered is too huge" << '\n';
+        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
         throw;
     }
     catch (const exception &e)
     {
-        cerr << "Error: " << e.what() << '\n';
+        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
         throw;
     }
 }

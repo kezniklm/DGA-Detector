@@ -50,6 +50,7 @@ void DomainValidator::ProcessDomains()
         }
         else
         {
+            cycle_count++;
             this_thread::sleep_for(chrono::milliseconds(100)); // Add sleep to reduce CPU usage
         }
     }

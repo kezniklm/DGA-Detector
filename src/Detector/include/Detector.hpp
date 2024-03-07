@@ -29,6 +29,7 @@
 #include "DomainValidator.hpp"
 #include "Filter.hpp"
 #include "IDatabase.hpp"
+#include "Logger.hpp"
 #include "MessagePublisher.hpp"
 #include "MPMCQueueWrapper.hpp"
 #include "MongoDbDatabase.hpp"
@@ -38,6 +39,9 @@
 
 /** Pointer to the global NetworkAnalyser instance. */
 extern NetworkAnalyser *global_analyser_ptr;
+
+/** Declare external logger pointer */
+extern Logger *global_logger_ptr;
 
 /**
  * @brief The Detector class orchestrates the monitoring of network traffic, filtering packets, validating domains, and publishing messages.
@@ -163,4 +167,7 @@ private:
 
     /** Publisher instance */
     std::unique_ptr<Publisher> publisher_;
+
+    /** Logger instance */
+    std::unique_ptr<Logger> logger_;
 };
