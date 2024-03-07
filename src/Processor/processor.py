@@ -1,61 +1,42 @@
-import signal
-from multiprocessing import Event, Process
+import queue
+import threading
+import time
 
 from src.arguments import Arguments
-from src.rabbitmq_consumer import consumer_process as run_consumer_process
-from src.return_codes import ReturnCodes
-from src.string_queue import StringQueue
-
-# Initialize the termination event for signaling between processes
-terminate_event = Event()
+from src.extractor import Extractor
+from src.rabbitmq_consumer import RabbitMQConsumer
 
 
-def setup_signal_handlers():
-    """
-    Configures signal handlers for gracefully shutting down the process.
-    """
+class Processor:
+    def __init__(self):
+        args = Arguments().parse_args()
+        self.shutdown_event = threading.Event()
+        self.message_queue = queue.Queue(5)
+        self.extractors = [
+            Extractor(self.message_queue, self.shutdown_event) for _ in range(1)
+        ]  # Argument????????
+        self.consumer = RabbitMQConsumer(
+            args.rabbitmq, args.queue, self.message_queue, self.shutdown_event
+        )
 
-    def signal_handler(sig, frame):
-        """
-        Signal handler that sets the termination event.
-        """
-        terminate_event.set()
+    def run(self):
+        for extractor in self.extractors:
+            extractor.start()
+        self.consumer.start()
 
-    # Register the signal handler for SIGINT and SIGTERM
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+        print("Application is running. Press CTRL+C to exit.\n")
+        try:
+            while not self.shutdown_event.is_set():
+                time.sleep(10)
+        except KeyboardInterrupt:
+            print("Interrupted by user, initiating shutdown...\n")
+            self.shutdown_event.set()
 
-
-def main():
-    """
-    Main function to start the consumer process.
-    """
-    setup_signal_handlers()
-
-    # Parse command line arguments
-    arg_parser = Arguments()
-    args = arg_parser.parse_args()
-
-    # Extract RabbitMQ connection details from arguments
-    rabbitmq_connection_string = args.rabbitmq
-    rabbitmq_queue_name = args.queue
-
-    # Initialize the queue with a max size
-    queue = StringQueue(10)
-
-    # Create and start the consumer process
-    consumer_process = Process(
-        target=run_consumer_process,
-        args=(rabbitmq_connection_string, rabbitmq_queue_name, queue, terminate_event),
-    )
-    consumer_process.start()
-
-    # Wait for the consumer process to complete
-    consumer_process.join()
-
-    # Exit the main process successfully
-    exit(ReturnCodes.SUCCESS.value)
+        for extractor in self.extractors:
+            extractor.join()
+        print("Processor has exited.")
 
 
 if __name__ == "__main__":
-    main()
+    processor = Processor()
+    processor.run()
