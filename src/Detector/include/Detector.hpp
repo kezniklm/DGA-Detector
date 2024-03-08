@@ -27,6 +27,7 @@
 #include "Arguments.hpp"
 #include "DNSPacketInfo.hpp"
 #include "DomainValidator.hpp"
+#include "DetectorPacket.hpp"
 #include "Filter.hpp"
 #include "IDatabase.hpp"
 #include "Logger.hpp"
@@ -34,7 +35,6 @@
 #include "MPMCQueueWrapper.hpp"
 #include "MongoDbDatabase.hpp"
 #include "NetworkAnalyser.hpp"
-#include "Packet.hpp"
 #include "Publisher.hpp"
 
 /** Pointer to the global NetworkAnalyser instance. */
@@ -108,6 +108,18 @@ public:
      */
     DomainValidator *GetValidator() const;
 
+    /**
+     * Gets the number of processing threads.
+     * @return The number of threads.
+     */
+    unsigned int GetNumberOfThreads() const;
+
+    /**
+     * Sets the number of processing threads.
+     * @param value The number of threads.
+     */
+    void SetNumberOfThreads(unsigned int value);
+
 private:
     /**
      * @brief Initializes the components required for network traffic monitoring.
@@ -142,7 +154,7 @@ private:
     static void SetupSignalHandling();
 
     /** Queue for packets */
-    std::unique_ptr<IQueue<Packet>> packet_queue_;
+    std::unique_ptr<IQueue<DetectorPacket>> packet_queue_;
 
     /** Queue for DNS packet information */
     std::unique_ptr<IQueue<DNSPacketInfo>> dns_info_queue_;
@@ -170,4 +182,7 @@ private:
 
     /** Logger instance */
     std::unique_ptr<Logger> logger_;
+
+    /** Number of threads used by the Filter */
+    int number_of_threads_;
 };

@@ -106,17 +106,32 @@ void Detector::Run()
 {
     cout << "Monitoring network traffic. Press Ctrl+C to stop.\n";
 
+    unsigned int total_threads = GetNumberOfThreads();
+
+    unsigned int filter_threads = total_threads > 3 ? total_threads - 3 : 1;
+
     thread capture_thread(&NetworkAnalyser::StartCapture, analyser_.get());
-    thread filter_thread(&Filter::ProcessPacket, filter_.get());
+
+    vector<thread> filter_threads_vector;
+    for (unsigned int i = 0; i < filter_threads; ++i)
+    {
+        filter_threads_vector.emplace_back(&Filter::ProcessPacket, filter_.get());
+    }
+
     thread domain_validator_thread(&DomainValidator::ProcessDomains, validator_.get());
+
     thread publisher_thread(&Publisher::Process, publisher_.get());
 
     capture_thread.join();
-    filter_thread.join();
+
+    for (auto &t : filter_threads_vector)
+    {
+        t.join();
+    }
+
     domain_validator_thread.join();
     publisher_thread.join();
 }
-
 /**
  * @brief Initializes the components required for network traffic monitoring.
  *
@@ -138,10 +153,12 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         logger_ = make_unique<Logger>("Detector");
         global_logger_ptr = logger_.get();
 
-        const auto args = make_unique<Arguments>();
+        const std::unique_ptr<Arguments> args = make_unique<Arguments>();
         args->Parse(argc, argv);
 
-        packet_queue_ = make_unique<MPMCQueueWrapper<Packet>>(args->GetPacketQueueSize());
+        SetNumberOfThreads(args->GetNumberOfThreads());
+
+        packet_queue_ = make_unique<MPMCQueueWrapper<DetectorPacket>>(args->GetPacketQueueSize());
         dns_info_queue_ = make_unique<MPMCQueueWrapper<DNSPacketInfo>>(args->GetDNSInfoQueueSize());
         publisher_queue_ = make_unique<MPMCQueueWrapper<ValidatedDomains>>(args->GetPublisherQueueSize());
 
@@ -153,6 +170,7 @@ void Detector::InitializeComponents(const int argc, const char **argv)
         validator_ = make_unique<DomainValidator>(dns_info_queue_.get(), publisher_queue_.get(), database_.get());
         message_publisher_ = make_unique<MessagePublisher>(args->GetRabbitMQConnectionString(), args->GetRabbitMQQueueName());
         publisher_ = make_unique<Publisher>(publisher_queue_.get(), message_publisher_.get());
+
         cout << "You are now free to do everything\n";
     }
     catch (const ArgumentException &e)
@@ -170,7 +188,7 @@ void Detector::InitializeComponents(const int argc, const char **argv)
     }
     catch (const bad_alloc &e)
     {
-        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
+        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string(" The entered size is too huge\n"));
         throw;
     }
     catch (const exception &e)
@@ -232,4 +250,22 @@ Publisher *Detector::GetPublisher() const
 DomainValidator *Detector::GetValidator() const
 {
     return validator_.get();
+}
+
+/**
+ * Gets the number of processing threads.
+ * @return The number of threads.
+ */
+unsigned int Detector::GetNumberOfThreads() const
+{
+    return this->number_of_threads_;
+}
+
+/**
+ * Sets the number of processing threads.
+ * @param value The number of threads.
+ */
+void Detector::SetNumberOfThreads(unsigned int value)
+{
+    this->number_of_threads_ = value;
 }

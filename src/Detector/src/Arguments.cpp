@@ -68,7 +68,7 @@ void Arguments::Parse(const int argc, const char *argv[])
  */
 void Arguments::ConfigureOptions(cxxopts::Options &options)
 {
-    options.add_options()("i,interface", "Interface to analyze DNS responses", cxxopts::value<string>(), "<interface name>")("s,size", "Allowed memory usage", cxxopts::value<unsigned long long>(), "<size in bytes>")("d,database", "Database connection string", cxxopts::value<string>(), "<connection string>")("r,rabbitmq", "RabbitMQ connection string", cxxopts::value<string>(), "<connection string>")("q,queue", "RabbitMQ queue name", cxxopts::value<string>(), "<queue name>")("h,help", "Show help");
+    options.add_options()("i,interface", "Interface to analyze DNS responses", cxxopts::value<string>(), "<interface name>")("s,size", "Allowed memory usage", cxxopts::value<unsigned long long>(), "<size in bytes>")("d,database", "Database connection string", cxxopts::value<string>(), "<connection string>")("r,rabbitmq", "RabbitMQ connection string", cxxopts::value<string>(), "<connection string>")("q,queue", "RabbitMQ queue name", cxxopts::value<string>(), "<queue name>")("t,threads", "Number of processing threads", cxxopts::value<int>(), "<number>")("h,help", "Show help");
 }
 
 /**
@@ -125,6 +125,17 @@ void Arguments::ValidateAndSetOptions(const cxxopts::ParseResult &result,
         SetOption<string>("database", database_connection_string_, result, appsettings, true, options);
         SetOption<string>("rabbitmq", rabbitmq_connection_string_, result, appsettings, true, options);
         SetOption<string>("queue", rabbitmq_queue_name_, result, appsettings, true, options);
+        SetOption<int>("threads", number_of_threads_, result, appsettings, false, options);
+
+        constexpr int DEFAULT_NUMBER_OF_THREADS = 5;
+        if (number_of_threads_ < DEFAULT_NUMBER_OF_THREADS)
+        {
+            number_of_threads_ = std::thread::hardware_concurrency();
+            if (number_of_threads_ == 0)
+            {
+                number_of_threads_ = DEFAULT_NUMBER_OF_THREADS;
+            }
+        }
     }
     catch (const std::exception &e)
     {
@@ -183,12 +194,22 @@ void Arguments::SetOption(const string &key,
  */
 void Arguments::CalculateSizes(const unsigned long long value)
 {
-    const unsigned long long divided_value = value / 16;
-    packet_buffer_size_ =
-        static_cast<int>(min(divided_value * 4, static_cast<unsigned long long>(numeric_limits<int>::max())));
-    packet_queue_size_ = static_cast<int>(divided_value * 13 / sizeof(Packet));
-    dns_info_queue_size_ = static_cast<int>(divided_value / sizeof(DNSPacketInfo));
-    publisher_queue_size_ = 10000; // Default size
+    unsigned long long packet_buffer_size_alloc = std::min(value * 65 / 100, static_cast<unsigned long long>(std::numeric_limits<int>::max()));
+
+    const unsigned long long publisher_queue_memory = 1000 * sizeof(ValidatedDomains);
+
+    unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
+
+    const double packet_queue_percentage = 35.0;
+    const double dns_info_queue_percentage = 65.0;
+
+    unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(remaining_value * (packet_queue_percentage / 100.0));
+    unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
+
+    packet_buffer_size_ = static_cast<int>(packet_buffer_size_alloc);
+    packet_queue_size_ = static_cast<int>(packet_queue_size_alloc / sizeof(DetectorPacket));
+    dns_info_queue_size_ = static_cast<int>(dns_info_queue_size_alloc / sizeof(DNSPacketInfo));
+    publisher_queue_size_ = 1000; // Fixed size
 }
 
 /**
@@ -422,4 +443,24 @@ void Arguments::SetDNSInfoQueueSize(const size_t value)
 void Arguments::SetPublisherQueueSize(const size_t value)
 {
     this->publisher_queue_size_ = value;
+}
+
+/**
+ * Gets the current number of threads to be used for processing.
+ * @return The current number of threads set for processing tasks.
+ */
+int Arguments::GetNumberOfThreads() const
+{
+    return this->number_of_threads_;
+}
+
+/**
+ * Sets the number of threads to be used for processing.
+ * Adjusting the number of threads can optimize the application's performance based on the hardware capabilities and the workload.
+ * It's important to select a value that balances the workload distribution without overwhelming the system resources.
+ * @param value The desired number of threads for processing tasks.
+ */
+void Arguments::SetNumberOfThreads(int value)
+{
+    this->number_of_threads_ = value;
 }

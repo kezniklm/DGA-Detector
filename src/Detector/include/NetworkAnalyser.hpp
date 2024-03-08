@@ -23,9 +23,9 @@
 #include <iostream>
 #include <pcap.h>
 
+#include "DetectorPacket.hpp"
 #include "IQueue.hpp"
 #include "NetworkAnalyserException.hpp"
-#include "Packet.hpp"
 #include "ReturnCodes.hpp"
 
 /** Declare external cancellation token */
@@ -49,7 +49,7 @@ public:
      */
     explicit NetworkAnalyser(const std::string &device,
                              int buffer_size,
-                             IQueue<Packet> *packet_queue);
+                             IQueue<DetectorPacket> *packet_queue);
 
     /**
      * @brief Destroys the NetworkAnalyser object.
@@ -77,7 +77,7 @@ private:
     pcap_t *handle_;
 
     /** Pointer to the packet queue */
-    IQueue<Packet> *queue_;
+    IQueue<DetectorPacket> *queue_;
 
     /**
      * @brief Creates a pcap handle for capturing network traffic.

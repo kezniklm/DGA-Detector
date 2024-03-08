@@ -23,14 +23,16 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <thread>
 
 #include "cxxopts.hpp"
 #include "nlohmann/json.hpp"
 
 #include "ArgumentException.hpp"
+#include "DetectorPacket.hpp"
 #include "DNSPacketInfo.hpp"
-#include "Packet.hpp"
 #include "ReturnCodes.hpp"
+#include "ValidatedDomains.hpp"
 
 #ifdef _WIN32
 #undef max
@@ -162,6 +164,18 @@ public:
      */
     void SetPublisherQueueSize(const size_t value);
 
+    /**
+     * Gets the number of processing threads.
+     * @return The number of threads.
+     */
+    int GetNumberOfThreads() const;
+
+    /**
+     * Sets the number of processing threads.
+     * @param value The number of threads.
+     */
+    void SetNumberOfThreads(int value);
+
 private:
     /**
      * Configures command line options for the program using cxxopts library.
@@ -285,4 +299,9 @@ private:
      * The size of the queue used by the publisher.
      */
     size_t publisher_queue_size_;
+
+    /**
+     * Number of threads used by the Detector
+     */
+    int number_of_threads_;
 };

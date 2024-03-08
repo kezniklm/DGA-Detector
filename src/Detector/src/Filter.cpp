@@ -26,7 +26,7 @@ using namespace std;
  * @param packet_queue Pointer to the packet queue for incoming packets.
  * @param dns_queue Pointer to the DNS info queue for processed DNS packets.
  */
-Filter::Filter(IQueue<Packet> *packet_queue, IQueue<DNSPacketInfo> *dns_queue) : packet_queue_(packet_queue), dns_info_queue_(dns_queue)
+Filter::Filter(IQueue<DetectorPacket> *packet_queue, IQueue<DNSPacketInfo> *dns_queue) : packet_queue_(packet_queue), dns_info_queue_(dns_queue)
 {
 }
 
@@ -38,7 +38,7 @@ Filter::Filter(IQueue<Packet> *packet_queue, IQueue<DNSPacketInfo> *dns_queue) :
  */
 void Filter::ProcessPacket() const
 {
-    struct Packet packet
+    struct DetectorPacket packet
     {
     };
     while (!cancellation_token.load())
@@ -61,11 +61,11 @@ void Filter::ProcessPacket() const
  *
  * @param custom_packet The custom packet structure containing packet data.
  */
-void Filter::ProcessDnsPacket(const Packet &custom_packet) const
+void Filter::ProcessDnsPacket(const DetectorPacket &custom_packet) const
 {
     constexpr int kQuery = 0;
 
-    pcpp::RawPacket raw_packet(custom_packet.data, custom_packet.header.caplen, custom_packet.header.ts, false, pcpp::LINKTYPE_ETHERNET);
+    pcpp::RawPacket raw_packet(reinterpret_cast<const uint8_t *>(custom_packet.getData()), custom_packet.header.caplen, custom_packet.header.ts, false, pcpp::LINKTYPE_ETHERNET);
     const pcpp::Packet parsed_packet(&raw_packet);
 
     const auto *dns_layer = parsed_packet.getLayerOfType<pcpp::DnsLayer>();

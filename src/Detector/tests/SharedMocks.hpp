@@ -24,7 +24,7 @@
 #include "IDatabase.hpp"
 #include "IMessagePublisher.hpp"
 #include "IQueue.hpp"
-#include "Packet.hpp"
+#include "DetectorPacket.hpp"
 #include "ValidatedDomains.hpp"
 
 /**
@@ -34,11 +34,11 @@
  * Simulates a queue for Packet objects to test components that produce or consume
  * network packets without requiring a real queue implementation.
  */
-class MockPacketQueue : public IQueue<Packet>
+class MockPacketQueue : public IQueue<DetectorPacket>
 {
 public:
-    MOCK_METHOD(bool, try_pop, (Packet &), (override));
-    MOCK_METHOD(void, emplace, (Packet &&), (override));
+    MOCK_METHOD(bool, try_pop, (DetectorPacket &), (override));
+    MOCK_METHOD(void, emplace, (DetectorPacket &&), (override));
 };
 
 /**

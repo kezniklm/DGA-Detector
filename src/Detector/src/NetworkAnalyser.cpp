@@ -35,7 +35,7 @@ using namespace std;
  * @param packet_queue Pointer to the packet queue for enqueuing captured packets.
  */
 NetworkAnalyser::NetworkAnalyser(const string &device, int buffer_size,
-                                 IQueue<Packet> *packet_queue)
+                                 IQueue<DetectorPacket> *packet_queue)
     : handle_(nullptr), queue_(packet_queue)
 {
     CreateHandle(device.c_str());
@@ -96,8 +96,8 @@ NetworkAnalyser::~NetworkAnalyser()
  */
 void NetworkAnalyser::PacketHandler(u_char *user, const struct pcap_pkthdr *header, const u_char *packet)
 {
-    auto *queue = reinterpret_cast<IQueue<Packet> *>(user);
-    queue->emplace(Packet(*header, packet));
+    auto *queue = reinterpret_cast<IQueue<DetectorPacket> *>(user);
+    queue->emplace(DetectorPacket(*header, packet));
 }
 
 /**

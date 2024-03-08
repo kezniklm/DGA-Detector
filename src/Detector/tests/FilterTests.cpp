@@ -59,7 +59,7 @@ std::vector<u_char> HexStringToBytes(const std::string &hex)
  * @param hex_string The hexadecimal string representing packet data.
  * @return Packet The Packet object created from the hex string.
  */
-Packet CreatePacketFromHexString(const std::string &hex_string)
+DetectorPacket CreatePacketFromHexString(const std::string &hex_string)
 {
     auto bytes = HexStringToBytes(hex_string);
 
@@ -71,7 +71,7 @@ Packet CreatePacketFromHexString(const std::string &hex_string)
     hdr.caplen = bytes.size();
     hdr.len = bytes.size();
 
-    return Packet(hdr, bytes.data());
+    return DetectorPacket(hdr, bytes.data());
 }
 
 /**
@@ -195,8 +195,8 @@ TEST_F(FilterTest, ProcessMultipleDnsResponses)
 {
     std::string hex_dns_response_1 = "000c291dc716005056fc80ea0800450000531ff1000080117cd3c0a88e02c0a88e820035da79003f6544ead98180000100010000000106676f6f676c6503636f6d0000010001c00c000100010000000500048efb256e000029100000000000050000";
     std::string hex_dns_response_2 = "000c291dc716005056fc80ea0800450001a6240d000080117764c0a88e02c0a88e82003585770192a9a5aab781800001000c0000000112636f6e6e65637469766974792d636865636b067562756e747503636f6d00001c0001c00c001c00010000000500102620002d400000010000000000000097c00c001c00010000000500102620002d400000010000000000000098c00c001c00010000000500102001067c1562000000000000000023c00c001c00010000000500102620002d400000010000000000000097c00c001c00010000000500102620002d400000010000000000000096c00c001c00010000000500102620002d400000010000000000000098c00c001c00010000000500102620002d400000010000000000000022c00c001c00010000000500102001067c156200000000000000002400002910000000050000";
-    Packet dns_response_packet_1 = CreatePacketFromHexString(hex_dns_response_1);
-    Packet dns_response_packet_2 = CreatePacketFromHexString(hex_dns_response_2);
+    DetectorPacket dns_response_packet_1 = CreatePacketFromHexString(hex_dns_response_1);
+    DetectorPacket dns_response_packet_2 = CreatePacketFromHexString(hex_dns_response_2);
 
     EXPECT_CALL(*mock_packet_queue_, try_pop(_))
         .WillOnce(DoAll(SetArgReferee<0>(dns_response_packet_1), Return(true)))

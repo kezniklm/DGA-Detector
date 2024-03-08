@@ -26,17 +26,17 @@
 struct DNSPacketInfo
 {
     std::vector<std::string> domain_names;
-
-    int response_code{};
+    int response_code;
 
     /**
      * @brief Constructs a DNSPacketInfo object with provided domain names and response code.
+     * Using std::move for the vector parameter to enable move semantics.
      *
      * @param domains Vector of domain names.
      * @param code Response code.
      */
-    DNSPacketInfo(const std::vector<std::string> &domains, int code)
-        : domain_names(domains), response_code(code) {}
+    explicit DNSPacketInfo(std::vector<std::string> domains, int code)
+        : domain_names(std::move(domains)), response_code(code) {}
 
     /**
      * @brief Default constructor for DNSPacketInfo.

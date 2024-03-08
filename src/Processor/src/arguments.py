@@ -51,6 +51,14 @@ class Arguments:
             help='Domain name for the API, e.g., "example.com". Required if not specified in appsettings.json',
         )
 
+        self.parser.add_argument(
+            "-t",
+            "--threads",
+            type=int,
+            default=self.config.get("threads", 1),
+            help="Number of processing threads. Default is 1 if not specified in appsettings.json or command line.",
+        )
+
     def parse_args(self) -> argparse.Namespace:
         """Parses the command line arguments and checks for missing arguments."""
         args = self.parser.parse_args()

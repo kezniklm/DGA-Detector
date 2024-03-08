@@ -29,8 +29,8 @@
 #include "ProtocolType.h"
 #include "UdpLayer.h"
 
+#include "DetectorPacket.hpp"
 #include "IQueue.hpp"
-#include "Packet.hpp"
 
 /** Declare external cancellation token */
 extern std::atomic<bool> cancellation_token;
@@ -52,7 +52,7 @@ public:
      * @param packet_queue Pointer to the packet queue for incoming packets.
      * @param dns_queue Pointer to the DNS info queue for processed DNS packets.
      */
-    explicit Filter(IQueue<Packet> *packet_queue, IQueue<DNSPacketInfo> *dns_queue);
+    explicit Filter(IQueue<DetectorPacket> *packet_queue, IQueue<DNSPacketInfo> *dns_queue);
 
     /**
      * @brief Processes packets from the packet queue.
@@ -64,7 +64,7 @@ public:
 
 private:
     /** Pointer to the packet queue */
-    IQueue<Packet> *packet_queue_;
+    IQueue<DetectorPacket> *packet_queue_;
 
     /** Pointer to the DNS info queue */
     IQueue<DNSPacketInfo> *dns_info_queue_;
@@ -76,5 +76,5 @@ private:
      *
      * @param custom_packet The custom packet structure containing packet data.
      */
-    void ProcessDnsPacket(const Packet &custom_packet) const;
+    void ProcessDnsPacket(const DetectorPacket &custom_packet) const;
 };

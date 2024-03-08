@@ -13,8 +13,9 @@ class Processor:
         self.shutdown_event = threading.Event()
         self.message_queue = queue.Queue(5)
         self.extractors = [
-            Extractor(self.message_queue, self.shutdown_event) for _ in range(1)
-        ]  # Argument????????
+            Extractor(self.message_queue, self.shutdown_event)
+            for _ in range(args.threads)
+        ]
         self.consumer = RabbitMQConsumer(
             args.rabbitmq, args.queue, self.message_queue, self.shutdown_event
         )
