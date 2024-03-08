@@ -372,3 +372,4 @@ src/Detector/CMakeFiles/*
 src/Detector/CMakeCache.txt
 .vscode/c_cpp_properties.json
 src/Processor/env
+src/Processor/appsettings.json
