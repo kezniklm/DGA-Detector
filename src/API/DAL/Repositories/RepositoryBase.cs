@@ -1,4 +1,5 @@
-﻿using DAL.Entities.Interfaces;
+﻿using Common.Exceptions;
+using DAL.Entities.Interfaces;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -47,6 +48,10 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         {
             _dbContext.Set<TEntity>().Remove(entity);
             await _dbContext.SaveChangesAsync();
+        }
+        else
+        {
+            throw new InvalidDeleteException("Entity cannot be deleted because it does not exist");
         }
     }
 
