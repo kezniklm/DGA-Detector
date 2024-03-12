@@ -1,12 +1,15 @@
 using BL.Facades.Interfaces;
 using BL.Models.Result;
 using Common.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace APP.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class ResultController(IResultFacade resultFacade) : ControllerBase
 {
     [HttpGet]
@@ -23,25 +26,25 @@ public class ResultController(IResultFacade resultFacade) : ControllerBase
         }
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ResultDetailModel>> Get(Guid id)
+    [HttpGet("{id:ObjectId}")]
+    public async Task<ActionResult<ResultDetailModel>> Get(ObjectId id)
     {
         ResultDetailModel? result = await resultFacade.GetByIdAsync(id);
         return result is null ? NotFound() : result;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(ResultDetailModel result) => await resultFacade.CreateAsync(result);
+    public async Task<ActionResult<ObjectId>> Create(ResultDetailModel result) => await resultFacade.CreateAsync(result);
 
     [HttpPatch]
-    public async Task<ActionResult<Guid>> Update(ResultDetailModel result)
+    public async Task<ActionResult<ObjectId>> Update(ResultDetailModel result)
     {
-        Guid? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
+        ObjectId? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
         return updatedResult is null ? NotFound() : updatedResult;
     }
 
     [HttpDelete]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(ObjectId id)
     {
         try
         {

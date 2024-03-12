@@ -1,12 +1,15 @@
 ﻿using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using Common.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace APP.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class BlacklistController(IBlacklistFacade blacklistFacade) : ControllerBase
 {
     [HttpGet]
@@ -23,25 +26,25 @@ public class BlacklistController(IBlacklistFacade blacklistFacade) : ControllerB
         }
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<BlacklistDetailModel>> Get(Guid id)
+    [HttpGet("{id:ObjectId}")]
+    public async Task<ActionResult<BlacklistDetailModel>> Get(ObjectId id)
     {
         BlacklistDetailModel? blacklist = await blacklistFacade.GetByIdAsync(id);
         return blacklist is null ? NotFound() : blacklist;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(BlacklistDetailModel blacklist) => await blacklistFacade.CreateAsync(blacklist);
+    public async Task<ActionResult<ObjectId>> Create(BlacklistDetailModel blacklist) => await blacklistFacade.CreateAsync(blacklist);
 
     [HttpPatch]
-    public async Task<ActionResult<Guid>> Update(BlacklistDetailModel blacklist)
+    public async Task<ActionResult<ObjectId>> Update(BlacklistDetailModel blacklist)
     {
-        Guid? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
+        ObjectId? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
         return updatedBlacklist is null ? NotFound() : updatedBlacklist;
     }
 
     [HttpDelete]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(ObjectId id)
     {
         try
         {

@@ -1,12 +1,15 @@
 ﻿using BL.Facades.Interfaces;
 using BL.Models.Whitelist;
 using Common.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace APP.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class WhitelistController(IWhitelistFacade whitelistFacade) : ControllerBase
 {
     [HttpGet]
@@ -23,25 +26,25 @@ public class WhitelistController(IWhitelistFacade whitelistFacade) : ControllerB
         }
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<WhitelistDetailModel>> Get(Guid id)
+    [HttpGet("{id:ObjectId}")]
+    public async Task<ActionResult<WhitelistDetailModel>> Get(ObjectId id)
     {
         WhitelistDetailModel? whitelist = await whitelistFacade.GetByIdAsync(id);
         return whitelist is null ? NotFound() : whitelist;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(WhitelistDetailModel whitelist) => await whitelistFacade.CreateAsync(whitelist);
+    public async Task<ActionResult<ObjectId>> Create(WhitelistDetailModel whitelist) => await whitelistFacade.CreateAsync(whitelist);
 
     [HttpPatch]
-    public async Task<ActionResult<Guid>> Update(WhitelistDetailModel whitelist)
+    public async Task<ActionResult<ObjectId>> Update(WhitelistDetailModel whitelist)
     {
-        Guid? updatedWhitelist = await whitelistFacade.CreateOrUpdateAsync(whitelist);
+        ObjectId? updatedWhitelist = await whitelistFacade.CreateOrUpdateAsync(whitelist);
         return updatedWhitelist is null ? NotFound() : updatedWhitelist;
     }
 
     [HttpDelete]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(ObjectId id)
     {
         try
         {

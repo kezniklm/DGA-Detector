@@ -1,14 +1,17 @@
+using APP;
 using APP.Config;
+using APP.Constraints;
 using AutoMapper;
-using AutoMapper.Internal;
 using BL.Installers;
 using BL.Models.User;
 using Common.Extensions;
 using DAL.Entities.Interfaces;
 using DAL.Installers;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -18,19 +21,23 @@ ConfigureOpenApiDocuments(builder.Services);
 
 ConfigureDependencies(builder.Services, builder.Configuration);
 
+ConfigureCookies(builder.Services);
+
 ConfigureAutoMapper(builder.Services);
 
 ConfigureControllers(builder.Services);
+
+ConfigureConstraints(builder.Services);
 
 WebApplication app = builder.Build();
 
 ValidateAutoMapperConfiguration(app.Services);
 
-UseDevelopmentSettings(app);
-
-UseSecurityFeatures(app);
+UseDevelopmentOrProductionSettings(app);
 
 UseRouting(app);
+
+UseSecurityFeatures(app);
 
 UseEndpoints(app);
 
@@ -52,23 +59,41 @@ void ConfigureCors(IServiceCollection serviceCollection)
 void ConfigureOpenApiDocuments(IServiceCollection serviceCollection)
 {
     serviceCollection.AddEndpointsApiExplorer();
-    serviceCollection.AddOpenApiDocument();
+
+    serviceCollection.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "DGA-Detector API",
+            Description = "API for DGA-Detector application",
+            Version = "v1"
+        });
+        options.AddSecurityDefinition("oauth2",
+            new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            });
+
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
 }
 
 void ConfigureDependencies(IServiceCollection serviceCollection, IConfiguration configuration)
 {
     DbConfig dbConfig = GetDatabaseConfig(configuration);
 
-    serviceCollection.AddIdentityApiEndpoints<User>()
-        .AddMongoDbStores<User, UserRole, Guid>
-        (
-            dbConfig.ConnectionString, dbConfig.DatabaseName
-        )
+    serviceCollection.AddDbContext<UserDbContext>(options => options.UseSqlite("Data Source=database.db"));
+
+    serviceCollection.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<UserDbContext>()
         .AddDefaultTokenProviders();
 
-    serviceCollection.AddInstaller<DalInstaller>(dbConfig.ConnectionString,dbConfig.DatabaseName);
+    serviceCollection.AddInstaller<DalInstaller>(dbConfig.ConnectionString, dbConfig.DatabaseName);
 
     serviceCollection.AddInstaller<BlInstaller>();
+
+    
 }
 
 DbConfig GetDatabaseConfig(IConfiguration configuration)
@@ -83,6 +108,24 @@ DbConfig GetDatabaseConfig(IConfiguration configuration)
     return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName };
 }
 
+void ConfigureCookies(IServiceCollection serviceCollection)
+{
+    serviceCollection.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.Name = "DGA-Detector_Cookie";
+        
+        options.LoginPath = "/Login";
+        
+        options.LogoutPath = "/Logout";
+        
+        options.ExpireTimeSpan = TimeSpan.FromDays(15);
+
+        // options.Cookie.HttpOnly = true;
+
+        // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+}
+
 
 void ConfigureAutoMapper(IServiceCollection serviceCollection)
 {
@@ -91,7 +134,25 @@ void ConfigureAutoMapper(IServiceCollection serviceCollection)
 
 void ConfigureControllers(IServiceCollection serviceCollection)
 {
-    builder.Services.AddControllers();
+    serviceCollection.AddControllers();
+
+    //serviceCollection.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+    //{
+    //    options.LoginPath = "/login";
+    //    options.LogoutPath = "/logout";
+    //});
+
+    serviceCollection.AddAuthorization();
+
+    serviceCollection.AddEndpointsApiExplorer();
+}
+
+void ConfigureConstraints(IServiceCollection serviceCollection)
+{
+    serviceCollection.Configure<RouteOptions>(options =>
+    {
+        options.ConstraintMap.Add("ObjectId", typeof(ObjectIdConstraint));
+    });
 }
 
 void ValidateAutoMapperConfiguration(IServiceProvider serviceProvider)
@@ -100,7 +161,7 @@ void ValidateAutoMapperConfiguration(IServiceProvider serviceProvider)
     mapper.ConfigurationProvider.AssertConfigurationIsValid();
 }
 
-void UseDevelopmentSettings(WebApplication application)
+void UseDevelopmentOrProductionSettings(WebApplication application)
 {
     IWebHostEnvironment environment = application.Services.GetRequiredService<IWebHostEnvironment>();
 
@@ -108,19 +169,25 @@ void UseDevelopmentSettings(WebApplication application)
     {
         application.UseDeveloperExceptionPage();
     }
+    else
+    {
+        app.UseExceptionHandler("/Error");
+        app.UseHsts();
+    }
 }
+
 void UseSecurityFeatures(IApplicationBuilder application)
 {
     application.UseCors();
     application.UseHttpsRedirection();
     MapIdentityEndpoints(app);
-    application.UseAuthorization();
     application.UseAuthentication();
+    application.UseAuthorization();
 }
 
 void MapIdentityEndpoints(WebApplication application)
 {
-    application.MapIdentityApi<User>().WithTags("Auth"); ;
+    application.MapIdentityApi<User>().WithTags("Auth");
 }
 
 void UseRouting(IApplicationBuilder application)
@@ -135,6 +202,6 @@ void UseEndpoints(WebApplication application)
 
 void UseOpenApi(IApplicationBuilder application)
 {
-    application.UseOpenApi();
-    application.UseSwaggerUi();
+    application.UseSwagger();
+    application.UseSwaggerUI();
 }

@@ -2,6 +2,7 @@
 using BL.Models.Interfaces;
 using DAL.Entities.Interfaces;
 using DAL.Repositories.Interfaces;
+using MongoDB.Bson;
 
 namespace BL.Facades;
 
@@ -27,28 +28,28 @@ internal abstract class FacadeBase<TListModel, TDetailModel, TEntity>(IRepositor
         return _mapper.Map<List<TListModel>>(entities);
     }
 
-    public virtual async Task<TDetailModel> GetByIdAsync(Guid id)
+    public virtual async Task<TDetailModel> GetByIdAsync(ObjectId id)
     {
         TEntity? entity = await _repository.GetByIdAsync(id);
         return _mapper.Map<TDetailModel>(entity);
     }
 
-    public virtual async Task<Guid?> CreateOrUpdateAsync(TDetailModel model) =>
+    public virtual async Task<ObjectId?> CreateOrUpdateAsync(TDetailModel model) =>
         await _repository.ExistsAsync(model.Id)
             ? await UpdateAsync(model)
             : await CreateAsync(model);
 
-    public virtual async Task<Guid> CreateAsync(TDetailModel model)
+    public virtual async Task<ObjectId> CreateAsync(TDetailModel model)
     {
         TEntity? entity = _mapper.Map<TEntity>(model);
         return await _repository.InsertAsync(entity);
     }
 
-    public virtual async Task<Guid?> UpdateAsync(TDetailModel model)
+    public virtual async Task<ObjectId?> UpdateAsync(TDetailModel model)
     {
         TEntity? entity = _mapper.Map<TEntity>(model);
         return await _repository.UpdateAsync(entity);
     }
 
-    public virtual async Task DeleteAsync(Guid id) => await _repository.RemoveAsync(id);
+    public virtual async Task DeleteAsync(ObjectId id) => await _repository.RemoveAsync(id);
 }

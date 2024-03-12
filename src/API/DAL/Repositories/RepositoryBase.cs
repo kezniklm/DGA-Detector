@@ -3,6 +3,7 @@ using DAL.Entities.Interfaces;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using MongoDB.Bson;
 
 namespace DAL.Repositories;
 
@@ -17,9 +18,9 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
 
     public virtual async Task<IList<TEntity>> GetAllAsync() => await _dbContext.Set<TEntity>().ToListAsync();
 
-    public virtual async Task<TEntity?> GetByIdAsync(Guid id) => await _dbContext.Set<TEntity>().SingleOrDefaultAsync(entity => entity.Id == id);
+    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) => await _dbContext.Set<TEntity>().SingleOrDefaultAsync(entity => entity.Id == id);
 
-    public virtual async Task<Guid> InsertAsync(TEntity entity)
+    public virtual async Task<ObjectId> InsertAsync(TEntity entity)
     {
         EntityEntry<TEntity> createdEntity = await _dbContext.Set<TEntity>().AddAsync(entity);
         await _dbContext.SaveChangesAsync();
@@ -27,7 +28,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         return createdEntity.Entity.Id;
     }
 
-    public virtual async Task<Guid?> UpdateAsync(TEntity entity)
+    public virtual async Task<ObjectId?> UpdateAsync(TEntity entity)
     {
         if (await ExistsAsync(entity.Id))
         {
@@ -41,7 +42,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         return null;
     }
 
-    public virtual async Task RemoveAsync(Guid id)
+    public virtual async Task RemoveAsync(ObjectId id)
     {
         TEntity? entity = await GetByIdAsync(id);
         if (entity != null)
@@ -55,7 +56,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         }
     }
 
-    public virtual async Task<bool> ExistsAsync(Guid id) => await _dbContext.Set<TEntity>().AnyAsync(entity => entity.Id == id);
+    public virtual async Task<bool> ExistsAsync(ObjectId id) => await _dbContext.Set<TEntity>().AnyAsync(entity => entity.Id == id);
 
     public virtual async Task<IList<TEntity>> GetMaxOrGetAllAsync(int max, int page)
     {

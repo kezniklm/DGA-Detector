@@ -1,6 +1,8 @@
-﻿namespace Common;
+﻿using MongoDB.Bson;
+
+namespace Common;
 
 public interface IWithId
 {
-    Guid Id { get; set; }
+    ObjectId Id { get; set; }
 }
