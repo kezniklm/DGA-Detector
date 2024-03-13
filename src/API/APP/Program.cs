@@ -1,15 +1,13 @@
-using APP;
 using APP.Config;
 using APP.Constraints;
 using AutoMapper;
 using BL.Installers;
-using BL.Models.User;
 using Common.Extensions;
+using Common.Models;
+using DAL;
 using DAL.Entities.Interfaces;
 using DAL.Installers;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -84,16 +82,12 @@ void ConfigureDependencies(IServiceCollection serviceCollection, IConfiguration 
 {
     DbConfig dbConfig = GetDatabaseConfig(configuration);
 
-    serviceCollection.AddDbContext<UserDbContext>(options => options.UseSqlite("Data Source=database.db"));
-
     serviceCollection.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<UserDbContext>()
         .AddDefaultTokenProviders();
 
     serviceCollection.AddInstaller<DalInstaller>(dbConfig.ConnectionString, dbConfig.DatabaseName);
 
     serviceCollection.AddInstaller<BlInstaller>();
-
-    
 }
 
 DbConfig GetDatabaseConfig(IConfiguration configuration)
@@ -105,7 +99,7 @@ DbConfig GetDatabaseConfig(IConfiguration configuration)
     string databaseName =
         dbConfigSection["DatabaseName"] ?? throw new ArgumentException("The database name is missing");
 
-    return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName };
+    return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName};
 }
 
 void ConfigureCookies(IServiceCollection serviceCollection)
@@ -197,11 +191,16 @@ void UseRouting(IApplicationBuilder application)
 
 void UseEndpoints(WebApplication application)
 {
-    app.MapControllers();
+    application.MapControllers();
 }
 
 void UseOpenApi(IApplicationBuilder application)
 {
     application.UseSwagger();
     application.UseSwaggerUI();
+}
+
+// Make the implicit Program class public so test projects can access it
+public partial class Program
+{
 }

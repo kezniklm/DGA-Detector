@@ -4,59 +4,54 @@ using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace DAL.Repositories;
 
 public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
     where TEntity : class, IEntity
 {
-    private readonly ApiDbContext _dbContext;
+    private readonly IMongoCollection<TEntity> _collection;
 
-    protected RepositoryBase(ApiDbContext dbContext) => _dbContext = dbContext;
+    public RepositoryBase(ApiDbContext dbContext)
+    {
+        string collectionName = typeof(TEntity).Name.EndsWith("Entity")
+            ? typeof(TEntity).Name.Substring(0, typeof(TEntity).Name.Length - "Entity".Length)
+            : typeof(TEntity).Name;
 
-    public void Dispose() => _dbContext.Dispose();
+        _collection = dbContext.Database.GetCollection<TEntity>(collectionName);
+    }
 
-    public virtual async Task<IList<TEntity>> GetAllAsync() => await _dbContext.Set<TEntity>().ToListAsync();
+    public virtual async Task<IList<TEntity>> GetAllAsync() => await _collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
 
-    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) => await _dbContext.Set<TEntity>().SingleOrDefaultAsync(entity => entity.Id == id);
+    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) => await _collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
 
     public virtual async Task<ObjectId> InsertAsync(TEntity entity)
     {
-        EntityEntry<TEntity> createdEntity = await _dbContext.Set<TEntity>().AddAsync(entity);
-        await _dbContext.SaveChangesAsync();
-
-        return createdEntity.Entity.Id;
+        await _collection.InsertOneAsync(entity);
+        return entity.Id;
     }
 
     public virtual async Task<ObjectId?> UpdateAsync(TEntity entity)
     {
-        if (await ExistsAsync(entity.Id))
+        var result = await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
+        if (result.IsAcknowledged && result.ModifiedCount > 0)
         {
-            _dbContext.Set<TEntity>().Attach(entity);
-            _dbContext.Set<TEntity>().Update(entity);
-            await _dbContext.SaveChangesAsync();
-
             return entity.Id;
         }
-
         return null;
     }
 
     public virtual async Task RemoveAsync(ObjectId id)
     {
-        TEntity? entity = await GetByIdAsync(id);
-        if (entity != null)
-        {
-            _dbContext.Set<TEntity>().Remove(entity);
-            await _dbContext.SaveChangesAsync();
-        }
-        else
+        var result = await _collection.DeleteOneAsync(entity => entity.Id == id);
+        if (result.DeletedCount <= 0)
         {
             throw new InvalidDeleteException("Entity cannot be deleted because it does not exist");
         }
     }
 
-    public virtual async Task<bool> ExistsAsync(ObjectId id) => await _dbContext.Set<TEntity>().AnyAsync(entity => entity.Id == id);
+    public virtual async Task<bool> ExistsAsync(ObjectId id) => await _collection.Find(entity => entity.Id == id).AnyAsync();
 
     public virtual async Task<IList<TEntity>> GetMaxOrGetAllAsync(int max, int page)
     {
@@ -72,12 +67,9 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
 
         int skipAmount = max * page;
 
-        return await _dbContext
-            .Set<TEntity>()
-            .Skip(skipAmount)
-            .Take(max)
-            .ToListAsync();
+        return await _collection.Find(Builders<TEntity>.Filter.Empty).Skip(skipAmount).Limit(max).ToListAsync();
     }
+
 
     public async Task<IList<TEntity>> SearchByNameAsync(string name)
     {
@@ -86,9 +78,11 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
             throw new ArgumentException("Name cannot be null or empty.", nameof(name));
         }
 
-        return await _dbContext.Set<TEntity>()
-            .AsNoTracking()
-            .Where(entity => entity.DomainName.Contains(name, StringComparison.OrdinalIgnoreCase))
-            .ToListAsync();
+        var filter = Builders<TEntity>.Filter.Regex("Name", new BsonRegularExpression(name, "i"));
+        return await _collection.Find(filter).ToListAsync();
+    }
+
+    public void Dispose()
+    {
     }
 }

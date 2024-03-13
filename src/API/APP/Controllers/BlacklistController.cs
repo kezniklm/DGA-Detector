@@ -1,8 +1,10 @@
 ﻿using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using Common.Exceptions;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 
 namespace APP.Controllers;

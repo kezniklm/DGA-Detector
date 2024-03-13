@@ -1,17 +1,18 @@
-﻿using DAL.Entities;
-using Microsoft.EntityFrameworkCore;
-using MongoDB.EntityFrameworkCore.Extensions;
+﻿using MongoDB.Driver;
 
 namespace DAL;
 
-public class ApiDbContext(DbContextOptions<ApiDbContext> options) : DbContext(options)
+public class ApiDbContext
 {
-    public DbSet<ResultEntity> Ingredients { get; set; } = null!;
+    public virtual IMongoDatabase Database { get; init; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public ApiDbContext(string connectionString, string databaseName)
     {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<ResultEntity>().ToCollection("Results");
+        var client = new MongoClient(connectionString);
+        Database = client.GetDatabase(databaseName);
+    }
+    public ApiDbContext(IMongoClient client, string databaseName)
+    {
+        Database = client.GetDatabase(databaseName);
     }
 }

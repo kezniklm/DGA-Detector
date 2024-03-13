@@ -1,5 +1,6 @@
 ﻿using DAL.Entities.Interfaces;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Entities;
 

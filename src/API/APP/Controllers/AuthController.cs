@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using BL.Models.User;
+using Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +16,14 @@ public class AuthController(SignInManager<User> signInManager) : ControllerBase
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Ok(); // Returns a 200 OK response
+        return Ok();
     }
 
     [Authorize]
     [HttpGet("pingauth")]
     public IActionResult PingAuth()
     {
-        var email = User.FindFirstValue(ClaimTypes.Email); // get the user's email from the claim
-        return Ok(new { Email = email }); // return the email in JSON format
+        string? email = User.FindFirstValue(ClaimTypes.Email);
+        return Ok(new { Email = email });
     }
 }
