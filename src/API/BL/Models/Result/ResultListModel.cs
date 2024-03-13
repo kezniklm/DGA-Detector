@@ -5,6 +5,6 @@ namespace BL.Models.Result;
 
 public record ResultListModel : IModel
 {
-    public required ObjectId Id { get; set; }
     public required string DomainName { get; set; }
+    public required ObjectId Id { get; set; }
 }

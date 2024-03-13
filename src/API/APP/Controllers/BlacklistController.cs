@@ -1,10 +1,8 @@
 ﻿using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using Common.Exceptions;
-using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 
 namespace APP.Controllers;
@@ -36,7 +34,8 @@ public class BlacklistController(IBlacklistFacade blacklistFacade) : ControllerB
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(BlacklistDetailModel blacklist) => await blacklistFacade.CreateAsync(blacklist);
+    public async Task<ActionResult<ObjectId>> Create(BlacklistDetailModel blacklist) =>
+        await blacklistFacade.CreateAsync(blacklist);
 
     [HttpPatch]
     public async Task<ActionResult<ObjectId>> Update(BlacklistDetailModel blacklist)
@@ -65,8 +64,6 @@ public class BlacklistController(IBlacklistFacade blacklistFacade) : ControllerB
     }
 
     [HttpGet("{max:int}/{page:int}")]
-    public async Task<ActionResult<IList<BlacklistListModel>>> GetWithPagination(int max, int page)
-    {
-        return await blacklistFacade.GetMaxOrGetAllAsync(max, page);
-    }
+    public async Task<ActionResult<IList<BlacklistListModel>>> GetWithPagination(int max, int page) =>
+        await blacklistFacade.GetMaxOrGetAllAsync(max, page);
 }

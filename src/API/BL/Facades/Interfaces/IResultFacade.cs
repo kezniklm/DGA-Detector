@@ -3,6 +3,6 @@ using DAL.Entities;
 
 namespace BL.Facades.Interfaces;
 
-public interface IResultFacade : IFacade<ResultEntity,ResultListModel,ResultDetailModel>
+public interface IResultFacade : IFacade<ResultEntity, ResultListModel, ResultDetailModel>
 {
 }

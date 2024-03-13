@@ -34,7 +34,8 @@ public class WhitelistController(IWhitelistFacade whitelistFacade) : ControllerB
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(WhitelistDetailModel whitelist) => await whitelistFacade.CreateAsync(whitelist);
+    public async Task<ActionResult<ObjectId>> Create(WhitelistDetailModel whitelist) =>
+        await whitelistFacade.CreateAsync(whitelist);
 
     [HttpPatch]
     public async Task<ActionResult<ObjectId>> Update(WhitelistDetailModel whitelist)
@@ -63,8 +64,6 @@ public class WhitelistController(IWhitelistFacade whitelistFacade) : ControllerB
     }
 
     [HttpGet("{max:int}/{page:int}")]
-    public async Task<ActionResult<IList<WhitelistListModel>>> GetWithPagination(int max, int page)
-    {
-        return await whitelistFacade.GetMaxOrGetAllAsync(max, page);
-    }
+    public async Task<ActionResult<IList<WhitelistListModel>>> GetWithPagination(int max, int page) =>
+        await whitelistFacade.GetMaxOrGetAllAsync(max, page);
 }

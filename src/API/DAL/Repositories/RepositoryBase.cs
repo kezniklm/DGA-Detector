@@ -1,8 +1,6 @@
 ﻿using Common.Exceptions;
 using DAL.Entities.Interfaces;
 using DAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -22,9 +20,15 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         _collection = dbContext.Database.GetCollection<TEntity>(collectionName);
     }
 
-    public virtual async Task<IList<TEntity>> GetAllAsync() => await _collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
+    public void Dispose()
+    {
+    }
 
-    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) => await _collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
+    public virtual async Task<IList<TEntity>> GetAllAsync() =>
+        await _collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
+
+    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) =>
+        await _collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
 
     public virtual async Task<ObjectId> InsertAsync(TEntity entity)
     {
@@ -34,24 +38,26 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
 
     public virtual async Task<ObjectId?> UpdateAsync(TEntity entity)
     {
-        var result = await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
+        ReplaceOneResult? result = await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
         if (result.IsAcknowledged && result.ModifiedCount > 0)
         {
             return entity.Id;
         }
+
         return null;
     }
 
     public virtual async Task RemoveAsync(ObjectId id)
     {
-        var result = await _collection.DeleteOneAsync(entity => entity.Id == id);
+        DeleteResult? result = await _collection.DeleteOneAsync(entity => entity.Id == id);
         if (result.DeletedCount <= 0)
         {
             throw new InvalidDeleteException("Entity cannot be deleted because it does not exist");
         }
     }
 
-    public virtual async Task<bool> ExistsAsync(ObjectId id) => await _collection.Find(entity => entity.Id == id).AnyAsync();
+    public virtual async Task<bool> ExistsAsync(ObjectId id) =>
+        await _collection.Find(entity => entity.Id == id).AnyAsync();
 
     public virtual async Task<IList<TEntity>> GetMaxOrGetAllAsync(int max, int page)
     {
@@ -78,11 +84,8 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
             throw new ArgumentException("Name cannot be null or empty.", nameof(name));
         }
 
-        var filter = Builders<TEntity>.Filter.Regex("Name", new BsonRegularExpression(name, "i"));
+        FilterDefinition<TEntity>?
+            filter = Builders<TEntity>.Filter.Regex("Name", new BsonRegularExpression(name, "i"));
         return await _collection.Find(filter).ToListAsync();
-    }
-
-    public void Dispose()
-    {
     }
 }

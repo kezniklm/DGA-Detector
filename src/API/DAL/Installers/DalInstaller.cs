@@ -9,9 +9,10 @@ public class DalInstaller : AbstractInstaller
 {
     public override void Install(IServiceCollection serviceCollection, string connectionString, string databaseName)
     {
-        serviceCollection.AddDbContext<UserDbContext>(options => options.UseSqlite("Data Source=userdatabase.db;", b => b.MigrationsAssembly("DAL")));
+        serviceCollection.AddDbContext<UserDbContext>(options =>
+            options.UseSqlite("Data Source=userdatabase.db;", b => b.MigrationsAssembly("DAL")));
 
-        serviceCollection.AddScoped<ApiDbContext>(sp => new ApiDbContext(connectionString,databaseName));
+        serviceCollection.AddScoped<ApiDbContext>(sp => new ApiDbContext(connectionString, databaseName));
 
         serviceCollection.Scan(selector =>
             selector.FromAssemblyOf<DalInstaller>()

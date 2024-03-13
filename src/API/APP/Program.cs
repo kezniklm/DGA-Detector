@@ -60,18 +60,15 @@ void ConfigureOpenApiDocuments(IServiceCollection serviceCollection)
 
     serviceCollection.AddSwaggerGen(options =>
     {
-        options.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Title = "DGA-Detector API",
-            Description = "API for DGA-Detector application",
-            Version = "v1"
-        });
+        options.SwaggerDoc("v1",
+            new OpenApiInfo
+            {
+                Title = "DGA-Detector API", Description = "API for DGA-Detector application", Version = "v1"
+            });
         options.AddSecurityDefinition("oauth2",
             new OpenApiSecurityScheme
             {
-                In = ParameterLocation.Header,
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey
+                In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey
             });
 
         options.OperationFilter<SecurityRequirementsOperationFilter>();
@@ -99,7 +96,7 @@ DbConfig GetDatabaseConfig(IConfiguration configuration)
     string databaseName =
         dbConfigSection["DatabaseName"] ?? throw new ArgumentException("The database name is missing");
 
-    return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName};
+    return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName };
 }
 
 void ConfigureCookies(IServiceCollection serviceCollection)
@@ -107,11 +104,11 @@ void ConfigureCookies(IServiceCollection serviceCollection)
     serviceCollection.ConfigureApplicationCookie(options =>
     {
         options.Cookie.Name = "DGA-Detector_Cookie";
-        
+
         options.LoginPath = "/Login";
-        
+
         options.LogoutPath = "/Logout";
-        
+
         options.ExpireTimeSpan = TimeSpan.FromDays(15);
 
         // options.Cookie.HttpOnly = true;

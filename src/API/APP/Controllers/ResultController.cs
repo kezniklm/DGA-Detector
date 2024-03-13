@@ -34,7 +34,8 @@ public class ResultController(IResultFacade resultFacade) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(ResultDetailModel result) => await resultFacade.CreateAsync(result);
+    public async Task<ActionResult<ObjectId>> Create(ResultDetailModel result) =>
+        await resultFacade.CreateAsync(result);
 
     [HttpPatch]
     public async Task<ActionResult<ObjectId>> Update(ResultDetailModel result)
@@ -63,8 +64,6 @@ public class ResultController(IResultFacade resultFacade) : ControllerBase
     }
 
     [HttpGet("{max:int}/{page:int}")]
-    public async Task<ActionResult<IList<ResultListModel>>> GetWithPagination(int max, int page)
-    {
-        return await resultFacade.GetMaxOrGetAllAsync(max, page);
-    }
+    public async Task<ActionResult<IList<ResultListModel>>> GetWithPagination(int max, int page) =>
+        await resultFacade.GetMaxOrGetAllAsync(max, page);
 }

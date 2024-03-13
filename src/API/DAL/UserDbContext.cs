@@ -6,8 +6,5 @@ namespace DAL;
 
 public class UserDbContext(DbContextOptions<UserDbContext> options) : IdentityDbContext<User>(options)
 {
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder) => base.OnModelCreating(modelBuilder);
 }

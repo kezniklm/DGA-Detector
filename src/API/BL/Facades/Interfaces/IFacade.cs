@@ -4,7 +4,7 @@ using MongoDB.Bson;
 
 namespace BL.Facades.Interfaces;
 
-public interface IFacade<TEntity,TListModel, TDetailModel>
+public interface IFacade<TEntity, TListModel, TDetailModel>
     where TEntity : class, IEntity
     where TListModel : IModel
     where TDetailModel : class, IModel

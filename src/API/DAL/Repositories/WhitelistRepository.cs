@@ -3,6 +3,7 @@ using DAL.Repositories.Interfaces;
 
 namespace DAL.Repositories;
 
-internal class WhitelistRepository(ApiDbContext dbContext) : RepositoryBase<WhitelistEntity>(dbContext), IWhitelistRepostitory
+internal class WhitelistRepository(ApiDbContext dbContext)
+    : RepositoryBase<WhitelistEntity>(dbContext), IWhitelistRepostitory
 {
 }
