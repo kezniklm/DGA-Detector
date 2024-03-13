@@ -6,7 +6,7 @@ public class ApiDbContext
 {
     public ApiDbContext(string connectionString, string databaseName)
     {
-        MongoClient client = new MongoClient(connectionString);
+        MongoClient client = new(connectionString);
         Database = client.GetDatabase(databaseName);
     }
 
