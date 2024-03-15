@@ -200,8 +200,8 @@ void Arguments::CalculateSizes(const unsigned long long value)
 
     unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
 
-    const double packet_queue_percentage = 35.0;
-    const double dns_info_queue_percentage = 65.0;
+    constexpr double packet_queue_percentage = 35.0;
+    constexpr double dns_info_queue_percentage = 65.0;
 
     unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(remaining_value * (packet_queue_percentage / 100.0));
     unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
