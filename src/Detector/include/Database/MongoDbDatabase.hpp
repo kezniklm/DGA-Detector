@@ -203,15 +203,28 @@ private:
      * @brief Handles a hit in the blacklist by inserting the element and timestamp into the "Results" collection.
      * @param element The element that hit the blacklist.
      */
-    void HandleBlacklistHit(const std::string &element) override
+    void HandleBlacklistHit(const std::string &domainName) override
     {
         const auto kNow = std::chrono::system_clock::now();
-        const auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(kNow.time_since_epoch()).count();
+
+        const auto bsonDateTime = bsoncxx::types::b_date(std::chrono::duration_cast<std::chrono::milliseconds>(kNow.time_since_epoch()));
 
         auto collection = db_["Results"];
+
         bsoncxx::builder::basic::document document{};
-        document.append(bsoncxx::builder::basic::kvp("element", element),
-                        bsoncxx::builder::basic::kvp("timestamp", static_cast<int64_t>(timestamp)));
+        document.append(
+
+            bsoncxx::builder::basic::kvp("DomainName", domainName),
+
+            bsoncxx::builder::basic::kvp("Detected", bsonDateTime),
+
+            bsoncxx::builder::basic::kvp("DidBlacklistHit", true),
+
+            bsoncxx::builder::basic::kvp("DangerousProbabilityValue", 100.0),
+
+            bsoncxx::builder::basic::kvp("DangerousBoolValue", false),
+
+            bsoncxx::builder::basic::kvp("_id", bsoncxx::oid{}));
 
         collection.insert_one(document.view());
     }
