@@ -8,9 +8,8 @@ public class ResultMapperProfile : Profile
 {
     public ResultMapperProfile()
     {
-        CreateMap<ResultEntity, ResultListModel>();
-        CreateMap<ResultEntity, ResultDetailModel>();
+        CreateMap<ResultEntity, ResultModel>();
 
-        CreateMap<ResultDetailModel, ResultEntity>();
+        CreateMap<ResultModel, ResultEntity>();
     }
 }

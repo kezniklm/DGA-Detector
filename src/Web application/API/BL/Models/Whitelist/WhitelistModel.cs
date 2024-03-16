@@ -1,12 +1,11 @@
 ﻿using BL.Models.Interfaces;
 using MongoDB.Bson;
 
-namespace BL.Models.Result;
+namespace BL.Models.Whitelist;
 
-public record ResultDetailModel : IModel
+public record WhitelistModel : IModel
 {
     public required string DomainName { get; set; }
-    public DateTime Detected { get; set; }
-    public double Value { get; set; }
+    public required DateTime Added { get; set; }
     public required ObjectId Id { get; set; }
 }

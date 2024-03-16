@@ -7,6 +7,6 @@ using DAL.Repositories.Interfaces;
 namespace BL.Facades;
 
 internal class WhitelistFacade(IRepository<WhitelistEntity> repository, IMapper mapper)
-    : FacadeBase<WhitelistListModel, WhitelistDetailModel, WhitelistEntity>(repository, mapper), IWhitelistFacade
+    : FacadeBase<WhitelistModel, WhitelistEntity>(repository, mapper), IWhitelistFacade
 {
 }

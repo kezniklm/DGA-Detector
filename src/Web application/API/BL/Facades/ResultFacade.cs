@@ -6,7 +6,22 @@ using DAL.Repositories.Interfaces;
 
 namespace BL.Facades;
 
-internal class ResultFacade(IRepository<ResultEntity> repository, IMapper mapper)
-    : FacadeBase<ResultListModel, ResultDetailModel, ResultEntity>(repository, mapper), IResultFacade
+internal class ResultFacade(IResultRepository repository, IMapper mapper)
+    : FacadeBase<ResultModel, ResultEntity>(repository, mapper), IResultFacade
 {
+    public async Task<long> GetNumberOfDomainsTodayAsync()
+    {
+        DateTime startOfDay = DateTime.UtcNow.Date;
+        DateTime endOfDay = startOfDay.AddDays(1);
+        return await repository.CountDomainsFromStartToEndDateTimeAsync(startOfDay, endOfDay);
+    }
+
+    public async Task<long> GetPositiveDetectionResultsTodayAsync()
+    {
+        DateTime startOfDay = DateTime.UtcNow.Date;
+        DateTime endOfDay = startOfDay.AddDays(1);
+        return await repository.CountPositiveResultsFromStartToEndDateTimeAsync(startOfDay, endOfDay);
+    }
+
+    public async Task<long> GetFilteredByBlacklistCountAsync() => await repository.CountFilteredByBlacklistAsync();
 }

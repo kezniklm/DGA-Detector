@@ -221,10 +221,10 @@ public class WhitelistRepositoryTests
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenMaxIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-            await _repository.GetMaxOrGetAllAsync(-1, 0));
+            await _repository.GetLimitOrGetAllAsync(-1, 0));
 
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenPageIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-            await _repository.GetMaxOrGetAllAsync(5, -1));
+            await _repository.GetLimitOrGetAllAsync(5, -1));
 }

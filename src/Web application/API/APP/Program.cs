@@ -9,9 +9,13 @@ using DAL.Entities.Interfaces;
 using DAL.Installers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Core;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+ConfigureLogging(builder.Services);
 
 ConfigureCors(builder.Services);
 
@@ -42,6 +46,16 @@ UseEndpoints(app);
 UseOpenApi(app);
 
 app.Run();
+
+void ConfigureLogging(IServiceCollection serviceCollection)
+{
+    builder.Logging.ClearProviders();
+    Logger logger = new LoggerConfiguration()
+        .ReadFrom.Configuration(builder.Configuration)
+        .CreateLogger();
+
+    builder.Host.UseSerilog(logger);
+}
 
 void ConfigureCors(IServiceCollection serviceCollection)
 {

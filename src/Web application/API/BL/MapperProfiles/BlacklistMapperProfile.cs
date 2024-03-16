@@ -8,9 +8,8 @@ public class BlacklistMapperProfile : Profile
 {
     public BlacklistMapperProfile()
     {
-        CreateMap<BlacklistEntity, BlacklistListModel>();
-        CreateMap<BlacklistEntity, BlacklistDetailModel>();
+        CreateMap<BlacklistEntity, BlacklistModel>();
 
-        CreateMap<BlacklistDetailModel, BlacklistEntity>();
+        CreateMap<BlacklistModel, BlacklistEntity>();
     }
 }

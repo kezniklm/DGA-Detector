@@ -8,9 +8,8 @@ public class WhitelistMapperProfile : Profile
 {
     public WhitelistMapperProfile()
     {
-        CreateMap<WhitelistEntity, WhitelistListModel>();
-        CreateMap<WhitelistEntity, WhitelistDetailModel>();
+        CreateMap<WhitelistEntity, WhitelistModel>();
 
-        CreateMap<WhitelistDetailModel, WhitelistEntity>();
+        CreateMap<WhitelistModel, WhitelistEntity>();
     }
 }

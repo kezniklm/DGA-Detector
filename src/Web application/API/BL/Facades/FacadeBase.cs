@@ -6,50 +6,55 @@ using MongoDB.Bson;
 
 namespace BL.Facades;
 
-internal abstract class FacadeBase<TListModel, TDetailModel, TEntity>(IRepository<TEntity> repository, IMapper mapper)
-    where TListModel : class, IModel
-    where TDetailModel : class, IModel
+internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> repository, IMapper mapper)
+    where TModel : class, IModel
     where TEntity : class, IEntity
 {
     private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
-    private readonly IRepository<TEntity> _repository =
+    protected readonly IRepository<TEntity> Repository =
         repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public virtual async Task<List<TListModel>> GetAllAsync()
+    public virtual async Task<List<TModel>> GetAllAsync()
     {
-        IList<TEntity> entities = await _repository.GetAllAsync();
-        return _mapper.Map<List<TListModel>>(entities);
+        IList<TEntity> entities = await Repository.GetAllAsync();
+        return _mapper.Map<List<TModel>>(entities);
     }
 
-    public virtual async Task<List<TListModel>> GetMaxOrGetAllAsync(int max, int page)
+    public virtual async Task<List<TModel>> GetEntriesPerPageAsync(int pageNumber, int pageSize,
+        string? searchQuery = null)
     {
-        IList<TEntity> entities = await _repository.GetMaxOrGetAllAsync(max, page);
-        return _mapper.Map<List<TListModel>>(entities);
+        int skip = (pageNumber - 1) * pageSize;
+
+        IEnumerable<TEntity> entities = await Repository.GetLimitOrGetAllAsync(skip, pageSize, searchQuery);
+        return _mapper.Map<List<TModel>>(entities);
     }
 
-    public virtual async Task<TDetailModel> GetByIdAsync(ObjectId id)
+    public virtual async Task<TModel> GetByIdAsync(ObjectId id)
     {
-        TEntity? entity = await _repository.GetByIdAsync(id);
-        return _mapper.Map<TDetailModel>(entity);
+        TEntity? entity = await Repository.GetByIdAsync(id);
+        return _mapper.Map<TModel>(entity);
     }
 
-    public virtual async Task<ObjectId?> CreateOrUpdateAsync(TDetailModel model) =>
-        await _repository.ExistsAsync(model.Id)
+    public virtual async Task<long> GetNumberOfAllAsync() => await Repository.CountAllAsync();
+
+
+    public virtual async Task<ObjectId?> CreateOrUpdateAsync(TModel model) =>
+        await Repository.ExistsAsync(model.Id)
             ? await UpdateAsync(model)
             : await CreateAsync(model);
 
-    public virtual async Task<ObjectId> CreateAsync(TDetailModel model)
+    public virtual async Task<ObjectId> CreateAsync(TModel model)
     {
         TEntity? entity = _mapper.Map<TEntity>(model);
-        return await _repository.InsertAsync(entity);
+        return await Repository.InsertAsync(entity);
     }
 
-    public virtual async Task<ObjectId?> UpdateAsync(TDetailModel model)
+    public virtual async Task<ObjectId?> UpdateAsync(TModel model)
     {
         TEntity? entity = _mapper.Map<TEntity>(model);
-        return await _repository.UpdateAsync(entity);
+        return await Repository.UpdateAsync(entity);
     }
 
-    public virtual async Task DeleteAsync(ObjectId id) => await _repository.RemoveAsync(id);
+    public virtual async Task DeleteAsync(ObjectId id) => await Repository.RemoveAsync(id);
 }

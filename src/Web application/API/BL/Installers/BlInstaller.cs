@@ -9,7 +9,7 @@ public class BlInstaller : AbstractInstaller
     public override void Install(IServiceCollection serviceCollection) =>
         serviceCollection.Scan(selector =>
             selector.FromAssemblyOf<BlInstaller>()
-                .AddClasses(classes => classes.AssignableTo(typeof(IFacade<,,>)))
+                .AddClasses(classes => classes.AssignableTo(typeof(IFacade<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 }

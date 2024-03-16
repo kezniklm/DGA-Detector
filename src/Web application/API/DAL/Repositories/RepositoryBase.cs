@@ -9,7 +9,7 @@ namespace DAL.Repositories;
 public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
     where TEntity : class, IEntity
 {
-    private readonly IMongoCollection<TEntity> _collection;
+    protected readonly IMongoCollection<TEntity> Collection;
 
     public RepositoryBase(ApiDbContext dbContext)
     {
@@ -17,28 +17,26 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
             ? typeof(TEntity).Name.Substring(0, typeof(TEntity).Name.Length - "Entity".Length)
             : typeof(TEntity).Name;
 
-        _collection = dbContext.Database.GetCollection<TEntity>(collectionName);
+        Collection = dbContext.Database.GetCollection<TEntity>(collectionName);
     }
 
-    public void Dispose()
-    {
-    }
+    public virtual void Dispose() => GC.SuppressFinalize(this);
 
     public virtual async Task<IList<TEntity>> GetAllAsync() =>
-        await _collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
+        await Collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
 
     public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) =>
-        await _collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
+        await Collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
 
     public virtual async Task<ObjectId> InsertAsync(TEntity entity)
     {
-        await _collection.InsertOneAsync(entity);
+        await Collection.InsertOneAsync(entity);
         return entity.Id;
     }
 
     public virtual async Task<ObjectId?> UpdateAsync(TEntity entity)
     {
-        ReplaceOneResult? result = await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
+        ReplaceOneResult? result = await Collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
         if (result.IsAcknowledged && result.ModifiedCount > 0)
         {
             return entity.Id;
@@ -49,7 +47,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
 
     public virtual async Task RemoveAsync(ObjectId id)
     {
-        DeleteResult? result = await _collection.DeleteOneAsync(entity => entity.Id == id);
+        DeleteResult? result = await Collection.DeleteOneAsync(entity => entity.Id == id);
         if (result.DeletedCount <= 0)
         {
             throw new InvalidDeleteException("Entity cannot be deleted because it does not exist");
@@ -57,27 +55,29 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
     }
 
     public virtual async Task<bool> ExistsAsync(ObjectId id) =>
-        await _collection.Find(entity => entity.Id == id).AnyAsync();
+        await Collection.Find(entity => entity.Id == id).AnyAsync();
 
-    public virtual async Task<IList<TEntity>> GetMaxOrGetAllAsync(int max, int page)
+    public virtual async Task<IEnumerable<TEntity>> GetLimitOrGetAllAsync(int skip, int limit,
+        string? searchQuery = null)
     {
-        if (max <= 0)
+        FilterDefinition<TEntity>? filter = Builders<TEntity>.Filter.Empty;
+
+        if (!string.IsNullOrEmpty(searchQuery))
         {
-            throw new ArgumentOutOfRangeException(nameof(max), "Maximum results must be greater than 0.");
+            filter = Builders<TEntity>.Filter.Or(
+                Builders<TEntity>.Filter.Regex(x => x.DomainName, new BsonRegularExpression(searchQuery, "i")));
         }
 
-        if (page < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(page), "Page index must be 0 or greater.");
-        }
-
-        int skipAmount = max * page;
-
-        return await _collection.Find(Builders<TEntity>.Filter.Empty).Skip(skipAmount).Limit(max).ToListAsync();
+        return await Collection.Find(filter)
+            .Skip(skip)
+            .Limit(limit)
+            .ToListAsync();
     }
 
+    public virtual async Task<long> CountAllAsync() => await Collection.CountDocumentsAsync(new BsonDocument());
 
-    public async Task<IList<TEntity>> SearchByNameAsync(string name)
+
+    public virtual async Task<IList<TEntity>> SearchByNameAsync(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -86,6 +86,6 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
 
         FilterDefinition<TEntity>?
             filter = Builders<TEntity>.Filter.Regex("Name", new BsonRegularExpression(name, "i"));
-        return await _collection.Find(filter).ToListAsync();
+        return await Collection.Find(filter).ToListAsync();
     }
 }

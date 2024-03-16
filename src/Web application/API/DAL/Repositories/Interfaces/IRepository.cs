@@ -7,10 +7,10 @@ public interface IRepository<TEntity> where TEntity : IEntity
 {
     Task<IList<TEntity>> GetAllAsync();
     Task<TEntity?> GetByIdAsync(ObjectId id);
+    Task<long> CountAllAsync();
     Task<ObjectId> InsertAsync(TEntity entity);
     Task<ObjectId?> UpdateAsync(TEntity entity);
     Task RemoveAsync(ObjectId id);
     Task<bool> ExistsAsync(ObjectId id);
-    Task<IList<TEntity>> GetMaxOrGetAllAsync(int max, int page);
-    Task<IList<TEntity>> SearchByNameAsync(string name);
+    Task<IEnumerable<TEntity>> GetLimitOrGetAllAsync(int skip, int limit, string? searchQuery = null);
 }
