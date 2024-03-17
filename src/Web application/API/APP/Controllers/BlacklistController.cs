@@ -1,4 +1,5 @@
-﻿using BL.Facades.Interfaces;
+﻿using APP.DTOs;
+using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -68,10 +69,12 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
     }
 
     [HttpPatch]
-    public async Task<ActionResult<ObjectId>> Update(BlacklistModel blacklist)
+    public async Task<ActionResult<ObjectId>> Update([FromBody] BlacklistDto blacklistDto)
     {
+        BlacklistModel? blacklist = null;
         try
         {
+            blacklist = BlacklistModelDeserializer.DeserializeBlacklistModel(blacklistDto);
             logger.LogInformation("Updating blacklist entry with ID: {Id}", blacklist.Id);
             ObjectId? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
             if (updatedBlacklist == null)
@@ -84,7 +87,7 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occurred while updating blacklist entry with ID: {Id}", blacklist.Id);
+            logger.LogError(ex, "Error occurred while updating blacklist entry with ID: {Id}", blacklist?.Id);
             return StatusCode(500, "Internal server error");
         }
     }

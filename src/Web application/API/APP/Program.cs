@@ -129,6 +129,16 @@ void ConfigureCookies(IServiceCollection serviceCollection)
 
         // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
+
+    serviceCollection.AddDistributedMemoryCache();
+    serviceCollection.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 }
 
 
@@ -186,6 +196,7 @@ void UseSecurityFeatures(IApplicationBuilder application)
     application.UseCors();
     application.UseHttpsRedirection();
     MapIdentityEndpoints(app);
+    application.UseSession();
     application.UseAuthentication();
     application.UseAuthorization();
 }
