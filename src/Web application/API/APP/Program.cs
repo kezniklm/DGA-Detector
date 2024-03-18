@@ -47,12 +47,27 @@ UseOpenApi(app);
 
 app.Run();
 
-void ConfigureLogging(IServiceCollection serviceCollection)
+void ConfigureLogging(IServiceCollection services)
 {
-    builder.Logging.ClearProviders();
-    Logger logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(builder.Configuration)
-        .CreateLogger();
+    LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+        .Enrich.FromLogContext()
+        .WriteTo.Console();
+
+    if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+    {
+        loggerConfiguration.WriteTo.EventLog(
+            source: "DGA-Detector",
+            manageEventSource: true,
+            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
+    }
+    else
+    {
+        loggerConfiguration.WriteTo.LocalSyslog(
+            appName: "DGA-Detector",
+            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
+    }
+
+    Logger logger = loggerConfiguration.CreateLogger();
 
     builder.Host.UseSerilog(logger);
 }
