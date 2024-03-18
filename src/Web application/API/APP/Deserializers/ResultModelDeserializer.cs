@@ -1,12 +1,10 @@
-﻿using System.Net;
-using System.Text.Json;
-using APP.DTOs;
+﻿using APP.DTOs;
 using BL.Models.Result;
 using MongoDB.Bson;
 
 namespace APP.Deserializers;
 
-public class ResultModelDeserializer :DeserializerBase
+public class ResultModelDeserializer : DeserializerBase
 {
     public static ResultModel DeserializeResultModel(ResultDto resultDto)
     {

@@ -1,5 +1,4 @@
 ﻿using APP.DTOs;
-using BL.Models.Blacklist;
 using BL.Models.Whitelist;
 using MongoDB.Bson;
 

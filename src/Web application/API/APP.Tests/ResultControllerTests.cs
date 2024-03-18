@@ -184,7 +184,7 @@ public class ResultControllerTests : IAsyncLifetime
     public async Task GetAll_ReturnsUnauthorizedForUnauthenticatedUser()
     {
         // Arrange - Create client without session
-        var client = _application.CreateClient();
+        HttpClient client = _application.CreateClient();
 
         // Act
         HttpResponseMessage response = await client.GetAsync("/result");

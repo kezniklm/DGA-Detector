@@ -7,8 +7,8 @@ using Xunit;
 
 namespace APP.Tests;
 
-[Xunit.Collection("APP.Tests")]
-public class BlacklistControllerTests :  IAsyncLifetime
+[Collection("APP.Tests")]
+public class BlacklistControllerTests : IAsyncLifetime
 {
     private readonly ApiApplicationFactory<Program> _application;
     private readonly HttpClient _client;
