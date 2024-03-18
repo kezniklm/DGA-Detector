@@ -123,7 +123,7 @@ public class BlacklistRepositoryTests
     public async Task SearchByNameAsync_ReturnsMatchingEntities_WhenNameMatches()
     {
         // Arrange
-        string nameToSearch = "test";
+        const string nameToSearch = "test";
         List<BlacklistEntity> testEntities = new()
         {
             new BlacklistEntity { DomainName = nameToSearch, Added = DateTime.Now, Id = ObjectId.GenerateNewId() }
@@ -183,7 +183,7 @@ public class BlacklistRepositoryTests
     public async Task SearchByNameAsync_ReturnsEmptyList_WhenNoMatches()
     {
         // Arrange
-        string nameToSearch = "NonExistent";
+        const string nameToSearch = "NonExistent";
         List<BlacklistEntity> testEntities = new();
         Mock<IAsyncCursor<BlacklistEntity>> mockCursor = new();
         mockCursor.SetupSequence(c => c.MoveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true)
@@ -220,11 +220,11 @@ public class BlacklistRepositoryTests
 
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenMaxIsInvalid() =>
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _repository.GetLimitOrGetAllAsync(-1, 0));
 
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenPageIsInvalid() =>
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _repository.GetLimitOrGetAllAsync(5, -1));
 }
