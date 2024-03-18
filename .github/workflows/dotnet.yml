@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Change Directory
-      run: cd DGA-Detector/src/Web\ Application/
+      run: cd DGA-Detector/src/Web Application/
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
