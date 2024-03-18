@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Print Current Directory
-      run: ls -l 
+      run: ls -l src/
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./src/Web Application/
