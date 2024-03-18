@@ -85,7 +85,7 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id:ObjectId}")]
     public async Task<ActionResult> Delete(ObjectId id)
     {
         try

@@ -85,7 +85,7 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id:ObjectId}")]
     public async Task<ActionResult> Delete(ObjectId id)
     {
         try
