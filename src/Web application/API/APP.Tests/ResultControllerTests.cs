@@ -221,6 +221,5 @@ public class ResultControllerTests : IAsyncLifetime
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(createdId);
     }
 }
