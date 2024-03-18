@@ -1,19 +1,20 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using APP.Tests.Deserializers;
-using BL.Models.Blacklist;
+using APP.Deserializers;
+using APP.DTOs;
+using BL.Models.Whitelist;
 using MongoDB.Bson;
 using Xunit;
 
 namespace APP.Tests;
 
-[Xunit.Collection("APP.Tests")]
-public class BlacklistControllerTests :  IAsyncLifetime
+[Collection("APP.Tests")]
+public class WhitelistControllerTests : IAsyncLifetime
 {
     private readonly ApiApplicationFactory<Program> _application;
     private readonly HttpClient _client;
 
-    public BlacklistControllerTests(ApiApplicationFactory<Program> application)
+    public WhitelistControllerTests(ApiApplicationFactory<Program> application)
     {
         _application = application;
         _client = _application.CreateClientWithSession();
@@ -27,7 +28,7 @@ public class BlacklistControllerTests :  IAsyncLifetime
     {
         // Arrange
         await _application.ClearMongoDbDataAsync();
-        const string url = "/Blacklist/";
+        const string url = "/Whitelist/";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -37,18 +38,18 @@ public class BlacklistControllerTests :  IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Act
-        IList<BlacklistModel>? blacklists = await response.Content.ReadFromJsonAsync<IList<BlacklistModel>>();
+        IList<WhitelistModel>? whitelists = await response.Content.ReadFromJsonAsync<IList<WhitelistModel>>();
 
         // Assert
-        Assert.NotNull(blacklists);
-        Assert.Empty(blacklists);
+        Assert.NotNull(whitelists);
+        Assert.Empty(whitelists);
     }
 
     [Fact]
     public async Task GetAll_ReturnsOkResult()
     {
         // Arrange
-        const string url = "/Blacklist/";
+        const string url = "/Whitelist/";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -58,38 +59,39 @@ public class BlacklistControllerTests :  IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Act
-        IList<BlacklistModel>? blacklists = await response.Content.ReadFromJsonAsync<IList<BlacklistModel>>();
+        IList<WhitelistModel>? whitelists = await response.Content.ReadFromJsonAsync<IList<WhitelistModel>>();
 
         // Assert
-        Assert.NotNull(blacklists);
-        Assert.True(blacklists.Count > 0);
+        Assert.NotNull(whitelists);
+        Assert.True(whitelists.Count > 0);
     }
 
     [Fact]
     public async Task Get_ReturnsOkResult()
     {
         // Arrange
-        const string id = "5f1a5151b5b5b5b5b5b5b5b1";
-        const string url = $"/Blacklist/{id}";
+        const string id = "5f1a5151b5b5b5b5b5b5b5b7";
+        const string url = $"/Whitelist/{id}";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
-        string json = await response.Content.ReadAsStringAsync();
-        BlacklistModel blacklist = BlacklistModelDeserializer.DeserializeBlacklistModel(json);
+        WhitelistDto? whitelistDto = await response.Content.ReadFromJsonAsync<WhitelistDto>();
+        WhitelistModel whitelist =
+            WhitelistModelDeserializer.DeserializeWhitelistModel(whitelistDto ?? throw new InvalidOperationException());
 
         // Assert
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(blacklist);
-        Assert.Equal(id, blacklist.Id.ToString());
+        Assert.NotNull(whitelist);
+        Assert.Equal(id, whitelist.Id.ToString());
     }
 
     [Fact]
     public async Task Get_ReturnsNotFoundResult()
     {
         // Arrange
-        const string id = "5f1a5151b5b5b5b5b5b5b5b9";
-        const string url = $"/Blacklist/{id}";
+        const string id = "5f1a5151b5b5b5b5b5b5b5b6";
+        const string url = $"/Whitelist/{id}";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -102,14 +104,14 @@ public class BlacklistControllerTests :  IAsyncLifetime
     public async Task Create_ReturnsOkResult()
     {
         // Arrange
-        BlacklistModel newBlacklist = new()
+        WhitelistModel newWhitelist = new()
         {
-            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
         };
-        const string url = "/Blacklist/";
+        const string url = "/Whitelist/";
 
         // Act
-        HttpResponseMessage response = await _client.PostAsJsonAsync(url, newBlacklist);
+        HttpResponseMessage response = await _client.PostAsJsonAsync(url, newWhitelist);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -120,8 +122,8 @@ public class BlacklistControllerTests :  IAsyncLifetime
     public async Task Delete_ReturnsOkResult()
     {
         // Arrange
-        const string idToDelete = "5f1a5151b5b5b5b5b5b5b5b1";
-        const string url = $"/Blacklist/{idToDelete}";
+        const string idToDelete = "5f1a5151b5b5b5b5b5b5b5b7";
+        const string url = $"/Whitelist/{idToDelete}";
 
         // Act
         HttpResponseMessage response = await _client.DeleteAsync(url);
@@ -137,7 +139,7 @@ public class BlacklistControllerTests :  IAsyncLifetime
         const int max = 10;
         const int page = 1;
         const string filter = "example";
-        string url = $"/Blacklist/{max}/{page}/{filter}";
+        string url = $"/Whitelist/{max}/{page}/{filter}";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -147,25 +149,25 @@ public class BlacklistControllerTests :  IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Act
-        IList<BlacklistModel>? filteredBlacklists = await response.Content.ReadFromJsonAsync<IList<BlacklistModel>>();
+        IList<WhitelistModel>? filteredWhitelists = await response.Content.ReadFromJsonAsync<IList<WhitelistModel>>();
 
         // Assert
-        Assert.NotNull(filteredBlacklists);
-        Assert.True(filteredBlacklists.Count <= max);
+        Assert.NotNull(filteredWhitelists);
+        Assert.True(filteredWhitelists.Count <= max);
     }
 
     [Fact]
     public async Task Create_WithoutAuthorization_ReturnsUnauthorized()
     {
         // Arrange
-        BlacklistModel blacklistEntry = new()
+        WhitelistModel whitelistEntry = new()
         {
-            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
         };
         HttpClient clientWithoutAuthorization = _application.CreateClient();
 
         // Act
-        HttpResponseMessage response = await clientWithoutAuthorization.PostAsJsonAsync("/Blacklist", blacklistEntry);
+        HttpResponseMessage response = await clientWithoutAuthorization.PostAsJsonAsync("/Whitelist", whitelistEntry);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -175,8 +177,8 @@ public class BlacklistControllerTests :  IAsyncLifetime
     public async Task Delete_ReturnsBadRequestForInvalidOperation()
     {
         // Arrange
-        const string nonDeletableId = "5f1a5151b5b5b5b5b5b5b5b9";
-        const string url = $"/Blacklist/{nonDeletableId}";
+        const string nonDeletableId = "5f1a5151b5b5b5b5b5b5b5b6";
+        const string url = $"/Whitelist/{nonDeletableId}";
 
         // Act
         HttpResponseMessage response = await _client.DeleteAsync(url);
@@ -191,14 +193,14 @@ public class BlacklistControllerTests :  IAsyncLifetime
         // Arrange
         const int max = 10;
         const int page = 9999;
-        string url = $"/Blacklist/{max}/{page}";
+        string url = $"/Whitelist/{max}/{page}";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
 
         // Assert
         response.EnsureSuccessStatusCode();
-        IList<BlacklistModel>? results = await response.Content.ReadFromJsonAsync<IList<BlacklistModel>>();
+        IList<WhitelistModel>? results = await response.Content.ReadFromJsonAsync<IList<WhitelistModel>>();
         Assert.NotNull(results);
         Assert.Empty(results);
     }
@@ -207,7 +209,7 @@ public class BlacklistControllerTests :  IAsyncLifetime
     public async Task GetTotalCount_ReturnsCorrectNumber()
     {
         // Arrange
-        const string url = "/Blacklist/count";
+        const string url = "/Whitelist/count";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -219,9 +221,9 @@ public class BlacklistControllerTests :  IAsyncLifetime
     }
 
     [Theory]
-    [InlineData("/Blacklist")]
-    [InlineData("/Blacklist/count")]
-    [InlineData("/Blacklist/5f1a5151b5b5b5b5b5b5b5b1")]
+    [InlineData("/Whitelist")]
+    [InlineData("/Whitelist/count")]
+    [InlineData("/Whitelist/5f1a5151b5b5b5b5b5b5b5b1")]
     public async Task Endpoints_RequireAuthentication(string url)
     {
         // Arrange
@@ -241,7 +243,7 @@ public class BlacklistControllerTests :  IAsyncLifetime
         const int max = 10;
         const int page = 1;
         const string strictFilter = "nonexistentkeyword";
-        string url = $"/Blacklist/{max}/{page}/{strictFilter}";
+        string url = $"/Whitelist/{max}/{page}/{strictFilter}";
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
@@ -251,10 +253,10 @@ public class BlacklistControllerTests :  IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Act
-        IList<BlacklistModel>? filteredBlacklists = await response.Content.ReadFromJsonAsync<IList<BlacklistModel>>();
+        IList<WhitelistModel>? filteredWhitelists = await response.Content.ReadFromJsonAsync<IList<WhitelistModel>>();
 
         // Assert
-        Assert.NotNull(filteredBlacklists);
-        Assert.Empty(filteredBlacklists);
+        Assert.NotNull(filteredWhitelists);
+        Assert.Empty(filteredWhitelists);
     }
 }

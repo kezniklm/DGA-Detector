@@ -217,7 +217,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 database.GetCollection<BlacklistEntity>("Blacklist");
             await blacklistCollection.InsertManyAsync(blacklistSeeds);
 
-            IMongoCollection<ResultEntity>? resultCollection = database.GetCollection<ResultEntity>("Results");
+            IMongoCollection<ResultEntity>? resultCollection = database.GetCollection<ResultEntity>("Result");
             await resultCollection.InsertManyAsync(resultSeeds);
 
             IMongoCollection<WhitelistEntity>? whitelistCollection =
