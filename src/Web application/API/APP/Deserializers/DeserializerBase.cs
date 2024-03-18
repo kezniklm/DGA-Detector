@@ -1,20 +1,12 @@
-﻿using System.Net;
+﻿using MongoDB.Bson;
+using System.Net;
 using System.Text.Json;
-using BL.Models.Blacklist;
-using MongoDB.Bson;
 
-namespace APP.DTOs;
+namespace APP.Deserializers;
 
-public static class BlacklistModelDeserializer
+public class DeserializerBase
 {
-    public static BlacklistModel DeserializeBlacklistModel(BlacklistDto blacklistDto)
-    {
-        ObjectId id = ParseObjectId(blacklistDto.Id);
-
-        return new BlacklistModel { Added = blacklistDto.Added, DomainName = blacklistDto.DomainName, Id = id };
-    }
-
-    private static ObjectId ParseObjectId(JsonElement element)
+    public static ObjectId ParseObjectId(JsonElement element)
     {
         if (element.ValueKind == JsonValueKind.String)
         {
@@ -30,7 +22,7 @@ public static class BlacklistModelDeserializer
         return ObjectId.Empty;
     }
 
-    public static ObjectId ConstructObjectIdFromJson(JsonElement element)
+    private static ObjectId ConstructObjectIdFromJson(JsonElement element)
     {
         byte[] bytes = new byte[12];
 
