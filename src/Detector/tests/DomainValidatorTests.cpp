@@ -46,15 +46,15 @@ extern std::atomic<bool> cancellation_token;
 class DomainValidatorTest : public ::testing::Test
 {
 protected:
-    MockDNSQueue mock_dns_queue;
-    MockValidatedDomainsQueue mock_publisher_queue;
-    MockDatabase mock_database;
-    std::unique_ptr<DomainValidator> validator;
+    MockDNSQueue mock_dns_queue_;
+    MockValidatedDomainsQueue mock_publisher_queue_;
+    MockDatabase mock_database_;
+    std::unique_ptr<DomainValidator> validator_;
 
     void SetUp() override
     {
         cancellation_token.store(false);
-        validator = std::make_unique<DomainValidator>(&mock_dns_queue, &mock_publisher_queue, &mock_database);
+        validator_ = std::make_unique<DomainValidator>(&mock_dns_queue_, &mock_publisher_queue_, &mock_database_);
     }
 
     void TearDown() override
@@ -68,7 +68,7 @@ protected:
  */
 TEST_F(DomainValidatorTest, StopsProcessingWhenCancellationIsSet)
 {
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
         .WillOnce(Return(true))
         .WillRepeatedly(Return(false));
 
@@ -77,7 +77,7 @@ TEST_F(DomainValidatorTest, StopsProcessingWhenCancellationIsSet)
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         cancellation_token.store(true); });
 
-    validator->ProcessDomains();
+    validator_->ProcessDomains();
 
     cancel_thread.join();
 }
@@ -87,19 +87,19 @@ TEST_F(DomainValidatorTest, StopsProcessingWhenCancellationIsSet)
  */
 TEST_F(DomainValidatorTest, HandlesEmptyDNSQueueGracefully)
 {
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
         .WillRepeatedly(Return(false));
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     cancellation_token.store(true);
 
     worker.join();
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_)).Times(0);
-    EXPECT_CALL(mock_database, CheckInWhitelist(_)).Times(0);
-    EXPECT_CALL(mock_publisher_queue, emplace(_)).Times(0);
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_)).Times(0);
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_)).Times(0);
+    EXPECT_CALL(mock_publisher_queue_, emplace(_)).Times(0);
 }
 
 /**
@@ -109,17 +109,17 @@ TEST_F(DomainValidatorTest, ProcessesLargeBatchesOfDomainsEfficiently)
 {
     DNSPacketInfo packet_info{{"example.com"}, 200};
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
         .WillRepeatedly(DoAll(SetArgReferee<0>(packet_info), Return(true)));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_)).Times(AtLeast(1));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_)).Times(AtLeast(1));
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_)).Times(AtLeast(1));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_)).Times(AtLeast(1));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(AtLeast(1));
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -135,22 +135,22 @@ TEST_F(DomainValidatorTest, FiltersDomainsBasedOnBlacklistAndWhitelist)
 {
     DNSPacketInfo packet_info_with_domains{{"valid.com", "blacklisted.com"}, 200};
 
-    const std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}, {"valid.com", false}};
-    const std::map<std::string, bool> whitelistResult{{"whitelisted.com", true}, {"valid.com", false}};
+    const std::map<std::string, bool> blacklist_result{{"blacklisted.com", true}, {"valid.com", false}};
+    const std::map<std::string, bool> whitelist_result{{"whitelisted.com", true}, {"valid.com", false}};
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
         .WillRepeatedly(DoAll(SetArgReferee<0>(packet_info_with_domains), Return(true)));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
-        .WillRepeatedly(Return(blacklistResult));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
-        .WillRepeatedly(Return(whitelistResult));
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
+        .WillRepeatedly(Return(blacklist_result));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
+        .WillRepeatedly(Return(whitelist_result));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(AtLeast(1));
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -168,34 +168,34 @@ TEST_F(DomainValidatorTest, DomainInBothBlacklistAndWhitelistIsFilteredOut)
 
     const DNSPacketInfo packet_info{{"conflicted.com"}, 200};
 
-    const std::map<std::string, bool> blacklistResult{{"conflicted.com", true}};
-    const std::map<std::string, bool> whitelistResult{{"conflicted.com", false}};
+    const std::map<std::string, bool> blacklist_result{{"conflicted.com", true}};
+    const std::map<std::string, bool> whitelist_result{{"conflicted.com", false}};
 
     int call_count = 0;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillRepeatedly(Invoke([&](DNSPacketInfo &packetInfoArg) -> bool
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillRepeatedly(Invoke([&](DNSPacketInfo &packet_info_arg) -> bool
                                {
             if (call_count <= num_packet_info_instances) {
-                packetInfoArg = packet_info; 
+                packet_info_arg = packet_info; 
                 ++call_count;
                 return true; 
             } else {
                 return false;
             } }));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
         .Times(1)
-        .WillRepeatedly(Return(blacklistResult));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
+        .WillRepeatedly(Return(blacklist_result));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
         .Times(1)
-        .WillRepeatedly(Return(whitelistResult));
+        .WillRepeatedly(Return(whitelist_result));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(0);
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -209,23 +209,23 @@ TEST_F(DomainValidatorTest, DomainInBothBlacklistAndWhitelistIsFilteredOut)
  */
 TEST_F(DomainValidatorTest, HandlesVariousResponseCodesCorrectly)
 {
-    DNSPacketInfo packetInfoSuccess{{"valid.com"}, 200};
-    DNSPacketInfo packetInfoFailure{{"invalid.com"}, 404};
+    DNSPacketInfo packet_info_success{{"valid.com"}, 200};
+    DNSPacketInfo packet_info_failure{{"invalid.com"}, 404};
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillOnce(DoAll(SetArgReferee<0>(packetInfoSuccess), Return(true)))
-        .WillOnce(DoAll(SetArgReferee<0>(packetInfoFailure), Return(true)))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillOnce(DoAll(SetArgReferee<0>(packet_info_success), Return(true)))
+        .WillOnce(DoAll(SetArgReferee<0>(packet_info_failure), Return(true)))
         .WillRepeatedly(Return(false));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
         .Times(AtLeast(0));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
         .Times(AtLeast(0));
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(AtLeast(0));
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -239,23 +239,23 @@ TEST_F(DomainValidatorTest, HandlesVariousResponseCodesCorrectly)
  */
 TEST_F(DomainValidatorTest, ProcessesMixOfValidAndInvalidDNSPacketsCorrectly)
 {
-    DNSPacketInfo validPacket{{"valid.com"}, 200};
-    DNSPacketInfo invalidPacket;
+    DNSPacketInfo valid_packet{{"valid.com"}, 200};
+    DNSPacketInfo invalid_packet;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillOnce(DoAll(SetArgReferee<0>(validPacket), Return(true)))
-        .WillOnce(DoAll(SetArgReferee<0>(invalidPacket), Return(true)))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillOnce(DoAll(SetArgReferee<0>(valid_packet), Return(true)))
+        .WillOnce(DoAll(SetArgReferee<0>(invalid_packet), Return(true)))
         .WillRepeatedly(Return(false));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
         .Times(AtLeast(0));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
         .Times(AtLeast(0));
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(AtLeast(0));
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -273,33 +273,33 @@ TEST_F(DomainValidatorTest, DomainInBlacklistIsFilteredOut)
 
     const DNSPacketInfo packet_info{{"blacklisted.com"}, 200};
 
-    const std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}};
-    const std::map<std::string, bool> whitelistResult{{"blacklisted.com", false}};
+    const std::map<std::string, bool> blacklist_result{{"blacklisted.com", true}};
+    const std::map<std::string, bool> whitelist_result{{"blacklisted.com", false}};
 
     int call_count = 0;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillRepeatedly(Invoke([&](DNSPacketInfo &packetInfoArg) -> bool
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillRepeatedly(Invoke([&](DNSPacketInfo &packet_info_arg) -> bool
                                {
             if (call_count <= num_packet_info_instances) {
-                packetInfoArg = packet_info; 
+                packet_info_arg = packet_info; 
                 ++call_count;
                 return true; 
             } else {
                 return false;
             } }));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
-        .WillOnce(Return(blacklistResult));
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
+        .WillOnce(Return(blacklist_result));
 
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
-        .WillOnce(Return(whitelistResult));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
+        .WillOnce(Return(whitelist_result));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(0);
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(700));
 
@@ -316,32 +316,32 @@ TEST_F(DomainValidatorTest, DomainNotInBlacklistOrWhitelistIsPublished)
     constexpr int num_packet_info_instances = 100000;
 
     const DNSPacketInfo packet_info{{"newdomain.com"}, 200};
-    const std::map<std::string, bool> blacklistResult{{"newdomain.com", false}};
-    const std::map<std::string, bool> whitelistResult{{"newdomain.com", false}};
+    const std::map<std::string, bool> blacklist_result{{"newdomain.com", false}};
+    const std::map<std::string, bool> whitelist_result{{"newdomain.com", false}};
 
     int call_count = 0;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillRepeatedly(Invoke([&](DNSPacketInfo &packetInfoArg) -> bool
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillRepeatedly(Invoke([&](DNSPacketInfo &packet_info_arg) -> bool
                                {
             if (call_count <= num_packet_info_instances) {
-                packetInfoArg = packet_info; 
+                packet_info_arg = packet_info; 
                 ++call_count;
                 return true; 
             } else {
                 return false; 
             } }));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
-        .WillOnce(Return(blacklistResult));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
-        .WillOnce(Return(whitelistResult));
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
+        .WillOnce(Return(blacklist_result));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
+        .WillOnce(Return(whitelist_result));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(1);
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -357,18 +357,18 @@ TEST_F(DomainValidatorTest, HandlesInvalidDNSPacket)
 {
     constexpr int num_packet_info_instances = 100000;
 
-    DNSPacketInfo invalidPacket;
+    DNSPacketInfo invalid_packet;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
         .Times(AtLeast(num_packet_info_instances))
-        .WillRepeatedly(DoAll(SetArgReferee<0>(invalidPacket), Return(true)));
+        .WillRepeatedly(DoAll(SetArgReferee<0>(invalid_packet), Return(true)));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_)).Times(0);
-    EXPECT_CALL(mock_database, CheckInWhitelist(_)).Times(0);
-    EXPECT_CALL(mock_publisher_queue, emplace(_)).Times(0);
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_)).Times(0);
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_)).Times(0);
+    EXPECT_CALL(mock_publisher_queue_, emplace(_)).Times(0);
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -386,31 +386,31 @@ TEST_F(DomainValidatorTest, HandlesEmptyBlacklistAndWhitelist)
 
     const DNSPacketInfo packet_info{{"example.com"}, 200};
 
-    const std::map<std::string, bool> emptyResult{};
+    const std::map<std::string, bool> empty_result{};
 
     int call_count = 0;
 
-    EXPECT_CALL(mock_dns_queue, try_pop(_))
-        .WillRepeatedly(Invoke([&](DNSPacketInfo &packetInfoArg) -> bool
+    EXPECT_CALL(mock_dns_queue_, try_pop(_))
+        .WillRepeatedly(Invoke([&](DNSPacketInfo &packet_info_arg) -> bool
                                {
             if (call_count <= num_packet_info_instances) {
-                packetInfoArg = packet_info; 
+                packet_info_arg = packet_info; 
                 ++call_count;
                 return true; 
             } else {
                 return false; 
             } }));
 
-    EXPECT_CALL(mock_database, CheckInBlacklist(_))
-        .WillOnce(Return(emptyResult));
-    EXPECT_CALL(mock_database, CheckInWhitelist(_))
-        .WillOnce(Return(emptyResult));
+    EXPECT_CALL(mock_database_, CheckInBlacklist(_))
+        .WillOnce(Return(empty_result));
+    EXPECT_CALL(mock_database_, CheckInWhitelist(_))
+        .WillOnce(Return(empty_result));
 
-    EXPECT_CALL(mock_publisher_queue, emplace(_))
+    EXPECT_CALL(mock_publisher_queue_, emplace(_))
         .Times(1);
 
     std::thread worker([&]()
-                       { validator->ProcessDomains(); });
+                       { validator_->ProcessDomains(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 

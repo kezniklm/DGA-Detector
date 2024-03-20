@@ -39,7 +39,7 @@ protected:
         std::remove("appsettings.json");
     }
 
-    void createTestAppSettings(const json &settings)
+    void CreateTestAppSettings(const json &settings)
     {
         std::ofstream ofs("appsettings.json");
         if (ofs.is_open())
@@ -49,10 +49,10 @@ protected:
         }
     }
 
-    std::vector<char *> prepareArguments(const std::vector<std::string> &argsVec)
+    std::vector<char *> PrepareArguments(const std::vector<std::string> &args_vec)
     {
         std::vector<char *> argv;
-        for (auto &arg : argsVec)
+        for (auto &arg : args_vec)
         {
             argv.push_back(const_cast<char *>(arg.data()));
         }
@@ -72,10 +72,10 @@ TEST_F(ArgumentsTest, ValidArgumentsFromJsonShouldNotThrow)
         {"Database", "database-string"},
         {"RabbitMQ", "rabbitmq-string"},
         {"Queue", "queue"}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {"./Detector", "--interface", "test-interface", "--size", "1024"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--interface", "test-interface", "--size", "1024"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -88,16 +88,16 @@ TEST_F(ArgumentsTest, ValidArgumentsFromJsonShouldNotThrow)
 TEST_F(ArgumentsTest, ValidArgumentsFromCommandLineShouldNotThrow)
 {
 	const json settings = {};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {
+	const std::vector<std::string> args_vec = {
         "./Detector",
         "--interface", "test-interface",
         "--size", "1024",
         "--database", "test-database",
         "--rabbitmq", "test-rabbitmq",
         "--queue", "test-queue"};
-    auto argv = prepareArguments(argsVec);
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -115,10 +115,10 @@ TEST_F(ArgumentsTest, CommandLineOverridesAppsettingsShouldNotThrow)
         {"database", "default-database"},
         {"rabbitmq", "default-rabbitmq"},
         {"queue", "default-queue"}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {"./Detector", "--interface", "override-interface", "--size", "4096"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--interface", "override-interface", "--size", "4096"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -133,10 +133,10 @@ TEST_F(ArgumentsTest, PartialCommandLineAndAppsettingsShouldNotThrow)
 	const json settings = {
         {"interface", "partial-interface"},
         {"size", 2048}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {"./Detector", "--database", "cmd-database", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--database", "cmd-database", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -148,8 +148,8 @@ TEST_F(ArgumentsTest, PartialCommandLineAndAppsettingsShouldNotThrow)
  */
 TEST_F(ArgumentsTest, MissingArgumentsShouldThrow)
 {
-	const std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -161,8 +161,8 @@ TEST_F(ArgumentsTest, MissingArgumentsShouldThrow)
  */
 TEST_F(ArgumentsTest, DuplicateCommandLineArgumentsShouldNotThrow)
 {
-	const std::vector<std::string> argsVec = {"./Detector", "--interface", "first-interface", "--interface", "second-interface", "--database", "cmd-database", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--interface", "first-interface", "--interface", "second-interface", "--database", "cmd-database", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -174,8 +174,8 @@ TEST_F(ArgumentsTest, DuplicateCommandLineArgumentsShouldNotThrow)
  */
 TEST_F(ArgumentsTest, QuotedStringArgumentsShouldNotThrow)
 {
-	const std::vector<std::string> argsVec = {"./Detector", "--interface", "interface", "--database", "\"Database=Test DB; Server=localhost;\"", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--interface", "interface", "--database", "\"Database=Test DB; Server=localhost;\"", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -193,10 +193,10 @@ TEST_F(ArgumentsTest, LargeSizeValueInsertedShouldNotThrow)
         {"database", "large-value-database"},
         {"rabbitmq", "large-value-rabbitmq"},
         {"queue", "large-value-queue"}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -208,14 +208,14 @@ TEST_F(ArgumentsTest, LargeSizeValueInsertedShouldNotThrow)
  */
 TEST_F(ArgumentsTest, InvalidArgumentValueTypeShouldThrow)
 {
-    json settings = {
+	const json settings = {
         {"interface", "invalid-type-interface"},
         {"size", "should-be-a-number"},
         {"database", "invalid-type-database"}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-    std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+    std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
     int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -227,8 +227,8 @@ TEST_F(ArgumentsTest, InvalidArgumentValueTypeShouldThrow)
  */
 TEST_F(ArgumentsTest, SpecialCharactersInArgumentsShouldNotThrow)
 {
-	const std::vector<std::string> argsVec = {"./Detector", "--interface", "interface", "--database", "\"Database=Test;Password=p@$$w0rd;\"", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--interface", "interface", "--database", "\"Database=Test;Password=p@$$w0rd;\"", "--rabbitmq", "cmd-rabbitmq", "--queue", "cmd-queue", "-s", "2000"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -240,8 +240,8 @@ TEST_F(ArgumentsTest, SpecialCharactersInArgumentsShouldNotThrow)
  */
 TEST_F(ArgumentsTest, HelpOptionHandlingShouldThrow)
 {
-	const std::vector<std::string> argsVec = {"./Detector", "--help"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector", "--help"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -260,8 +260,8 @@ TEST_F(ArgumentsTest, JsonParsingErrorShouldThrow)
         ofs.close();
     }
 
-    std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+    std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
     int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -275,14 +275,14 @@ TEST_F(ArgumentsTest, NonexistentAppsettingsFileShouldNotThrow)
 {
     std::remove("appsettings.json");
 
-    const std::vector<std::string> argsVec = {
+    const std::vector<std::string> args_vec = {
         "./Detector",
         "--interface", "no-settings-interface",
         "--size", "2048",
         "--database", "no-settings-database",
         "--rabbitmq", "no-settings-rabbitmq",
         "--queue", "no-settings-queue"};
-    auto argv = prepareArguments(argsVec);
+    auto argv = PrepareArguments(args_vec);
     const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -300,10 +300,10 @@ TEST_F(ArgumentsTest, AppSettingsKeyCaseSensitivityShouldNotThrow)
         {"DataBase", "case-database"},
         {"RabbitMQ", "case-rabbitmq"},
         {"Queue", "case-queue"}};
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
-	const std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+	const std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
 	const int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
@@ -321,11 +321,11 @@ TEST_F(ArgumentsTest, MissingRequiredArgumentsShouldThrow)
         {"rabbitmq", "some-rabbitmq"},
         {"queue", "some-queue"}};
 
-    createTestAppSettings(settings);
+    CreateTestAppSettings(settings);
 
     // No command line arguments for "interface" and "size" which are required
-    std::vector<std::string> argsVec = {"./Detector"};
-    auto argv = prepareArguments(argsVec);
+    std::vector<std::string> args_vec = {"./Detector"};
+    auto argv = PrepareArguments(args_vec);
     int argc = static_cast<int>(argv.size()) - 1;
 
     Arguments args;
