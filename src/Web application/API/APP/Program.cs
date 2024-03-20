@@ -1,7 +1,8 @@
-using APP.Config;
+using System.Runtime.InteropServices;
 using APP.Constraints;
 using AutoMapper;
 using BL.Installers;
+using Common.Config;
 using Common.Extensions;
 using Common.Models;
 using DAL;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -53,18 +55,18 @@ void ConfigureLogging(IServiceCollection services)
         .Enrich.FromLogContext()
         .WriteTo.Console();
 
-    if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         loggerConfiguration.WriteTo.EventLog(
-            source: "DGA-Detector",
+            "DGA-Detector",
             manageEventSource: true,
-            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
+            restrictedToMinimumLevel: LogEventLevel.Error);
     }
     else
     {
         loggerConfiguration.WriteTo.LocalSyslog(
-            appName: "DGA-Detector",
-            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
+            "DGA-Detector",
+            restrictedToMinimumLevel: LogEventLevel.Error);
     }
 
     Logger logger = loggerConfiguration.CreateLogger();
@@ -111,21 +113,17 @@ void ConfigureDependencies(IServiceCollection serviceCollection, IConfiguration 
     serviceCollection.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<UserDbContext>()
         .AddDefaultTokenProviders();
 
-    serviceCollection.AddInstaller<DalInstaller>(dbConfig.ConnectionString, dbConfig.DatabaseName);
+    serviceCollection.AddInstaller<DalInstaller>(dbConfig);
 
     serviceCollection.AddInstaller<BlInstaller>();
 }
 
 DbConfig GetDatabaseConfig(IConfiguration configuration)
 {
-    IConfigurationSection dbConfigSection = configuration.GetSection("DbConfig");
+    DbConfig dbConfig = configuration.GetSection("DbConfig").Get<DbConfig>() ??
+                        throw new ArgumentException("The DbConfig section is missing or improperly configured.");
 
-    string connectionString = dbConfigSection["ConnectionString"] ??
-                              throw new ArgumentException("The connection string is missing");
-    string databaseName =
-        dbConfigSection["DatabaseName"] ?? throw new ArgumentException("The database name is missing");
-
-    return new DbConfig { ConnectionString = connectionString, DatabaseName = databaseName };
+    return dbConfig;
 }
 
 void ConfigureCookies(IServiceCollection serviceCollection)

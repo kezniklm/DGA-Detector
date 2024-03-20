@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Common.Config;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Installers;
 
 public interface IInstaller
 {
     void Install(IServiceCollection serviceCollection);
-    void Install(IServiceCollection serviceCollection, string connectionString, string databaseName);
+    void Install(IServiceCollection serviceCollection, DbConfig config);
 }

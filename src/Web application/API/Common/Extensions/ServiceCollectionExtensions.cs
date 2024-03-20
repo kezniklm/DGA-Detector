@@ -1,4 +1,5 @@
-﻿using Common.Installers;
+﻿using Common.Config;
+using Common.Installers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Extensions;
@@ -13,11 +14,10 @@ public static class ServiceCollectionExtensions
     }
 
 
-    public static void AddInstaller<TInstaller>(this IServiceCollection serviceCollection, string connectionString,
-        string databaseName)
+    public static void AddInstaller<TInstaller>(this IServiceCollection serviceCollection, DbConfig dbConfig)
         where TInstaller : IInstaller, new()
     {
         TInstaller installer = new();
-        installer.Install(serviceCollection, connectionString, databaseName);
+        installer.Install(serviceCollection, dbConfig);
     }
 }
