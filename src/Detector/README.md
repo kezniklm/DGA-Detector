@@ -26,22 +26,14 @@ $ git clone https://github.com/kezniklm/DGA-Detector
 $ cd DGA-Detector/src/Detector
 ```
 
-3. Install the required C++ libraries using vcpkg:
-
+3. Install the required C++ libraries using vcpkg and compile the project:
 ```
-$ ./vcpkg install --overlay-ports=vcpkg_ports
-```
-
-4. Compile the project:
-```
-$ mkdir build && cd build
-$ cmake ..
-$ make
+$ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path to vcpkg.cmake>
 ```
 
-5. Configure MongoDB, RabbitMQ and other needed details in the configuration file appsettings.json or by using arguments of Detector binary.
+4. Configure MongoDB, RabbitMQ and other needed details in the configuration file appsettings.json or by using arguments of Detector binary.
 
-6. Run the Detector block:
+5. Run the Detector block:
 ```
 $ sudo ./Detector <arguments>
 ```
