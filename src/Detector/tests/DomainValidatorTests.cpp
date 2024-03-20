@@ -135,8 +135,8 @@ TEST_F(DomainValidatorTest, FiltersDomainsBasedOnBlacklistAndWhitelist)
 {
     DNSPacketInfo packet_info_with_domains{{"valid.com", "blacklisted.com"}, 200};
 
-    std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}, {"valid.com", false}};
-    std::map<std::string, bool> whitelistResult{{"whitelisted.com", true}, {"valid.com", false}};
+    const std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}, {"valid.com", false}};
+    const std::map<std::string, bool> whitelistResult{{"whitelisted.com", true}, {"valid.com", false}};
 
     EXPECT_CALL(mock_dns_queue, try_pop(_))
         .WillRepeatedly(DoAll(SetArgReferee<0>(packet_info_with_domains), Return(true)));
@@ -166,10 +166,10 @@ TEST_F(DomainValidatorTest, DomainInBothBlacklistAndWhitelistIsFilteredOut)
 {
     constexpr int num_packet_info_instances = 100000;
 
-    DNSPacketInfo packet_info{{"conflicted.com"}, 200};
+    const DNSPacketInfo packet_info{{"conflicted.com"}, 200};
 
-    std::map<std::string, bool> blacklistResult{{"conflicted.com", true}};
-    std::map<std::string, bool> whitelistResult{{"conflicted.com", false}};
+    const std::map<std::string, bool> blacklistResult{{"conflicted.com", true}};
+    const std::map<std::string, bool> whitelistResult{{"conflicted.com", false}};
 
     int call_count = 0;
 
@@ -271,10 +271,10 @@ TEST_F(DomainValidatorTest, DomainInBlacklistIsFilteredOut)
 {
     constexpr int num_packet_info_instances = 100000;
 
-    DNSPacketInfo packet_info{{"blacklisted.com"}, 200};
+    const DNSPacketInfo packet_info{{"blacklisted.com"}, 200};
 
-    std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}};
-    std::map<std::string, bool> whitelistResult{{"blacklisted.com", false}};
+    const std::map<std::string, bool> blacklistResult{{"blacklisted.com", true}};
+    const std::map<std::string, bool> whitelistResult{{"blacklisted.com", false}};
 
     int call_count = 0;
 
@@ -315,9 +315,9 @@ TEST_F(DomainValidatorTest, DomainNotInBlacklistOrWhitelistIsPublished)
 {
     constexpr int num_packet_info_instances = 100000;
 
-    DNSPacketInfo packet_info{{"newdomain.com"}, 200};
-    std::map<std::string, bool> blacklistResult{{"newdomain.com", false}};
-    std::map<std::string, bool> whitelistResult{{"newdomain.com", false}};
+    const DNSPacketInfo packet_info{{"newdomain.com"}, 200};
+    const std::map<std::string, bool> blacklistResult{{"newdomain.com", false}};
+    const std::map<std::string, bool> whitelistResult{{"newdomain.com", false}};
 
     int call_count = 0;
 
@@ -384,9 +384,9 @@ TEST_F(DomainValidatorTest, HandlesEmptyBlacklistAndWhitelist)
 {
     constexpr int num_packet_info_instances = 100000;
 
-    DNSPacketInfo packet_info{{"example.com"}, 200};
+    const DNSPacketInfo packet_info{{"example.com"}, 200};
 
-    std::map<std::string, bool> emptyResult{};
+    const std::map<std::string, bool> emptyResult{};
 
     int call_count = 0;
 

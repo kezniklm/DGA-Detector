@@ -63,7 +63,7 @@ struct DetectorPacket
      *
      * @param other The DetectorPacket object to copy from.
      */
-    DetectorPacket(const DetectorPacket &other) : header(other.header), data_size(other.data_size), dynamic_data(nullptr)
+    DetectorPacket(const DetectorPacket &other) : header(other.header), data_size(other.data_size)
     {
         if (data_size <= MAX_STATIC_SIZE)
         {

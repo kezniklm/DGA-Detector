@@ -45,8 +45,8 @@ bool JsonEqual(const std::string &actualJsonStr, const std::string &expectedJson
 {
     try
     {
-        auto actualJson = nlohmann::json::parse(actualJsonStr);
-        auto expectedJson = nlohmann::json::parse(expectedJsonStr);
+	    const auto actualJson = nlohmann::json::parse(actualJsonStr);
+	    const auto expectedJson = nlohmann::json::parse(expectedJsonStr);
         return actualJson == expectedJson;
     }
     catch (const std::exception &e)
@@ -171,8 +171,8 @@ TEST_F(PublisherTest, EnsuresJSONFormatIntegrity)
 
     EXPECT_CALL(mock_message_publisher, PublishMessage(::testing::Truly([expectedJson](const std::string &actualJson)
                                                                         {
-                                                                            auto expected = nlohmann::json::parse(expectedJson);
-                                                                            auto actual = nlohmann::json::parse(actualJson);
+                                                                            const auto expected = nlohmann::json::parse(expectedJson);
+                                                                            const auto actual = nlohmann::json::parse(actualJson);
                                                                             EXPECT_EQ(expected, actual);
                                                                             return true; })))
         .Times(1);

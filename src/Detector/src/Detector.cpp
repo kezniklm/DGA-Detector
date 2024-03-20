@@ -106,9 +106,9 @@ void Detector::Run()
 {
     cout << "Monitoring network traffic. Press Ctrl+C to stop.\n";
 
-    unsigned int total_threads = GetNumberOfThreads();
+    const unsigned int total_threads = GetNumberOfThreads();
 
-    unsigned int filter_threads = total_threads > 3 ? total_threads - 3 : 1;
+    const unsigned int filter_threads = total_threads > 3 ? total_threads - 3 : 1;
 
     thread capture_thread(&NetworkAnalyser::StartCapture, analyser_.get());
 
@@ -177,23 +177,23 @@ void Detector::InitializeComponents(const int argc, const char **argv)
     {
         if (e.GetCode() != ARGUMENT_HELP)
         {
-            global_logger_ptr->error(std::string("Error: ") + e.what());
+            global_logger_ptr->Error(std::string("Error: ") + e.what());
         }
         throw;
     }
     catch (const DetectorException &e)
     {
-        global_logger_ptr->critical(std::string("Error: ") + e.what());
+        global_logger_ptr->Critical(std::string("Error: ") + e.what());
         throw;
     }
     catch (const bad_alloc &e)
     {
-        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string(" The entered size is too huge\n"));
+        global_logger_ptr->Critical(std::string("Error: ") + e.what() + std::string(" The entered size is too huge\n"));
         throw;
     }
     catch (const exception &e)
     {
-        global_logger_ptr->critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
+        global_logger_ptr->Critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
         throw;
     }
 }

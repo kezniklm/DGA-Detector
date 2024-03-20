@@ -263,7 +263,7 @@ private:
     /**
      * Represents the size of memory in bytes as an unsigned long long integer.
      */
-    unsigned long long memory_size_;
+    unsigned long long memory_size_ = 0;
 
     /**
      * A string variable to store the connection string for the database.
@@ -283,25 +283,25 @@ private:
     /**
      * Size of the packet buffer.
      */
-    int packet_buffer_size_;
+    int packet_buffer_size_ = 0;
 
     /**
      * The size of the packet queue.
      */
-    size_t packet_queue_size_;
+    size_t packet_queue_size_ = 0;
 
     /**
      * The size of the DNS information queue.
      */
-    size_t dns_info_queue_size_;
+    size_t dns_info_queue_size_ = 0;
 
     /**
      * The size of the queue used by the publisher.
      */
-    size_t publisher_queue_size_;
+    size_t publisher_queue_size_ = 0;
 
     /**
      * Number of threads used by the Detector
      */
-    int number_of_threads_;
+    int number_of_threads_ = 0;
 };

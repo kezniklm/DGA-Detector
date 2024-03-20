@@ -70,7 +70,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            global_logger_ptr->critical(std::string("Error: " + std::string(e.what()) + "\n"));
+            global_logger_ptr->Critical(std::string("Error: " + std::string(e.what()) + "\n"));
             cancellation_token.store(true);
             return std::map<std::string, bool>{};
         }
@@ -89,7 +89,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            global_logger_ptr->critical(std::string("Error: " + std::string(e.what()) + "\n"));
+            global_logger_ptr->Critical(std::string("Error: " + std::string(e.what()) + "\n"));
             cancellation_token.store(true);
             return std::map<std::string, bool>{};
         }
@@ -201,7 +201,7 @@ private:
 
     /**
      * @brief Handles a hit in the blacklist by inserting the element and timestamp into the "Results" collection.
-     * @param element The element that hit the blacklist.
+     * @param domainName The domain name that hit the blacklist.
      */
     void HandleBlacklistHit(const std::string &domainName) override
     {

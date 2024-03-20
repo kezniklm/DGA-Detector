@@ -40,7 +40,7 @@ public:
      *
      * @param name The name of the logger, used for identifying different loggers or log sources.
      */
-    Logger(const std::string &name) : _logger(Poco::Logger::get(name))
+    Logger(const std::string &name) : logger_(Poco::Logger::get(name))
     {
         Initialize(name);
     }
@@ -50,10 +50,10 @@ public:
      *
      * @param message The message to log.
      */
-    void log(const std::string &message)
+    void Log(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.information(message);
+        logger_.information(message);
     }
 
     /**
@@ -61,10 +61,10 @@ public:
      *
      * @param message The message to log.
      */
-    void debug(const std::string &message)
+    void Debug(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.debug(message);
+        logger_.debug(message);
     }
 
     /**
@@ -72,9 +72,9 @@ public:
      *
      * @param message The message to log.
      */
-    void information(const std::string &message)
+    void Information(const std::string &message) const
     {
-        log(message);
+        Log(message);
     }
 
     /**
@@ -82,10 +82,10 @@ public:
      *
      * @param message The message to log.
      */
-    void notice(const std::string &message)
+    void Notice(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.notice(message);
+        logger_.notice(message);
     }
 
     /**
@@ -93,10 +93,10 @@ public:
      *
      * @param message The message to log.
      */
-    void warning(const std::string &message)
+    void Warning(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.warning(message);
+        logger_.warning(message);
     }
 
     /**
@@ -104,10 +104,10 @@ public:
      *
      * @param message The message to log.
      */
-    void error(const std::string &message)
+    void Error(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.error(message);
+        logger_.error(message);
     }
 
     /**
@@ -115,10 +115,10 @@ public:
      *
      * @param message The message to log.
      */
-    void critical(const std::string &message)
+    void Critical(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.critical(message);
+        logger_.critical(message);
     }
 
     /**
@@ -126,10 +126,10 @@ public:
      *
      * @param message The message to log.
      */
-    void fatal(const std::string &message)
+    void Fatal(const std::string &message) const
     {
         std::cerr << message << '\n';
-        _logger.fatal(message);
+        logger_.fatal(message);
     }
 
     /**
@@ -137,21 +137,21 @@ public:
      *
      * @param priority The priority level to set.
      */
-    void setLogLevel(Poco::Message::Priority priority)
+    void SetLogLevel(const Poco::Message::Priority priority) const
     {
-        _logger.setLevel(priority);
+        logger_.setLevel(priority);
     }
 
 private:
     /** Reference to the internal Poco::Logger instance. */
-    Poco::Logger &_logger;
+    Poco::Logger &logger_;
 
     /**
      * @brief Initializes the logger with an appropriate channel based on the operating system.
      *
      * @param name The name of the logger.
      */
-    void Initialize(const std::string &name)
+    void Initialize(const std::string &name) const
     {
         Poco::AutoPtr<Poco::Channel> channel;
 #ifdef WIN32
@@ -159,7 +159,7 @@ private:
 #else
         channel = new Poco::SyslogChannel(name);
 #endif
-        _logger.setChannel(channel);
-        _logger.setLevel(Poco::Message::PRIO_TRACE);
+        logger_.setChannel(channel);
+        logger_.setLevel(Poco::Message::PRIO_TRACE);
     }
 };

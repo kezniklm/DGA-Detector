@@ -65,7 +65,7 @@ void DomainValidator::ProcessDomains()
  * @param domain_return_code_pairs The map to store domain-return code pairs.
  * @param cycle_count The count of cycles processed.
  */
-void DomainValidator::ProcessPacketInfo(const DNSPacketInfo &packet_info,
+inline void DomainValidator::ProcessPacketInfo(const DNSPacketInfo &packet_info,
                                         unordered_map<string, int> &domain_return_code_pairs,
                                         int &cycle_count)
 {
@@ -87,7 +87,7 @@ void DomainValidator::ProcessPacketInfo(const DNSPacketInfo &packet_info,
  * @param max_cycle_count The maximum allowed cycle count.
  * @return True if a batch should be processed, false otherwise.
  */
-bool DomainValidator::ShouldProcessBatch(const size_t current_batch_size,
+inline bool DomainValidator::ShouldProcessBatch(const size_t current_batch_size,
                                          const unsigned cycle_count,
                                          const unsigned max_batch_size,
                                          const unsigned max_cycle_count) const
@@ -102,7 +102,7 @@ bool DomainValidator::ShouldProcessBatch(const size_t current_batch_size,
  *
  * @param domain_return_code_pairs The map containing domain-return code pairs to process.
  */
-void DomainValidator::ProcessBatch(std::unordered_map<std::string, int> &domain_return_code_pairs)
+inline void DomainValidator::ProcessBatch(std::unordered_map<std::string, int> &domain_return_code_pairs)
 {
     std::unordered_set<std::string> domain_names_to_query;
     for (const auto &kPair : domain_return_code_pairs)
@@ -133,7 +133,7 @@ void DomainValidator::ProcessBatch(std::unordered_map<std::string, int> &domain_
  * @param domain_return_code_pairs The map containing domain-return code pairs.
  * @param result_list The map containing the results of the blacklist or whitelist check.
  */
-void DomainValidator::RemoveListedDomains(std::unordered_map<std::string, int> &domain_return_code_pairs,
+inline void DomainValidator::RemoveListedDomains(std::unordered_map<std::string, int> &domain_return_code_pairs,
                                           const std::map<std::string, bool> &result_list)
 {
     for (const auto &kResult : result_list)

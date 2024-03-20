@@ -34,7 +34,7 @@ using namespace std;
  * @param buffer_size The buffer size for packet capture.
  * @param packet_queue Pointer to the packet queue for enqueuing captured packets.
  */
-NetworkAnalyser::NetworkAnalyser(const string &device, int buffer_size,
+NetworkAnalyser::NetworkAnalyser(const string &device, const int buffer_size,
                                  IQueue<DetectorPacket> *packet_queue)
     : handle_(nullptr), queue_(packet_queue)
 {

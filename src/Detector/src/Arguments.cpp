@@ -47,7 +47,7 @@ void Arguments::Parse(const int argc, const char *argv[])
 
         ValidateAndSetOptions(result, appsettings, options);
     }
-    catch (const ArgumentException &e)
+    catch (ArgumentException)
     {
         cout << options.help() << '\n';
         throw;
@@ -194,17 +194,17 @@ void Arguments::SetOption(const string &key,
  */
 void Arguments::CalculateSizes(const unsigned long long value)
 {
-    unsigned long long packet_buffer_size_alloc = std::min(value * 65 / 100, static_cast<unsigned long long>(std::numeric_limits<int>::max()));
+	const unsigned long long packet_buffer_size_alloc = std::min(value * 65 / 100, static_cast<unsigned long long>(std::numeric_limits<int>::max()));
 
-    const unsigned long long publisher_queue_memory = 1000 * sizeof(ValidatedDomains);
+	constexpr unsigned long long publisher_queue_memory = 1000 * sizeof(ValidatedDomains);
 
-    unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
+	const unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
 
     constexpr double packet_queue_percentage = 35.0;
-    constexpr double dns_info_queue_percentage = 65.0;
 
-    unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(remaining_value * (packet_queue_percentage / 100.0));
-    unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
+	const unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(packet_queue_percentage / 100.0 *
+		remaining_value);
+	const unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
 
     packet_buffer_size_ = static_cast<int>(packet_buffer_size_alloc);
     packet_queue_size_ = static_cast<int>(packet_queue_size_alloc / sizeof(DetectorPacket));
