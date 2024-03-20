@@ -1,0 +1,53 @@
+name: Detector - CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          path: src/Detector
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install build essentials and CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake bison flex libbison-dev
+
+      - name: Install vcpkg and dependencies
+        shell: bash
+        working-directory: src/Detector
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          ./vcpkg/vcpkg integrate install
+
+      - name: Configure CMake Project
+        working-directory: src/Detector
+        run: |
+          cmake -B build -S ./src/Detector -DCMAKE_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake
+        shell: bash
+
+      - name: Build
+        shell: bash
+        run: |
+          cmake --build build --config Release
+        working-directory: src/Detector
+
+      - name: Run Tests (optional)
+        shell: bash
+        run: |
+          ./DetectorTests
+        working-directory: src/Detector/build/tests
