@@ -31,7 +31,7 @@ $ cd DGA-Detector/src/Detector
 $ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path to vcpkg.cmake>
 ```
 
-4. Configure MongoDB, RabbitMQ and other needed details in the configuration file appsettings.json or by using arguments of Detector binary.
+4. Edit the appsettings.json file or use arguments with the Detector binary to configure MongoDB, RabbitMQ, and other necessary details. Ensure your MongoDB instance includes the following collections: Blacklist, Whitelist, and Results for proper operation.
 
 5. Run the Detector block:
 ```
