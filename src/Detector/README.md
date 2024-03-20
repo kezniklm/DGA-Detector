@@ -55,6 +55,12 @@ $ make test
 
 To deploy the Detector block on a live system, ensure all dependencies are met, and the system has access to the network interface for capturing DNS packets. Use the provided systemd service file or similar for daemonizing the application.
 
+## Logging
+
+The Detector block utilizes a custom logging mechanism encapsulated in the `Logger` class. This class provides a simple interface for logging messages at various levels of severity and automatically selects the appropriate logging channel based on the operating system. The `Logger` class supports logging to both EventLogChannel on Windows and SyslogChannel on other platforms.
+
+For more details on the `Logger` class, refer to the [Logger.hpp](include/Logger.hpp) file.
+
 ## Built With
 
 - [Boost](https://www.boost.org/) - Used for network and system abstraction
