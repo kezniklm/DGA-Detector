@@ -17,6 +17,10 @@ find_package(rabbitmq-c CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(Poco CONFIG REQUIRED COMPONENTS Foundation Net Util)
 
+add_definitions(-DNOMINMAX)
+
+enable_testing()
+
 # Include the source and tests directories
 add_subdirectory(src)
 add_subdirectory(tests)

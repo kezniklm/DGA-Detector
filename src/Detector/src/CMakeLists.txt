@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(YourProjectName)
+project(Detector)
 
 # Collect all source files from the src directory, excluding main.cpp for the library
 file(GLOB_RECURSE LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
@@ -60,4 +60,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 endif()
 
-target_link_libraries(Detector PRIVATE DetectorLib pthread)
+if(UNIX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(Detector PRIVATE DetectorLib Threads::Threads)
+elseif(WIN32)
+    target_link_libraries(Detector PRIVATE DetectorLib)
+endif()
