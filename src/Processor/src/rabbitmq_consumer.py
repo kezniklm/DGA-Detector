@@ -1,5 +1,5 @@
 """
- * @file RabbitMQConsumer.py
+ * @file rabbitmq_consumer.py
  * @brief Handles consuming messages from a RabbitMQ queue and putting them into a message queue.
  *
  * This file contains the implementation of the RabbitMQConsumer class, which is responsible for consuming messages from a RabbitMQ queue and storing them into a message queue. It utilizes the pika library for interacting with RabbitMQ.
