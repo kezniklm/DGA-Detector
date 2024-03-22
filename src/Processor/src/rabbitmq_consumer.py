@@ -2,32 +2,35 @@
  * @file rabbitmq_consumer.py
  * @brief Handles consuming messages from a RabbitMQ queue and putting them into a message queue.
  *
- * This file contains the implementation of the RabbitMQConsumer class, which is responsible for consuming messages from a RabbitMQ queue and storing them into a message queue. It utilizes the pika library for interacting with RabbitMQ.
+ * This file contains the implementation of the RabbitMQConsumer class, which is responsible for consuming messages from a RabbitMQ queue and storing them into a message queue. It utilizes the pika library for interacting with RabbitMQ and integrates a custom logging solution for comprehensive message logging.
  *
  * The main functionalities of this file include:
  * - Connecting to RabbitMQ and consuming messages from a specified queue.
  * - Handling retries in case of connection failures or unexpected errors.
  * - Putting consumed messages into a message queue for further processing.
  * - Providing a mechanism for graceful shutdown of the consumer thread.
+ * - Logging activities and errors for monitoring and debugging purposes.
  *
  * @version 1.0
  * @date 2024-03-22
  * @author Matej Keznikl (matej.keznikl@gmail.com)
  * @copyright Copyright (c) 2024
  *
- """
+"""
 
 import threading
 import time
 
 import pika
 
+from .logger import Logger
+
 
 class RabbitMQConsumer(threading.Thread):
     """
     A class representing a RabbitMQ consumer thread.
 
-    This class handles consuming messages from a RabbitMQ queue and putting them into a message queue.
+    This class handles consuming messages from a RabbitMQ queue and putting them into a message queue. It utilizes a custom logger for logging activities and errors.
 
     Attributes:
         connection_string (str): The connection string for connecting to RabbitMQ.
@@ -66,6 +69,7 @@ class RabbitMQConsumer(threading.Thread):
         self.retry_delay = retry_delay
         self.max_retries = max_retries
         self.daemon = True
+        self.logger = Logger().get_logger()
 
     def run(self):
         """Start the RabbitMQ consumer thread."""
@@ -78,14 +82,14 @@ class RabbitMQConsumer(threading.Thread):
                 pika.exceptions.AMQPConnectionError,
                 pika.exceptions.AMQPChannelError,
             ) as e:
-                print(f"Connection attempt failed: {e}")
+                self.logger.error(f"Connection attempt failed: {e}")
                 time.sleep(self.retry_delay * (2**attempt))
                 attempt += 1
             except Exception as e:
-                print(f"Unexpected error: {e}")
+                self.logger.error(f"Unexpected error: {e}")
                 break
         if attempt > self.max_retries:
-            print("Maximum retry attempts reached. Exiting.")
+            self.logger.error("Maximum retry attempts reached. Exiting.")
             self.shutdown_event.set()
 
     def connect_and_consume(self):
@@ -99,6 +103,7 @@ class RabbitMQConsumer(threading.Thread):
             """Callback function for handling consumed messages."""
             if not self.shutdown_event.is_set():
                 self.message_queue.put(body)
+                self.logger.debug(f"Message received and put into queue: {body}")
             else:
                 ch.stop_consuming()
 
@@ -111,6 +116,11 @@ class RabbitMQConsumer(threading.Thread):
                 channel.start_consuming()
         except pika.exceptions.ConnectionClosedByBroker:
             if not self.shutdown_event.is_set():
+                self.logger.warning(
+                    "Connection closed by broker, attempting to reconnect..."
+                )
                 self.connect_and_consume()
         finally:
-            connection.close()
+            if connection.is_open:
+                connection.close()
+                self.logger.info("RabbitMQ connection closed.")

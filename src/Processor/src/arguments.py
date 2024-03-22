@@ -28,19 +28,24 @@ class Arguments:
     """
     Handles parsing and storing of command line arguments for the application.
 
-    This class parses command-line arguments using the argparse library. It also loads configuration settings from a JSON file named 'appsettings.json' if available.
+    This class parses command-line arguments using the argparse library and utilizes a logger for logging. It also loads configuration settings from a JSON file named 'appsettings.json' if available.
 
     Attributes:
         parser (argparse.ArgumentParser): An instance of the ArgumentParser class for defining command-line arguments.
         config (dict): A dictionary containing configuration settings loaded from 'appsettings.json'.
+        logger: The logger instance used for logging errors and other messages.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, logger) -> None:
         """
         Initialize the Arguments class.
 
-        Initializes the ArgumentParser and loads configuration settings.
+        Initializes the ArgumentParser, loads configuration settings, and sets up the logger for logging.
+
+        Parameters:
+            logger: The logger instance used for logging errors and other messages.
         """
+        self.logger = logger
         self.parser = argparse.ArgumentParser(description="Application configuration")
         self.config = self.__load_config()
         self.__add_arguments()
@@ -56,9 +61,11 @@ class Arguments:
             with open("appsettings.json", "r") as file:
                 return json.load(file)
         except FileNotFoundError:
-            print("appsettings.json not found. Using default values.")
+            self.logger.error("appsettings.json not found. Using default values.")
         except json.JSONDecodeError:
-            print("Error decoding appsettings.json. Ensure it's properly formatted.")
+            self.logger.error(
+                "Error decoding appsettings.json. Ensure it's properly formatted."
+            )
         return {}
 
     def __add_arguments(self) -> None:
@@ -128,7 +135,7 @@ class Arguments:
 
         missing_args = [name for name, value in vars(args).items() if value is None]
         if missing_args:
-            print(f"Error: Missing argument(s): {', '.join(missing_args)}")
+            self.logger.error(f"Error: Missing argument(s): {', '.join(missing_args)}")
             self.parser.print_help()
             sys.exit(ReturnCodes.MISSING_ARGUMENTS.value)
 

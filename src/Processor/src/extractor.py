@@ -5,16 +5,21 @@ import time
 
 from pandas import DataFrame
 
+from .database.mongodb_database import MongoDbDatabase
+from .features import Features
+from .logger import Logger
+
 
 class Extractor(threading.Thread):
-    def __init__(self, message_queue, shutdown_event):
+    def __init__(self, message_queue, shutdown_event, database_uri, database_name):
         super().__init__()
         self.message_queue = message_queue
         self.shutdown_event = shutdown_event
-        self.daemon = (
-            True  # Ensures that this thread won't prevent the program from exiting
-        )
+        self.daemon = True
         self.count = 0
+        self.logger = Logger().get_logger()
+        self.features = Features()
+        self.database = MongoDbDatabase(self.logger, database_uri, database_name)
 
     def run(self):
         while not self.shutdown_event.is_set() or not self.message_queue.empty():
@@ -45,11 +50,25 @@ class Extractor(threading.Thread):
             )
 
             # Split into two DataFrames based on 'Return_Code'
-            df_return_code_3 = df[df["return_code"] == 3]
-            df_other_return_codes = df[df["return_code"] != 3]
+            df_return_code_3 = df[df["return_code"] == 3].drop(columns=["return_code"])
 
+            df_other_return_codes = df[df["return_code"] != 3].drop(
+                columns=["return_code"]
+            )
+
+            self.features.get_lexical(df_return_code_3)
+
+            self.features.get_lexical_and_external(df_other_return_codes)
+
+            print(df_return_code_3.head())
+
+            print(df_other_return_codes.head())
+
+            self.database.insert_dataframe(df_return_code_3)
+
+            self.database.insert_dataframe(df_other_return_codes)
         except ValueError as e:
-            print(f"Error processing message: {e}")
+            self.logger.error(f"Error processing message: {e}")
             return
 
     def lexical_features(df: DataFrame) -> DataFrame:

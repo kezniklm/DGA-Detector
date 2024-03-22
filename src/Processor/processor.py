@@ -49,7 +49,8 @@ class Processor:
 
         Initializes Extractors, RabbitMQConsumer, Logger, and other attributes.
         """
-        args = Arguments().parse_args()
+        self.logger = Logger().get_logger()
+        args = Arguments(self.logger).parse_args()
         self.shutdown_event = threading.Event()
         self.message_queue = queue.Queue(args.queue_size)
         self.extractors: List[Extractor] = [
@@ -61,7 +62,6 @@ class Processor:
         self.consumer = RabbitMQConsumer(
             args.rabbitmq, args.queue, self.message_queue, self.shutdown_event
         )
-        self.logger = Logger().get_logger()
 
     def run(self) -> None:
         """

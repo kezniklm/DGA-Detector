@@ -28,6 +28,7 @@ class MongoDbDatabase(AbstractDatabase):
     A class representing a MongoDB database handler.
 
     This class provides methods to connect to a MongoDB database, insert data from a Pandas DataFrame or dictionary, and handle connection retries.
+    A logger is used to log information, warnings, and errors during the database connection and data insertion processes. This facilitates debugging and monitoring the operation of the database handler.
 
     Attributes:
         uri (str): The URI of the MongoDB server.
@@ -38,19 +39,24 @@ class MongoDbDatabase(AbstractDatabase):
         client (MongoClient): The MongoDB client instance.
         db (Database): The MongoDB database instance.
         collection (Collection): The MongoDB collection instance.
+        logger: The logger instance for logging messages.
     """
 
-    def __init__(self, uri, db_name, collection_name, max_retries=3, delay=5) -> None:
+    def __init__(
+        self, logger, uri, db_name, collection_name="Results", max_retries=3, delay=5
+    ) -> None:
         """
         Initialize the MongoDbDatabase instance.
 
         Args:
             uri (str): The URI of the MongoDB server.
             db_name (str): The name of the database.
-            collection_name (str): The name of the collection within the database.
+            collection_name (str, optional): The name of the collection within the database. Defaults to Results.
             max_retries (int, optional): The maximum number of connection retry attempts. Defaults to 3.
             delay (int, optional): The delay (in seconds) between connection retry attempts. Defaults to 5.
+            logger: The logger instance for logging operation messages.
         """
+        self.logger = logger
         self.uri = uri
         self.db_name = db_name
         self.collection_name = collection_name
@@ -74,10 +80,10 @@ class MongoDbDatabase(AbstractDatabase):
                 self.db = self.client[self.db_name]
                 self.collection = self.db[self.collection_name]
                 self.client.admin.command("ismaster")
-                print("MongoDB connected successfully")
+                self.logger.info("MongoDB connected successfully")
                 break
             except errors.ServerSelectionTimeoutError as err:
-                print(f"Connection attempt {retries + 1} failed: {err}")
+                self.logger.error(f"Connection attempt {retries + 1} failed: {err}")
                 time.sleep(self.delay)
                 retries += 1
         if retries == self.max_retries:
@@ -103,8 +109,8 @@ class MongoDbDatabase(AbstractDatabase):
         try:
             if documents:
                 result = self.collection.insert_many(documents)
-                print(f"Inserted {len(result.inserted_ids)} documents.")
+                self.logger.info(f"Inserted {len(result.inserted_ids)} documents.")
             else:
-                print("No data to insert.")
+                self.logger.info("No data to insert.")
         except Exception as e:
-            print(f"An error occurred while inserting documents: {e}")
+            self.logger.error(f"An error occurred while inserting documents: {e}")
