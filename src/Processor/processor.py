@@ -15,6 +15,7 @@
  * @date 2024-03-22
  * @author Matej Keznikl (matej.keznikl@gmail.com)
  * @copyright Copyright (c) 2024
+ *
 """
 
 import queue
