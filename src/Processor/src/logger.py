@@ -30,15 +30,22 @@ class Logger:
 
     def __init__(self, app_name="DGA-Detector"):
         """Initialize the Logger instance.
-
         Args:
             app_name (str): The name of the application for which logging is set up. Defaults to 'DGA-Detector'.
         """
         self.logger = logging.getLogger(app_name)
         self.configure_logging()
 
+    def clear_handlers(self):
+        """Clear all existing handlers from the logger."""
+        for handler in self.logger.handlers[
+            :
+        ]:  # Iterate over a copy of the handler list
+            self.logger.removeHandler(handler)
+
     def configure_logging(self):
         """Configure logging to include console logging and OS-specific logging."""
+        self.clear_handlers()  # Clear existing handlers before adding new ones
         self.logger.setLevel(logging.INFO)
         self.configure_console_logging()
         self.configure_os_specific_logging()
@@ -62,7 +69,6 @@ class Logger:
 
     def configure_windows_logging(self, formatter):
         """Configure Windows-specific event log logging.
-
         Args:
             formatter (logging.Formatter): The logging formatter to use.
         """
@@ -77,7 +83,6 @@ class Logger:
 
     def configure_unix_logging(self, formatter):
         """Configure Unix/Linux-specific syslog logging.
-
         Args:
             formatter (logging.Formatter): The logging formatter to use.
         """
@@ -90,7 +95,6 @@ class Logger:
 
     def get_standard_formatter(self):
         """Create and return a standard logging formatter.
-
         Returns:
             logging.Formatter: The configured formatter for log messages.
         """
@@ -98,7 +102,6 @@ class Logger:
 
     def get_logger(self):
         """Get the configured logger instance.
-
         Returns:
             logging.Logger: The configured logger.
         """
