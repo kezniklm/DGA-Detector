@@ -20,7 +20,9 @@
 import argparse
 import json
 import sys
+from typing import Any, Dict
 
+from src.logger import Logger
 from src.return_codes import ReturnCodes
 
 
@@ -36,7 +38,7 @@ class Arguments:
         logger: The logger instance used for logging errors and other messages.
     """
 
-    def __init__(self, logger) -> None:
+    def __init__(self, logger: Logger) -> None:
         """
         Initialize the Arguments class.
 
@@ -45,9 +47,11 @@ class Arguments:
         Parameters:
             logger: The logger instance used for logging errors and other messages.
         """
-        self.logger = logger
-        self.parser = argparse.ArgumentParser(description="Application configuration")
-        self.config = self.__load_config()
+        self.logger: Logger = logger
+        self.parser: argparse.ArgumentParser = argparse.ArgumentParser(
+            description="Application configuration"
+        )
+        self.config: Dict[str, Any] = self.__load_config()
         self.__add_arguments()
 
     def __load_config(self) -> dict:

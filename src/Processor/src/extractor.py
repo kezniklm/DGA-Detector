@@ -2,9 +2,12 @@ import json
 import queue
 import threading
 import time
+from queue import Queue
+from threading import Event
 
 from pandas import DataFrame
 
+from .database.abstract_database import AbstractDatabase
 from .database.mongodb_database import MongoDbDatabase
 from .features import Features
 from .logger import Logger
@@ -13,13 +16,14 @@ from .logger import Logger
 class Extractor(threading.Thread):
     def __init__(self, message_queue, shutdown_event, database_uri, database_name):
         super().__init__()
-        self.message_queue = message_queue
-        self.shutdown_event = shutdown_event
-        self.daemon = True
-        self.count = 0
-        self.logger = Logger().get_logger()
-        self.features = Features()
-        self.database = MongoDbDatabase(self.logger, database_uri, database_name)
+        self.message_queue: Queue = message_queue
+        self.shutdown_event: Event = shutdown_event
+        self.daemon: bool = True
+        self.logger: Logger = Logger().get_logger()
+        self.features: Features = Features()
+        self.database: AbstractDatabase = MongoDbDatabase(
+            self.logger, database_uri, database_name
+        )
 
     def run(self):
         while not self.shutdown_event.is_set() or not self.message_queue.empty():

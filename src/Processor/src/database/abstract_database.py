@@ -19,6 +19,8 @@
 
 from abc import ABC, abstractmethod
 
+from pandas import DataFrame
+
 
 class AbstractDatabase(ABC):
     """
@@ -40,7 +42,7 @@ class AbstractDatabase(ABC):
         pass
 
     @abstractmethod
-    def insert_dataframe(self, df) -> None:
+    def insert_dataframe(self, df: DataFrame) -> None:
         """
         @brief Insert data into the database.
 

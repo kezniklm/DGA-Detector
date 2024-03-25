@@ -17,6 +17,7 @@
 """
 
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 
 class FeatureTemplateBase:
@@ -26,7 +27,7 @@ class FeatureTemplateBase:
     This class provides a template for adding columns to a DataFrame based on specified column names and data types.
     """
 
-    def __init__(self, columns_with_types):
+    def __init__(self, columns_with_types: dict) -> None:
         """
         @brief Initializes a FeatureTemplateBase instance.
 
@@ -34,7 +35,7 @@ class FeatureTemplateBase:
         """
         self.columns_with_types = columns_with_types
 
-    def add_columns(self, dataframe):
+    def add_columns(self, dataframe: DataFrame) -> DataFrame:
         """
         @brief Adds columns to the DataFrame according to the specified column names and data types.
 

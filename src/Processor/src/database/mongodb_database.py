@@ -16,10 +16,14 @@
  """
 
 import time
+from typing import Union
 
 import pandas as pd
 from pymongo import MongoClient, errors
+from pymongo.collection import Collection
+from pymongo.database import Database
 
+from ..logger import Logger
 from .abstract_database import AbstractDatabase
 
 
@@ -43,7 +47,13 @@ class MongoDbDatabase(AbstractDatabase):
     """
 
     def __init__(
-        self, logger, uri, db_name, collection_name="Results", max_retries=3, delay=5
+        self,
+        logger: Logger,
+        uri: str,
+        db_name: str,
+        collection_name: str = "Results",
+        max_retries: int = 3,
+        delay: int = 5,
     ) -> None:
         """
         Initialize the MongoDbDatabase instance.
@@ -56,15 +66,15 @@ class MongoDbDatabase(AbstractDatabase):
             delay (int, optional): The delay (in seconds) between connection retry attempts. Defaults to 5.
             logger: The logger instance for logging operation messages.
         """
-        self.logger = logger
-        self.uri = uri
-        self.db_name = db_name
-        self.collection_name = collection_name
-        self.max_retries = max_retries
-        self.delay = delay
-        self.client = None
-        self.db = None
-        self.collection = None
+        self.logger: Logger = logger
+        self.uri: str = uri
+        self.db_name: str = db_name
+        self.collection_name: str = collection_name
+        self.max_retries: int = max_retries
+        self.delay: int = delay
+        self.client: MongoClient = None
+        self.db: Database = None
+        self.collection: Collection = None
 
     def connect(self) -> None:
         """
@@ -89,7 +99,12 @@ class MongoDbDatabase(AbstractDatabase):
         if retries == self.max_retries:
             raise Exception("Max retries reached, could not connect to MongoDB")
 
-    def insert_dataframe(self, data) -> None:
+    def _ensure_connected(self) -> None:
+        """Checks if the database connection is established and raises an error if not."""
+        if self.client is None or self.db is None or self.collection is None:
+            raise RuntimeError("Database connection is not established.")
+
+    def insert_dataframe(self, data: Union[pd.DataFrame, dict]) -> None:
         """
         Insert data into the MongoDB collection from a Pandas DataFrame or dictionary.
 
@@ -99,6 +114,9 @@ class MongoDbDatabase(AbstractDatabase):
         Raises:
             ValueError: If the provided data is not a Pandas DataFrame or a dictionary.
         """
+
+        self._ensure_connected()
+
         if isinstance(data, pd.DataFrame):
             documents = data.to_dict("records")
         elif isinstance(data, dict):

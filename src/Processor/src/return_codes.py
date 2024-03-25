@@ -32,8 +32,8 @@ class ReturnCodes(Enum):
         RABBITMQ_CONNECTION_FAILED: Indicates failure to establish connection with RabbitMQ.
     """
 
-    SUCCESS = 0
-    FILE_NOT_FOUND = auto()
-    JSON_DECODE_ERROR = auto()
-    MISSING_ARGUMENTS = auto()
-    RABBITMQ_CONNECTION_FAILED = auto()
+    SUCCESS: int = 0
+    FILE_NOT_FOUND: int = auto()
+    JSON_DECODE_ERROR: int = auto()
+    MISSING_ARGUMENTS: int = auto()
+    RABBITMQ_CONNECTION_FAILED: int = auto()

@@ -20,6 +20,7 @@
 
 import threading
 import time
+from queue import Queue
 
 import pika
 
@@ -43,12 +44,12 @@ class RabbitMQConsumer(threading.Thread):
 
     def __init__(
         self,
-        connection_string,
-        queue_name,
-        message_queue,
-        shutdown_event,
-        retry_delay=5,
-        max_retries=5,
+        connection_string: str,
+        queue_name: str,
+        message_queue: Queue,
+        shutdown_event: threading.Event,
+        retry_delay: int = 5,
+        max_retries: int = 5,
     ):
         """
         Initialize the RabbitMQConsumer.
@@ -62,14 +63,14 @@ class RabbitMQConsumer(threading.Thread):
             max_retries (int, optional): The maximum number of retry attempts. Defaults to 5.
         """
         super().__init__()
-        self.connection_string = connection_string
-        self.queue_name = queue_name
-        self.message_queue = message_queue
-        self.shutdown_event = shutdown_event
-        self.retry_delay = retry_delay
-        self.max_retries = max_retries
-        self.daemon = True
-        self.logger = Logger().get_logger()
+        self.connection_string: str = connection_string
+        self.queue_name: str = queue_name
+        self.message_queue: Queue = message_queue
+        self.shutdown_event: threading.Event = shutdown_event
+        self.retry_delay: int = retry_delay
+        self.max_retries: int = max_retries
+        self.daemon: bool = True
+        self.logger: Logger = Logger().get_logger()
 
     def run(self):
         """Start the RabbitMQ consumer thread."""

@@ -15,6 +15,8 @@
  *
  """
 
+from typing import Dict
+
 from .feature_template_base import FeatureTemplateBase
 
 
@@ -28,13 +30,13 @@ class LexicalFeatureTemplate(FeatureTemplateBase):
         lexical_columns (dict): A dictionary mapping feature names to their data types.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the LexicalFeatureTemplate.
 
         Initializes specific lexical columns with their data types.
         """
-        lexical_columns = {
+        lexical_columns: Dict[str, str] = {
             "string_length": "Int16",
             "subdomain_count": "Int16",
             "longest_digit_sequence": "Int16",
