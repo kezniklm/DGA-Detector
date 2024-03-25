@@ -31,9 +31,9 @@ void DomainValidator::ProcessDomains()
 {
     unordered_map<string, int> domain_return_code_pairs;
 
-    domain_return_code_pairs.reserve(MAX_BATCH_SIZE);
+    domain_return_code_pairs.reserve(max_batch_size_);
 
-    int cycle_count = 0;
+    unsigned int cycle_count = 0;
 
     while (!cancellation_token.load())
     {
@@ -42,7 +42,7 @@ void DomainValidator::ProcessDomains()
         {
             ProcessPacketInfo(packet_info, domain_return_code_pairs, cycle_count);
 
-            if (ShouldProcessBatch(domain_return_code_pairs.size(), cycle_count, MAX_BATCH_SIZE, MAX_CYCLE_COUNT))
+            if (ShouldProcessBatch(domain_return_code_pairs.size(), cycle_count))
             {
                 ProcessBatch(domain_return_code_pairs);
                 cycle_count = 0; // Reset cycle count for the next batch
@@ -66,8 +66,8 @@ void DomainValidator::ProcessDomains()
  * @param cycle_count The count of cycles processed.
  */
 inline void DomainValidator::ProcessPacketInfo(const DNSPacketInfo &packet_info,
-                                        unordered_map<string, int> &domain_return_code_pairs,
-                                        int &cycle_count)
+                                               unordered_map<string, int> &domain_return_code_pairs,
+                                               unsigned int &cycle_count)
 {
     for (const auto &kDomainName : packet_info.domain_names)
     {
@@ -83,16 +83,12 @@ inline void DomainValidator::ProcessPacketInfo(const DNSPacketInfo &packet_info,
  *
  * @param current_batch_size The current size of the domain-return code pairs.
  * @param cycle_count The count of cycles processed.
- * @param max_batch_size The maximum allowed batch size.
- * @param max_cycle_count The maximum allowed cycle count.
  * @return True if a batch should be processed, false otherwise.
  */
 inline bool DomainValidator::ShouldProcessBatch(const size_t current_batch_size,
-                                         const unsigned cycle_count,
-                                         const unsigned max_batch_size,
-                                         const unsigned max_cycle_count) const
+                                                const unsigned cycle_count) const
 {
-    return current_batch_size > max_batch_size || (cycle_count > max_cycle_count && current_batch_size > 0);
+    return current_batch_size > max_batch_size_ || (cycle_count > max_cycle_count_ && current_batch_size > 0);
 }
 
 /**
@@ -134,7 +130,7 @@ inline void DomainValidator::ProcessBatch(std::unordered_map<std::string, int> &
  * @param result_list The map containing the results of the blacklist or whitelist check.
  */
 inline void DomainValidator::RemoveListedDomains(std::unordered_map<std::string, int> &domain_return_code_pairs,
-                                          const std::map<std::string, bool> &result_list)
+                                                 const std::map<std::string, bool> &result_list)
 {
     for (const auto &kResult : result_list)
     {

@@ -167,7 +167,7 @@ void Detector::InitializeComponents(const int argc, const char **argv)
 
         filter_ = make_unique<Filter>(packet_queue_.get(), dns_info_queue_.get());
         database_ = make_unique<MongoDbDatabase>(args->GetDatabaseConnectionString(), "Database");
-        validator_ = make_unique<DomainValidator>(dns_info_queue_.get(), publisher_queue_.get(), database_.get());
+        validator_ = make_unique<DomainValidator>(dns_info_queue_.get(), publisher_queue_.get(), database_.get(), args->GetMaxBatchSize(), args->GetMaxCycleCount());
         message_publisher_ = make_unique<MessagePublisher>(args->GetRabbitMQConnectionString(), args->GetRabbitMQQueueName());
         publisher_ = make_unique<Publisher>(publisher_queue_.get(), message_publisher_.get());
 

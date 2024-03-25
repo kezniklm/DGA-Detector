@@ -176,6 +176,30 @@ public:
      */
     void SetNumberOfThreads(int value);
 
+    /**
+     * Gets the maximal size of batch to query the database.
+     * @return The maximal batch size.
+     */
+    size_t GetMaxBatchSize() const;
+
+    /**
+     * Sets the maximal size of batch to query the database.
+     * @param value The maximal batch size.
+     */
+    void SetMaxBatchSize(const size_t value);
+
+    /**
+     * Gets the maximal number of cycles after which the database will be queried.
+     * @return The maximal cycle count.
+     */
+    size_t GetMaxCycleCount() const;
+
+    /**
+     * Sets the maximal number of cycles after which the database will be queried.
+     * @param value The maximal cycle count.
+     */
+    void SetMaxCycleCount(const size_t value);
+
 private:
     /**
      * Configures command line options for the program using cxxopts library.
@@ -304,4 +328,14 @@ private:
      * Number of threads used by the Detector
      */
     int number_of_threads_ = 0;
+
+    /**
+     * Maximal size of batch to query the database
+     */
+    size_t max_batch_size_ = 0;
+
+    /**
+     * Maximal number of cycles after which the database will be queried
+     */
+    size_t max_cycle_count_ = 0;
 };

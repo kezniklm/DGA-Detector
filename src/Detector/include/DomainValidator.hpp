@@ -50,8 +50,8 @@ public:
      */
     explicit DomainValidator(IQueue<DNSPacketInfo> *dns_info_queue,
                              IQueue<ValidatedDomains> *publisher_queue,
-                             IDatabase *database)
-        : dns_info_queue_(dns_info_queue), publisher_queue_(publisher_queue), database_(database) {}
+                             IDatabase *database, size_t max_batch_size, size_t max_cycle_count)
+        : dns_info_queue_(dns_info_queue), publisher_queue_(publisher_queue), database_(database), max_batch_size_(max_batch_size), max_cycle_count_(max_cycle_count) {}
 
     /**
      * @brief Processes domains by continuously processing DNS packet information until a cancellation token is set.
@@ -72,7 +72,7 @@ private:
      */
     void ProcessPacketInfo(const DNSPacketInfo &packet_info,
                            std::unordered_map<std::string, int> &domain_return_code_pairs,
-                           int &cycle_count);
+                           unsigned int &cycle_count);
 
     /**
      * @brief Determines whether to process a batch of domains based on the current batch size and cycle count.
@@ -81,11 +81,9 @@ private:
      *
      * @param current_batch_size The current size of the domain-return code pairs.
      * @param cycle_count The count of cycles processed.
-     * @param max_batch_size The maximum allowed batch size.
-     * @param max_cycle_count The maximum allowed cycle count.
      * @return True if a batch should be processed, false otherwise.
      */
-    bool ShouldProcessBatch(const size_t current_batch_size, const unsigned cycle_count, const unsigned max_batch_size, const unsigned max_cycle_count) const;
+    bool ShouldProcessBatch(const size_t current_batch_size, const unsigned cycle_count) const;
 
     /**
      * @brief Processes a batch of domains by performing blacklist and whitelist checks and publishing validated domains.
@@ -116,9 +114,7 @@ private:
     /** Pointer to the database */
     IDatabase *database_;
 
-    static constexpr int DEFAULT_SIZE = 100000;
+    size_t max_batch_size_ = 0;
 
-    static constexpr int MAX_BATCH_SIZE = DEFAULT_SIZE;
-
-    static constexpr int MAX_CYCLE_COUNT = DEFAULT_SIZE;
+    size_t max_cycle_count_ = 0;
 };

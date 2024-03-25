@@ -68,7 +68,8 @@ void Arguments::Parse(const int argc, const char *argv[])
  */
 void Arguments::ConfigureOptions(cxxopts::Options &options)
 {
-    options.add_options()("i,interface", "Interface to analyze DNS responses", cxxopts::value<string>(), "<interface name>")("s,size", "Allowed memory usage", cxxopts::value<unsigned long long>(), "<size in bytes>")("d,database", "Database connection string", cxxopts::value<string>(), "<connection string>")("r,rabbitmq", "RabbitMQ connection string", cxxopts::value<string>(), "<connection string>")("q,queue", "RabbitMQ queue name", cxxopts::value<string>(), "<queue name>")("t,threads", "Number of processing threads", cxxopts::value<int>(), "<number>")("h,help", "Show help");
+    options.add_options()("i,interface", "Interface to analyze DNS responses", cxxopts::value<string>(), "<interface name>")("s,size", "Allowed memory usage", cxxopts::value<unsigned long long>(), "<size in bytes>")("d,database", "Database connection string", cxxopts::value<string>(), "<connection string>")("r,rabbitmq", "RabbitMQ connection string", cxxopts::value<string>(), "<connection string>")("q,queue", "RabbitMQ queue name", cxxopts::value<string>(), "<queue name>")("t,threads", "Number of processing threads", cxxopts::value<int>(), "<number>")("b,max-batch-size", "Maximal size of batch to query the database", cxxopts::value<size_t>()->default_value("100000"), "<max batch size>")
+        ("c,max-cycle-count", "Maximal number of cycles after which the database will be queried", cxxopts::value<size_t>()->default_value("50000"), "<max cycle count>")("h,help", "Show help");
 }
 
 /**
@@ -126,6 +127,8 @@ void Arguments::ValidateAndSetOptions(const cxxopts::ParseResult &result,
         SetOption<string>("rabbitmq", rabbitmq_connection_string_, result, appsettings, true, options);
         SetOption<string>("queue", rabbitmq_queue_name_, result, appsettings, true, options);
         SetOption<int>("threads", number_of_threads_, result, appsettings, false, options);
+        SetOption<size_t>("max-batch-size", max_batch_size_, result, appsettings, false, options);
+        SetOption<size_t>("max-cycle-count", max_cycle_count_, result, appsettings, false, options);
 
         constexpr int DEFAULT_NUMBER_OF_THREADS = 5;
         if (number_of_threads_ < DEFAULT_NUMBER_OF_THREADS)
@@ -194,17 +197,17 @@ void Arguments::SetOption(const string &key,
  */
 void Arguments::CalculateSizes(const unsigned long long value)
 {
-	const unsigned long long packet_buffer_size_alloc = std::min(value * 65 / 100, static_cast<unsigned long long>(std::numeric_limits<int>::max()));
+    const unsigned long long packet_buffer_size_alloc = std::min(value * 65 / 100, static_cast<unsigned long long>(std::numeric_limits<int>::max()));
 
-	constexpr unsigned long long publisher_queue_memory = 1000 * sizeof(ValidatedDomains);
+    constexpr unsigned long long publisher_queue_memory = 1000 * sizeof(ValidatedDomains);
 
-	const unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
+    const unsigned long long remaining_value = value - packet_buffer_size_alloc - publisher_queue_memory;
 
     constexpr double packet_queue_percentage = 35.0;
 
-	const unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(packet_queue_percentage / 100.0 *
-		remaining_value);
-	const unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
+    const unsigned long long packet_queue_size_alloc = static_cast<unsigned long long>(packet_queue_percentage / 100.0 *
+                                                                                       remaining_value);
+    const unsigned long long dns_info_queue_size_alloc = remaining_value - packet_queue_size_alloc;
 
     packet_buffer_size_ = static_cast<int>(packet_buffer_size_alloc);
     packet_queue_size_ = static_cast<int>(packet_queue_size_alloc / sizeof(DetectorPacket));
@@ -463,4 +466,40 @@ int Arguments::GetNumberOfThreads() const
 void Arguments::SetNumberOfThreads(int value)
 {
     this->number_of_threads_ = value;
+}
+
+/**
+ * Gets the maximal size of batch to query the database.
+ * @return The maximal batch size.
+ */
+size_t Arguments::GetMaxBatchSize() const
+{
+    return this->max_batch_size_;
+}
+
+/**
+ * Sets the maximal size of batch to query the database.
+ * @param value The maximal batch size.
+ */
+void Arguments::SetMaxBatchSize(const size_t value)
+{
+    this->max_batch_size_ = value;
+}
+
+/**
+ * Gets the maximal number of cycles after which the database will be queried.
+ * @return The maximal cycle count.
+ */
+size_t Arguments::GetMaxCycleCount() const
+{
+    return this->max_cycle_count_;
+}
+
+/**
+ * Sets the maximal number of cycles after which the database will be queried.
+ * @param value The maximal cycle count.
+ */
+void Arguments::SetMaxCycleCount(const size_t value)
+{
+    this->max_cycle_count_ = value;
 }

@@ -53,8 +53,11 @@ protected:
 
     void SetUp() override
     {
+        constexpr unsigned int MAX_BATCH_SIZE = 100000;
+        constexpr unsigned int MAX_CYCLE_COUNT = 100000;
+
         cancellation_token.store(false);
-        validator_ = std::make_unique<DomainValidator>(&mock_dns_queue_, &mock_publisher_queue_, &mock_database_);
+        validator_ = std::make_unique<DomainValidator>(&mock_dns_queue_, &mock_publisher_queue_, &mock_database_, MAX_BATCH_SIZE, MAX_CYCLE_COUNT);
     }
 
     void TearDown() override
