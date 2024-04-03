@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using BL.Models.Whitelist;
+using Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,18 @@ namespace APP.Controllers;
 [Authorize]
 public class UserController(UserManager<User> userManager) : ControllerBase
 {
+    [HttpGet("get")]
+    public async Task<ActionResult<User>> GetUser()
+    {
+        User? user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        return Ok(user);
+    }
+
     [HttpPut("update")]
     public async Task<IActionResult> UpdateUser(UserUpdateModel model)
     {
