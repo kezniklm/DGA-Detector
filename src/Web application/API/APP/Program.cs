@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using APP.Constraints;
 using AutoMapper;
 using BL.Installers;
 using Common.Config;
@@ -31,8 +30,6 @@ ConfigureAutoMapper(builder.Services);
 
 ConfigureControllers(builder.Services);
 
-ConfigureConstraints(builder.Services);
-
 WebApplication app = builder.Build();
 
 ValidateAutoMapperConfiguration(app.Services);
@@ -46,6 +43,7 @@ UseSecurityFeatures(app);
 UseEndpoints(app);
 
 UseOpenApi(app);
+
 
 app.Run();
 
@@ -78,10 +76,11 @@ void ConfigureCors(IServiceCollection serviceCollection)
 {
     serviceCollection.AddCors(options =>
     {
-        options.AddDefaultPolicy(o =>
-            o.AllowAnyOrigin()
+        options.AddDefaultPolicy(builder =>
+            builder.SetIsOriginAllowed(origin => true)
                 .AllowAnyHeader()
-                .AllowAnyMethod());
+                .AllowAnyMethod()
+                .AllowCredentials());
     });
 }
 
@@ -138,18 +137,26 @@ void ConfigureCookies(IServiceCollection serviceCollection)
 
         options.ExpireTimeSpan = TimeSpan.FromDays(15);
 
-        // options.Cookie.HttpOnly = true;
+        options.Cookie.HttpOnly = true;
 
-        // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.IsEssential = true;
+
+        options.Cookie.SameSite = SameSiteMode.None;
+
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
     serviceCollection.AddDistributedMemoryCache();
     serviceCollection.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromMinutes(30);
+
         options.Cookie.HttpOnly = true;
+
         options.Cookie.IsEssential = true;
+
         options.Cookie.SameSite = SameSiteMode.None;
+
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 }
@@ -173,14 +180,6 @@ void ConfigureControllers(IServiceCollection serviceCollection)
     serviceCollection.AddAuthorization();
 
     serviceCollection.AddEndpointsApiExplorer();
-}
-
-void ConfigureConstraints(IServiceCollection serviceCollection)
-{
-    serviceCollection.Configure<RouteOptions>(options =>
-    {
-        options.ConstraintMap.Add("ObjectId", typeof(ObjectIdConstraint));
-    });
 }
 
 void ValidateAutoMapperConfiguration(IServiceProvider serviceProvider)

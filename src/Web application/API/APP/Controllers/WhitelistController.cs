@@ -3,7 +3,6 @@ using BL.Models.Whitelist;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 
 namespace APP.Controllers;
 
@@ -28,8 +27,8 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
         }
     }
 
-    [HttpGet("{id:ObjectId}")]
-    public async Task<ActionResult<WhitelistModel>> Get(ObjectId id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<WhitelistModel>> Get(string id)
     {
         try
         {
@@ -50,11 +49,11 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(WhitelistModel whitelist)
+    public async Task<ActionResult<string>> Create(WhitelistModel whitelist)
     {
         try
         {
-            ObjectId createdWhitelist = await whitelistFacade.CreateAsync(whitelist);
+            string createdWhitelist = await whitelistFacade.CreateAsync(whitelist);
             return Ok(createdWhitelist);
         }
         catch (Exception ex)
@@ -65,11 +64,11 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
     }
 
     [HttpPatch]
-    public async Task<ActionResult<ObjectId>> Update(WhitelistModel whitelist)
+    public async Task<ActionResult<string>> Update(WhitelistModel whitelist)
     {
         try
         {
-            ObjectId? updatedWhitelist = await whitelistFacade.CreateOrUpdateAsync(whitelist);
+            string? updatedWhitelist = await whitelistFacade.CreateOrUpdateAsync(whitelist);
             if (updatedWhitelist == null)
             {
                 logger.LogWarning("Whitelist not found for update.");
@@ -85,8 +84,8 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
         }
     }
 
-    [HttpDelete("{id:ObjectId}")]
-    public async Task<ActionResult> Delete(ObjectId id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(string id)
     {
         try
         {

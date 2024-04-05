@@ -1,6 +1,5 @@
 ﻿using BL.Models.Interfaces;
 using DAL.Entities.Interfaces;
-using MongoDB.Bson;
 
 namespace BL.Facades.Interfaces;
 
@@ -10,10 +9,10 @@ public interface IFacade<TEntity, TModel>
 {
     Task<List<TModel>> GetAllAsync();
     Task<List<TModel>> GetEntriesPerPageAsync(int max, int page, string? searchQuery = null);
-    Task<TModel> GetByIdAsync(ObjectId id);
+    Task<TModel> GetByIdAsync(string id);
     Task<long> GetNumberOfAllAsync();
-    Task<ObjectId?> CreateOrUpdateAsync(TModel model);
-    Task<ObjectId> CreateAsync(TModel model);
-    Task<ObjectId?> UpdateAsync(TModel model);
-    Task DeleteAsync(ObjectId id);
+    Task<string?> CreateOrUpdateAsync(TModel model);
+    Task<string> CreateAsync(TModel model);
+    Task<string?> UpdateAsync(TModel model);
+    Task DeleteAsync(string id);
 }

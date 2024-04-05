@@ -1,7 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using APP.Deserializers;
-using APP.DTOs;
 using BL.Models.Whitelist;
 using MongoDB.Bson;
 using Xunit;
@@ -75,15 +73,13 @@ public class WhitelistControllerTests : IAsyncLifetime
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
-        WhitelistDto? whitelistDto = await response.Content.ReadFromJsonAsync<WhitelistDto>();
-        WhitelistModel whitelist =
-            WhitelistModelDeserializer.DeserializeWhitelistModel(whitelistDto ?? throw new InvalidOperationException());
+        WhitelistModel? whitelist = await response.Content.ReadFromJsonAsync<WhitelistModel>();
 
         // Assert
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(whitelist);
-        Assert.Equal(id, whitelist.Id.ToString());
+        Assert.Equal(id, whitelist.Id);
     }
 
     [Fact]
@@ -106,7 +102,7 @@ public class WhitelistControllerTests : IAsyncLifetime
         // Arrange
         WhitelistModel newWhitelist = new()
         {
-            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId().ToString()
         };
         const string url = "/Whitelist/";
 
@@ -162,7 +158,7 @@ public class WhitelistControllerTests : IAsyncLifetime
         // Arrange
         WhitelistModel whitelistEntry = new()
         {
-            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplegood.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId().ToString()
         };
         HttpClient clientWithoutAuthorization = _application.CreateClient();
 

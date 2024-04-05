@@ -3,7 +3,6 @@ using BL.Models.Result;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 
 namespace APP.Controllers;
 
@@ -28,8 +27,8 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         }
     }
 
-    [HttpGet("{id:ObjectId}")]
-    public async Task<ActionResult<ResultModel>> Get(ObjectId id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ResultModel>> Get(string id)
     {
         try
         {
@@ -50,11 +49,11 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(ResultModel result)
+    public async Task<ActionResult<string>> Create(ResultModel result)
     {
         try
         {
-            ObjectId createdResult = await resultFacade.CreateAsync(result);
+            string createdResult = await resultFacade.CreateAsync(result);
             return Ok(createdResult);
         }
         catch (Exception ex)
@@ -65,11 +64,11 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
     }
 
     [HttpPatch]
-    public async Task<ActionResult<ObjectId>> Update(ResultModel result)
+    public async Task<ActionResult<string>> Update(ResultModel result)
     {
         try
         {
-            ObjectId? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
+            string? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
             if (updatedResult == null)
             {
                 logger.LogWarning("Result not found for update.");
@@ -85,8 +84,8 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         }
     }
 
-    [HttpDelete("{id:ObjectId}")]
-    public async Task<ActionResult> Delete(ObjectId id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(string id)
     {
         try
         {

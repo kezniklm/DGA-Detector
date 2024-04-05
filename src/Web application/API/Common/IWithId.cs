@@ -1,8 +1,6 @@
-﻿using MongoDB.Bson;
-
-namespace Common;
+﻿namespace Common;
 
 public interface IWithId
 {
-    ObjectId Id { get; set; }
+    string Id { get; set; }
 }

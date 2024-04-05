@@ -25,16 +25,16 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
     public virtual async Task<IList<TEntity>> GetAllAsync() =>
         await Collection.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
 
-    public virtual async Task<TEntity?> GetByIdAsync(ObjectId id) =>
+    public virtual async Task<TEntity?> GetByIdAsync(string id) =>
         await Collection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
 
-    public virtual async Task<ObjectId> InsertAsync(TEntity entity)
+    public virtual async Task<string> InsertAsync(TEntity entity)
     {
         await Collection.InsertOneAsync(entity);
         return entity.Id;
     }
 
-    public virtual async Task<ObjectId?> UpdateAsync(TEntity entity)
+    public virtual async Task<string?> UpdateAsync(TEntity entity)
     {
         ReplaceOneResult? result = await Collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
         if (result.IsAcknowledged && result.ModifiedCount > 0)
@@ -45,7 +45,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         return null;
     }
 
-    public virtual async Task RemoveAsync(ObjectId id)
+    public virtual async Task RemoveAsync(string id)
     {
         DeleteResult? result = await Collection.DeleteOneAsync(entity => entity.Id == id);
         if (result.DeletedCount <= 0)
@@ -54,7 +54,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
         }
     }
 
-    public virtual async Task<bool> ExistsAsync(ObjectId id) =>
+    public virtual async Task<bool> ExistsAsync(string id) =>
         await Collection.Find(entity => entity.Id == id).AnyAsync();
 
     public virtual async Task<IEnumerable<TEntity>> GetLimitOrGetAllAsync(int skip, int limit,

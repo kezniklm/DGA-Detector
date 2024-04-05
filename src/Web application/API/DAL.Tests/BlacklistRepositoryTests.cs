@@ -55,13 +55,13 @@ public class BlacklistRepositoryTests
     public async Task InsertAsync_AddsNewEntity_ReturnsId()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         BlacklistEntity testEntity = new() { Id = id, DomainName = "New Entity", Added = DateTime.Now };
         _mockCollection.Setup(x => x.InsertOneAsync(testEntity, null, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask).Verifiable();
 
         // Act
-        ObjectId resultId = await _repository.InsertAsync(testEntity);
+        string resultId = await _repository.InsertAsync(testEntity);
 
         // Assert
         Assert.Equal(testEntity.Id, resultId);
@@ -72,14 +72,14 @@ public class BlacklistRepositoryTests
     public async Task UpdateAsync_UpdatesEntity_ReturnsId()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         BlacklistEntity testEntity = new() { Id = id, DomainName = "Updated Name", Added = DateTime.Now };
         ReplaceOneResult.Acknowledged replaceResult = new(1, 1, id);
         _mockCollection.Setup(x => x.ReplaceOneAsync(It.IsAny<FilterDefinition<BlacklistEntity>>(), testEntity,
             It.IsAny<ReplaceOptions>(), It.IsAny<CancellationToken>())).ReturnsAsync(replaceResult);
 
         // Act
-        ObjectId? resultId = await _repository.UpdateAsync(testEntity);
+        string? resultId = await _repository.UpdateAsync(testEntity);
 
         // Assert
         Assert.NotNull(resultId);
@@ -90,7 +90,7 @@ public class BlacklistRepositoryTests
     public async Task RemoveAsync_DeletesEntity_Successfully()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         DeleteResult.Acknowledged deleteResult = new(1);
         _mockCollection.Setup(x =>
                 x.DeleteOneAsync(It.IsAny<FilterDefinition<BlacklistEntity>>(), It.IsAny<CancellationToken>()))
@@ -109,7 +109,7 @@ public class BlacklistRepositoryTests
     public async Task RemoveAsync_ThrowsInvalidDeleteException_WhenEntityDoesNotExist()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         DeleteResult.Acknowledged deleteResult = new(0);
         _mockCollection.Setup(x =>
                 x.DeleteOneAsync(It.IsAny<FilterDefinition<BlacklistEntity>>(), It.IsAny<CancellationToken>()))
@@ -126,7 +126,10 @@ public class BlacklistRepositoryTests
         const string nameToSearch = "test";
         List<BlacklistEntity> testEntities = new()
         {
-            new BlacklistEntity { DomainName = nameToSearch, Added = DateTime.Now, Id = ObjectId.GenerateNewId() }
+            new BlacklistEntity
+            {
+                DomainName = nameToSearch, Added = DateTime.Now, Id = ObjectId.GenerateNewId().ToString()
+            }
         };
         Mock<IAsyncCursor<BlacklistEntity>> mockCursor = new();
         mockCursor.SetupSequence(c => c.MoveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true)
@@ -170,7 +173,7 @@ public class BlacklistRepositoryTests
     public async Task InsertAsync_ThrowsException_WhenEntityExists()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         BlacklistEntity testEntity = new() { Id = id, DomainName = "Existing Entity", Added = DateTime.Now };
         _mockCollection.Setup(x => x.InsertOneAsync(testEntity, null, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new MongoException("Duplicate key error."));
@@ -205,14 +208,14 @@ public class BlacklistRepositoryTests
     public async Task UpdateAsync_ReturnsNull_WhenEntityDoesNotExist()
     {
         // Arrange
-        ObjectId id = ObjectId.GenerateNewId();
+        string id = ObjectId.GenerateNewId().ToString();
         BlacklistEntity testEntity = new() { Id = id, DomainName = "Non-Existing Name", Added = DateTime.Now };
         ReplaceOneResult.Acknowledged replaceResult = new(0, 0, id);
         _mockCollection.Setup(x => x.ReplaceOneAsync(It.IsAny<FilterDefinition<BlacklistEntity>>(), testEntity,
             It.IsAny<ReplaceOptions>(), It.IsAny<CancellationToken>())).ReturnsAsync(replaceResult);
 
         // Act
-        ObjectId? resultId = await _repository.UpdateAsync(testEntity);
+        string? resultId = await _repository.UpdateAsync(testEntity);
 
         // Assert
         Assert.Null(resultId);

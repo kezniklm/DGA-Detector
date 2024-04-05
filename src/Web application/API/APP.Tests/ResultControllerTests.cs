@@ -1,7 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using APP.Deserializers;
-using APP.DTOs;
 using BL.Models.Result;
 using MongoDB.Bson;
 using Xunit;
@@ -44,14 +42,12 @@ public class ResultControllerTests : IAsyncLifetime
 
         // Act
         HttpResponseMessage response = await _client.GetAsync($"/result/{expectedId}");
-        ResultDto? resultDto = await response.Content.ReadFromJsonAsync<ResultDto>();
-        ResultModel result =
-            ResultModelDeserializer.DeserializeResultModel(resultDto ?? throw new InvalidOperationException());
+        ResultModel? result = await response.Content.ReadFromJsonAsync<ResultModel>();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(result);
-        Assert.Equal(expectedId, result.Id.ToString());
+        Assert.Equal(expectedId, result.Id);
     }
 
     [Fact]
@@ -63,15 +59,16 @@ public class ResultControllerTests : IAsyncLifetime
             DomainName = "newwebsite.com",
             DangerousBoolValue = true,
             Detected = DateTime.UtcNow,
-            Id = ObjectId.GenerateNewId()
+            Id = ObjectId.GenerateNewId().ToString()
         };
 
         // Act
         HttpResponseMessage response = await _client.PostAsJsonAsync("/result", newResult);
-        ObjectId createdId = await response.Content.ReadFromJsonAsync<ObjectId>();
+        string? createdId = await response.Content.ReadAsStringAsync();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(newResult.Id, createdId);
     }
 
     [Fact]
@@ -212,14 +209,15 @@ public class ResultControllerTests : IAsyncLifetime
             DomainName = "newwebsite.com",
             DangerousBoolValue = true,
             Detected = DateTime.UtcNow,
-            Id = ObjectId.GenerateNewId()
+            Id = ObjectId.GenerateNewId().ToString()
         };
 
         // Act
         HttpResponseMessage response = await _client.PostAsJsonAsync("/result", validResult);
-        ObjectId createdId = await response.Content.ReadFromJsonAsync<ObjectId>();
+        string? createdId = await response.Content.ReadAsStringAsync();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(validResult.Id, createdId);
     }
 }

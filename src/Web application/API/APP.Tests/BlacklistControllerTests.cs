@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using APP.Tests.Deserializers;
 using BL.Models.Blacklist;
 using MongoDB.Bson;
 using Xunit;
@@ -74,14 +73,13 @@ public class BlacklistControllerTests : IAsyncLifetime
 
         // Act
         HttpResponseMessage response = await _client.GetAsync(url);
-        string json = await response.Content.ReadAsStringAsync();
-        BlacklistModel blacklist = BlacklistModelDeserializer.DeserializeBlacklistModel(json);
+        BlacklistModel? blacklist = await response.Content.ReadFromJsonAsync<BlacklistModel>();
 
         // Assert
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(blacklist);
-        Assert.Equal(id, blacklist.Id.ToString());
+        Assert.Equal(id, blacklist.Id);
     }
 
     [Fact]
@@ -104,7 +102,7 @@ public class BlacklistControllerTests : IAsyncLifetime
         // Arrange
         BlacklistModel newBlacklist = new()
         {
-            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId().ToString()
         };
         const string url = "/Blacklist/";
 
@@ -160,7 +158,7 @@ public class BlacklistControllerTests : IAsyncLifetime
         // Arrange
         BlacklistModel blacklistEntry = new()
         {
-            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId()
+            DomainName = "examplebad.com", Added = DateTime.Now, Id = ObjectId.GenerateNewId().ToString()
         };
         HttpClient clientWithoutAuthorization = _application.CreateClient();
 

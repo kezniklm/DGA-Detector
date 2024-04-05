@@ -96,7 +96,6 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         HttpResponseMessage response = await _clientWithSession.PostAsync("/login?useSessionCookies=true", content);
         response.EnsureSuccessStatusCode();
 
-        // Capture the Set-Cookie header from the response and add it to the client's default request headers
         if (response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookies))
         {
             _clientWithSession.DefaultRequestHeaders.Add("Cookie", string.Join(";", cookies));
@@ -134,21 +133,19 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         {
             new BlacklistEntity
             {
-                Added = DateTime.UtcNow.AddDays(-10),
-                DomainName = "badwebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b1")
+                Added = DateTime.UtcNow.AddDays(-10), DomainName = "badwebsite.com", Id = "5f1a5151b5b5b5b5b5b5b5b1"
             },
             new BlacklistEntity
             {
                 Added = DateTime.UtcNow.AddDays(-5),
                 DomainName = "maliciouswebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b2")
+                Id = "5f1a5151b5b5b5b5b5b5b5b2"
             },
             new BlacklistEntity
             {
                 Added = DateTime.UtcNow.AddDays(-3),
                 DomainName = "phishingwebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b3")
+                Id = "5f1a5151b5b5b5b5b5b5b5b3"
             }
             // Add more BlacklistEntity seeds here if needed
         };
@@ -163,7 +160,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DangerousProbabilityValue = 0.9,
                 DangerousBoolValue = true,
                 DomainName = "badwebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b4")
+                Id = "5f1a5151b5b5b5b5b5b5b5b4"
             },
             new ResultEntity
             {
@@ -172,7 +169,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DangerousProbabilityValue = 0.2,
                 DangerousBoolValue = false,
                 DomainName = "safewebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b5")
+                Id = "5f1a5151b5b5b5b5b5b5b5b5"
             },
             new ResultEntity
             {
@@ -181,7 +178,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DangerousProbabilityValue = 0.95,
                 DangerousBoolValue = true,
                 DomainName = "verybadwebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b6")
+                Id = "5f1a5151b5b5b5b5b5b5b5b6"
             }
             // Add more ResultEntity seeds here if needed
         };
@@ -193,19 +190,17 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
             {
                 Added = DateTime.UtcNow.AddDays(-10),
                 DomainName = "goodwebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b7")
+                Id = "5f1a5151b5b5b5b5b5b5b5b7"
             },
             new WhitelistEntity
             {
-                Added = DateTime.UtcNow.AddDays(-5),
-                DomainName = "trustedsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b8")
+                Added = DateTime.UtcNow.AddDays(-5), DomainName = "trustedsite.com", Id = "5f1a5151b5b5b5b5b5b5b5b8"
             },
             new WhitelistEntity
             {
                 Added = DateTime.UtcNow.AddDays(-3),
                 DomainName = "securewebsite.com",
-                Id = ObjectId.Parse("5f1a5151b5b5b5b5b5b5b5b9")
+                Id = "5f1a5151b5b5b5b5b5b5b5b9"
             }
             // Add more WhitelistEntity seeds here if needed
         };

@@ -1,11 +1,8 @@
-﻿using APP.Deserializers;
-using APP.DTOs;
-using BL.Facades.Interfaces;
+﻿using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 
 namespace APP.Controllers;
 
@@ -31,8 +28,8 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
         }
     }
 
-    [HttpGet("{id:ObjectId}")]
-    public async Task<ActionResult<BlacklistModel>> Get(ObjectId id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BlacklistModel>> Get(string id)
     {
         try
         {
@@ -54,12 +51,12 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
     }
 
     [HttpPost]
-    public async Task<ActionResult<ObjectId>> Create(BlacklistModel blacklist)
+    public async Task<ActionResult<string>> Create(BlacklistModel blacklist)
     {
         try
         {
             logger.LogInformation("Creating a new blacklist entry.");
-            ObjectId resultId = await blacklistFacade.CreateAsync(blacklist);
+            string resultId = await blacklistFacade.CreateAsync(blacklist);
             return Ok(resultId);
         }
         catch (Exception ex)
@@ -70,14 +67,12 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
     }
 
     [HttpPatch]
-    public async Task<ActionResult<ObjectId>> Update([FromBody] BlacklistDto blacklistDto)
+    public async Task<ActionResult<string>> Update([FromBody] BlacklistModel blacklist)
     {
-        BlacklistModel? blacklist = null;
         try
         {
-            blacklist = BlacklistModelDeserializer.DeserializeBlacklistModel(blacklistDto);
             logger.LogInformation("Updating blacklist entry with ID: {Id}", blacklist.Id);
-            ObjectId? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
+            string? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
             if (updatedBlacklist == null)
             {
                 logger.LogWarning("Blacklist entry for update not found with ID: {Id}", blacklist.Id);
@@ -93,8 +88,8 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
         }
     }
 
-    [HttpDelete("{id:ObjectId}")]
-    public async Task<ActionResult> Delete(ObjectId id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(string id)
     {
         try
         {
