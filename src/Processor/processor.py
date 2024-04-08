@@ -23,9 +23,9 @@ import threading
 import time
 from typing import List
 
-from src.arguments import Arguments
+from src.utils.arguments import Arguments
 from src.extractor import Extractor
-from src.logger import Logger
+from src.logging.logger import Logger
 from src.rabbitmq_consumer import RabbitMQConsumer
 
 

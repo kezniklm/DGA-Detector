@@ -24,7 +24,7 @@ from queue import Queue
 
 import pika
 
-from .logger import Logger
+from .logging.logger import Logger
 
 
 class RabbitMQConsumer(threading.Thread):
