@@ -9,8 +9,8 @@ from pandas import DataFrame
 
 from .database.abstract_database import AbstractDatabase
 from .database.mongodb_database import MongoDbDatabase
-from .features import Features
-from .logger import Logger
+from .features.features import Features
+from .logging.logger import Logger
 
 
 class Extractor(threading.Thread):

@@ -23,7 +23,7 @@ from pymongo import MongoClient, errors
 from pymongo.collection import Collection
 from pymongo.database import Database
 
-from ..logger import Logger
+from ..logging.logger import Logger
 from .abstract_database import AbstractDatabase
 
 

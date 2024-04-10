@@ -22,8 +22,8 @@ import json
 import sys
 from typing import Any, Dict
 
-from src.logger import Logger
-from src.return_codes import ReturnCodes
+from src.logging.logger import Logger
+from src.utils.return_codes import ReturnCodes
 
 
 class Arguments:
