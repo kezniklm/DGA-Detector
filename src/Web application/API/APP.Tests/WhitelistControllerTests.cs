@@ -201,21 +201,6 @@ public class WhitelistControllerTests : IAsyncLifetime
         Assert.Empty(results);
     }
 
-    [Fact]
-    public async Task GetTotalCount_ReturnsCorrectNumber()
-    {
-        // Arrange
-        const string url = "/Whitelist/count";
-
-        // Act
-        HttpResponseMessage response = await _client.GetAsync(url);
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        long count = await response.Content.ReadFromJsonAsync<long>();
-        Assert.True(count >= 0);
-    }
-
     [Theory]
     [InlineData("/Whitelist")]
     [InlineData("/Whitelist/count")]

@@ -1,5 +1,6 @@
 ﻿using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
+using BL.Models.Result;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,10 @@ namespace APP.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<BlacklistController> logger)
+public class BlacklistController(
+    IBlacklistFacade blacklistFacade,
+    IResultFacade resultFacade,
+    ILogger<BlacklistController> logger)
     : ControllerBase
 {
     [HttpGet]
@@ -66,6 +70,24 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
         }
     }
 
+    [HttpPost("MoveResultToBlacklist")]
+    public async Task<ActionResult<string>> MoveResultToBlacklist(ResultModel resultModel)
+    {
+        try
+        {
+            logger.LogInformation("Moving result to a new blacklist entry.");
+            string resultId = await blacklistFacade.MoveResultToBlacklist(resultModel);
+
+            await resultFacade.DeleteAsync(resultId);
+            return Ok(resultId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while moving result to a new blacklist entry.");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
     [HttpPatch]
     public async Task<ActionResult<string>> Update([FromBody] BlacklistModel blacklist)
     {
@@ -110,35 +132,21 @@ public class BlacklistController(IBlacklistFacade blacklistFacade, ILogger<Black
     }
 
     [HttpGet("{max:int}/{page:int}/{filter?}")]
-    public async Task<ActionResult<IList<BlacklistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter)
+    public async Task<ActionResult<IList<BlacklistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter,
+        DateTime? startDate, DateTime endDate)
     {
         try
         {
             logger.LogInformation(
                 "Fetching blacklist entries with pagination. Max: {Max}, Page: {Page}, Filter: {Filter}", max, page,
                 filter);
-            List<BlacklistModel> entries = await blacklistFacade.GetEntriesPerPageAsync(max, page, filter);
+            List<BlacklistModel> entries =
+                await blacklistFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
             return Ok(entries);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error occurred while fetching blacklist entries with pagination.");
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    [HttpGet("count")]
-    public async Task<ActionResult<long>> GetTotalCount()
-    {
-        try
-        {
-            logger.LogInformation("Fetching total count of blacklist entries.");
-            long count = await blacklistFacade.GetNumberOfAllAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while fetching total count of blacklist entries.");
             return StatusCode(500, "Internal server error");
         }
     }

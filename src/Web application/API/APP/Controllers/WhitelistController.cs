@@ -1,4 +1,5 @@
 ﻿using BL.Facades.Interfaces;
+using BL.Models.Result;
 using BL.Models.Whitelist;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,10 @@ namespace APP.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<WhitelistController> logger)
+public class WhitelistController(
+    IWhitelistFacade whitelistFacade,
+    IResultFacade resultFacade,
+    ILogger<WhitelistController> logger)
     : ControllerBase
 {
     [HttpGet]
@@ -63,6 +67,24 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
         }
     }
 
+    [HttpPost("MoveResultToWhitelist")]
+    public async Task<ActionResult<string>> MoveResultToWhitelist(ResultModel resultModel)
+    {
+        try
+        {
+            logger.LogInformation("Moving result to a new blacklist entry.");
+            string resultId = await whitelistFacade.MoveResultToWhitelist(resultModel);
+
+            await resultFacade.DeleteAsync(resultId);
+            return Ok(resultId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while moving result to a new blacklist entry.");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
     [HttpPatch]
     public async Task<ActionResult<string>> Update(WhitelistModel whitelist)
     {
@@ -105,31 +127,18 @@ public class WhitelistController(IWhitelistFacade whitelistFacade, ILogger<White
     }
 
     [HttpGet("{max:int}/{page:int}/{filter?}")]
-    public async Task<ActionResult<IList<WhitelistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter)
+    public async Task<ActionResult<IList<WhitelistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter,
+        DateTime? startDate, DateTime endDate)
     {
         try
         {
-            List<WhitelistModel> results = await whitelistFacade.GetEntriesPerPageAsync(max, page, filter);
+            List<WhitelistModel> results =
+                await whitelistFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
             return Ok(results);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting whitelists with pagination.");
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    [HttpGet("count")]
-    public async Task<ActionResult<long>> GetTotalCount()
-    {
-        try
-        {
-            long count = await whitelistFacade.GetNumberOfAllAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting total count of whitelists.");
             return StatusCode(500, "Internal server error");
         }
     }

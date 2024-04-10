@@ -35,6 +35,7 @@ public class UserController(UserManager<User> userManager) : ControllerBase
         user.UserName = model.UserName;
         user.PhoneNumber = model.PhoneNumber;
         user.PhotoUrl = model.PhotoUrl;
+        user.SubscribedToNotifications = model.SubscribedToNotifications;
 
         IdentityResult result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)

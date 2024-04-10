@@ -5,4 +5,6 @@ namespace Common.Models;
 public class User : IdentityUser
 {
     public string? PhotoUrl { get; set; }
+
+    public bool SubscribedToNotifications { get; set; }
 }

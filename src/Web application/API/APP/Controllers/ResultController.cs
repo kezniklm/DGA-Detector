@@ -105,76 +105,18 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
     }
 
     [HttpGet("{max:int}/{page:int}/{filter?}")]
-    public async Task<ActionResult<IList<ResultModel>>> GetWithPaginationAndFilter(int max, int page, string? filter)
+    public async Task<ActionResult<IList<ResultModel>>> GetWithPaginationAndFilter(int max, int page, string? filter,
+        DateTime? startDate, DateTime endDate)
     {
         try
         {
-            List<ResultModel> results = await resultFacade.GetEntriesPerPageAsync(max, page, filter);
+            List<ResultModel> results =
+                await resultFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
             return Ok(results);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting results with pagination.");
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    [HttpGet("NumberOfDomainsToday")]
-    public async Task<ActionResult<long>> NumberOfDomainsToday()
-    {
-        try
-        {
-            long count = await resultFacade.GetNumberOfDomainsTodayAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting number of domains today.");
-            return StatusCode(500, "Internal server error: " + ex.Message);
-        }
-    }
-
-    [HttpGet("PositiveResultsToday")]
-    public async Task<ActionResult<long>> PositiveResultsToday()
-    {
-        try
-        {
-            long count = await resultFacade.GetPositiveDetectionResultsTodayAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting positive results today.");
-            return StatusCode(500, "Internal server error: " + ex.Message);
-        }
-    }
-
-    [HttpGet("FilteredByBlacklist")]
-    public async Task<ActionResult<long>> FilteredByBlacklist()
-    {
-        try
-        {
-            long count = await resultFacade.GetFilteredByBlacklistCountAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting filtered by blacklist count.");
-            return StatusCode(500, "Internal server error: " + ex.Message);
-        }
-    }
-
-    [HttpGet("count")]
-    public async Task<ActionResult<long>> GetTotalCount()
-    {
-        try
-        {
-            long count = await resultFacade.GetNumberOfAllAsync();
-            return Ok(count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting total count.");
             return StatusCode(500, "Internal server error");
         }
     }

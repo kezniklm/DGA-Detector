@@ -103,53 +103,6 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.NotNull(paginatedResults);
     }
 
-    [Fact]
-    public async Task NumberOfDomainsToday_ReturnsNumberOfDomains()
-    {
-        // Act
-        HttpResponseMessage response = await _client.GetAsync("/result/NumberOfDomainsToday");
-        long count = await response.Content.ReadFromJsonAsync<long>();
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(count >= 0);
-    }
-
-    [Fact]
-    public async Task PositiveResultsToday_ReturnsPositiveResultsCount()
-    {
-        // Act
-        HttpResponseMessage response = await _client.GetAsync("/result/PositiveResultsToday");
-        long count = await response.Content.ReadFromJsonAsync<long>();
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(count >= 0);
-    }
-
-    [Fact]
-    public async Task FilteredByBlacklist_ReturnsFilteredCount()
-    {
-        // Act
-        HttpResponseMessage response = await _client.GetAsync("/result/FilteredByBlacklist");
-        long count = await response.Content.ReadFromJsonAsync<long>();
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(count >= 0);
-    }
-
-    [Fact]
-    public async Task GetTotalCount_ReturnsTotalCount()
-    {
-        // Act
-        HttpResponseMessage response = await _client.GetAsync("/result/count");
-        long count = await response.Content.ReadFromJsonAsync<long>();
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(count >= 0);
-    }
 
     [Fact]
     public async Task Get_Returns404ForNonExistentResult()

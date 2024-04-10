@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using BL.Models.Interfaces;
 using DAL.Entities.Interfaces;
 using DAL.Repositories.Interfaces;
@@ -21,12 +22,48 @@ internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> reposit
     }
 
     public virtual async Task<List<TModel>> GetEntriesPerPageAsync(int pageNumber, int pageSize,
-        string? searchQuery = null)
+        string? searchQuery = null, DateTime? startTime = null, DateTime? endTime = null)
     {
         int skip = (pageNumber - 1) * pageSize;
 
         IEnumerable<TEntity> entities = await Repository.GetLimitOrGetAllAsync(skip, pageSize, searchQuery);
+
+        if (startTime.HasValue && endTime.HasValue)
+        {
+            entities = FilterEntitiesByDate(entities, startTime.Value, endTime.Value);
+        }
+
         return _mapper.Map<List<TModel>>(entities);
+    }
+
+    private IEnumerable<TEntity> FilterEntitiesByDate(IEnumerable<TEntity> entities, DateTime startTime,
+        DateTime endTime)
+    {
+        List<TEntity> filteredEntities = new();
+
+        foreach (TEntity entity in entities)
+        {
+            PropertyInfo? addedProp = entity.GetType().GetProperty("Added");
+            PropertyInfo? detectedProp = entity.GetType().GetProperty("Detected");
+
+            DateTime? date = null;
+
+            if (addedProp != null && addedProp.PropertyType == typeof(DateTime))
+            {
+                date = (DateTime?)addedProp.GetValue(entity);
+            }
+            else if (detectedProp != null && detectedProp.PropertyType == typeof(DateTime))
+            {
+                date = (DateTime?)detectedProp.GetValue(entity);
+            }
+
+            if (date.HasValue && date >= startTime && date <= endTime)
+            {
+                filteredEntities.Add(entity);
+            }
+        }
+
+        return filteredEntities;
     }
 
     public virtual async Task<TModel> GetByIdAsync(string id)
@@ -36,7 +73,6 @@ internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> reposit
     }
 
     public virtual async Task<long> GetNumberOfAllAsync() => await Repository.CountAllAsync();
-
 
     public virtual async Task<string?> CreateOrUpdateAsync(TModel model) =>
         await Repository.ExistsAsync(model.Id)
