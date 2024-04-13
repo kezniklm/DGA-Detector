@@ -39,7 +39,7 @@ public class BlacklistController(
         {
             logger.LogInformation("Fetching blacklist entry with ID: {Id}", id);
             BlacklistModel? blacklist = await blacklistFacade.GetByIdAsync(id);
-            if (blacklist == null)
+            if (blacklist is null)
             {
                 logger.LogWarning("Blacklist entry not found for ID: {Id}", id);
                 return NotFound();
@@ -95,7 +95,7 @@ public class BlacklistController(
         {
             logger.LogInformation("Updating blacklist entry with ID: {Id}", blacklist.Id);
             string? updatedBlacklist = await blacklistFacade.CreateOrUpdateAsync(blacklist);
-            if (updatedBlacklist == null)
+            if (updatedBlacklist is null)
             {
                 logger.LogWarning("Blacklist entry for update not found with ID: {Id}", blacklist.Id);
                 return NotFound();

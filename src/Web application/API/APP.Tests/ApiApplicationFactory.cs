@@ -116,7 +116,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
     private void EnsureDatabaseCreated()
     {
         IMongoDatabase? database = _mongoClient?.GetDatabase("Database");
-        if (database == null)
+        if (database is null)
         {
             _mongoClient?.GetDatabase("admin")
                 .RunCommand(new JsonCommand<BsonDocument>("{ createDatabase: 'Database' }"));

@@ -11,6 +11,7 @@ internal class WhitelistFacade(IRepository<WhitelistEntity> repository, IMapper 
     : FacadeBase<WhitelistModel, WhitelistEntity>(repository, mapper), IWhitelistFacade
 {
     private readonly IMapper _mapper = mapper;
+
     public async Task<string> MoveResultToWhitelist(ResultModel model)
     {
         WhitelistModel? whitelistModel = _mapper.Map<WhitelistModel>(model);

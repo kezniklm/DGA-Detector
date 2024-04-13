@@ -48,16 +48,16 @@ internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> reposit
 
             DateTime? date = null;
 
-            if (addedProp != null && addedProp.PropertyType == typeof(DateTime))
+            if (addedProp is not null && addedProp.PropertyType == typeof(DateTime))
             {
                 date = (DateTime?)addedProp.GetValue(entity);
             }
-            else if (detectedProp != null && detectedProp.PropertyType == typeof(DateTime))
+            else if (detectedProp is not null && detectedProp.PropertyType == typeof(DateTime))
             {
                 date = (DateTime?)detectedProp.GetValue(entity);
             }
 
-            if (date.HasValue && date >= startTime && date <= endTime)
+            if (date >= startTime && date <= endTime)
             {
                 filteredEntities.Add(entity);
             }
@@ -66,7 +66,7 @@ internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> reposit
         return filteredEntities;
     }
 
-    public virtual async Task<TModel> GetByIdAsync(string id)
+    public virtual async Task<TModel?> GetByIdAsync(string id)
     {
         TEntity? entity = await Repository.GetByIdAsync(id);
         return _mapper.Map<TModel>(entity);

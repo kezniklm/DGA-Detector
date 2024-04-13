@@ -33,7 +33,7 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         try
         {
             ResultModel? result = await resultFacade.GetByIdAsync(id);
-            if (result == null)
+            if (result is null)
             {
                 logger.LogWarning("Result not found for ID: {Id}", id);
                 return NotFound();
@@ -69,7 +69,7 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         try
         {
             string? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
-            if (updatedResult == null)
+            if (updatedResult is null)
             {
                 logger.LogWarning("Result not found for update.");
                 return NotFound();

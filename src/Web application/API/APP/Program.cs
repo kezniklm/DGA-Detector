@@ -44,7 +44,6 @@ UseEndpoints(app);
 
 UseOpenApi(app);
 
-
 app.Run();
 
 void ConfigureLogging(IServiceCollection services)

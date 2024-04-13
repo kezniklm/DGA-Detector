@@ -37,7 +37,7 @@ public class WhitelistController(
         try
         {
             WhitelistModel? whitelist = await whitelistFacade.GetByIdAsync(id);
-            if (whitelist == null)
+            if (whitelist is null)
             {
                 logger.LogWarning("Whitelist not found for ID: {Id}", id);
                 return NotFound();
@@ -91,7 +91,7 @@ public class WhitelistController(
         try
         {
             string? updatedWhitelist = await whitelistFacade.CreateOrUpdateAsync(whitelist);
-            if (updatedWhitelist == null)
+            if (updatedWhitelist is null)
             {
                 logger.LogWarning("Whitelist not found for update.");
                 return NotFound();

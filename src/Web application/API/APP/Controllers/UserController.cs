@@ -14,9 +14,16 @@ public class UserController(UserManager<User> userManager) : ControllerBase
     public async Task<ActionResult<User>> GetUser()
     {
         User? user = await userManager.GetUserAsync(User);
-        if (user == null)
+
+        if (user is null)
         {
             return NotFound("User not found");
+        }
+
+        if (user.DisplayUserName is null)
+        {
+            user.DisplayUserName = user.UserName;
+            await userManager.UpdateAsync(user);
         }
 
         return Ok(user);
@@ -26,13 +33,16 @@ public class UserController(UserManager<User> userManager) : ControllerBase
     public async Task<IActionResult> UpdateUser(UserUpdateModel model)
     {
         User? user = await userManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return NotFound("User not found");
         }
 
         user.Email = model.Email;
-        user.UserName = model.UserName;
+        user.NormalizedEmail = model.Email.ToUpper();
+        user.UserName = model.Email;
+        user.NormalizedUserName = model.Email.ToUpper();
+        user.DisplayUserName = model.UserName;
         user.PhoneNumber = model.PhoneNumber;
         user.PhotoUrl = model.PhotoUrl;
         user.SubscribedToNotifications = model.SubscribedToNotifications;
@@ -50,7 +60,7 @@ public class UserController(UserManager<User> userManager) : ControllerBase
     public async Task<IActionResult> DeleteUser(string userId)
     {
         User? user = await userManager.FindByIdAsync(userId);
-        if (user == null)
+        if (user is null)
         {
             return NotFound("User not found");
         }
@@ -68,7 +78,7 @@ public class UserController(UserManager<User> userManager) : ControllerBase
     public async Task<IActionResult> ChangePassword([FromBody] UserPasswordChangeModel model)
     {
         User? user = await userManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return NotFound("User not found");
         }
