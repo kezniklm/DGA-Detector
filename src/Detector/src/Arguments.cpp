@@ -130,6 +130,12 @@ void Arguments::ValidateAndSetOptions(const cxxopts::ParseResult &result,
         SetOption<size_t>("max-batch-size", max_batch_size_, result, appsettings, false, options);
         SetOption<size_t>("max-cycle-count", max_cycle_count_, result, appsettings, false, options);
 
+        if (max_batch_size_ == 0 || max_cycle_count_ == 0)
+        {
+            max_batch_size_ = 100000;
+            max_cycle_count_ = 50000;
+        }
+
         constexpr int DEFAULT_NUMBER_OF_THREADS = 5;
         if (number_of_threads_ < DEFAULT_NUMBER_OF_THREADS)
         {
