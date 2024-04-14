@@ -21,6 +21,7 @@ import argparse
 import json
 import sys
 from typing import Any, Dict
+from multiprocessing import cpu_count
 
 from src.logging.logger import Logger
 from src.utils.return_codes import ReturnCodes
@@ -113,11 +114,11 @@ class Arguments:
         )
 
         self.parser.add_argument(
-            "-t",
-            "--threads",
+            "-p",
+            "--processes",
             type=int,
-            default=self.config.get("threads", 1),
-            help="Number of processing threads. Default is 1 if not specified in appsettings.json or command line.",
+            default=self.config.get("processes", cpu_count),
+            help="Number of processes that extract features. Default is number of cores of device you are using, if not specified in appsettings.json or command line.",
         )
 
         self.parser.add_argument(

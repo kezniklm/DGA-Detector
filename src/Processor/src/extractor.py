@@ -2,6 +2,7 @@ import json
 import queue
 import threading
 import time
+import warnings
 from queue import Queue
 from threading import Event
 
@@ -9,23 +10,35 @@ from pandas import DataFrame
 
 from .database.abstract_database import AbstractDatabase
 from .database.mongodb_database import MongoDbDatabase
-from .features.features import Features
+from .features.features import FeatureExtractor
 from .logging.logger import Logger
+
+warnings.filterwarnings(
+    "ignore", category=FutureWarning, module="numpy.core.fromnumeric"
+)
 
 
 class Extractor(threading.Thread):
-    def __init__(self, message_queue, shutdown_event, database_uri, database_name):
+    def __init__(
+        self,
+        message_queue,
+        shutdown_event,
+        database_uri,
+        database_name,
+        number_of_processes,
+    ):
         super().__init__()
         self.message_queue: Queue = message_queue
         self.shutdown_event: Event = shutdown_event
         self.daemon: bool = True
         self.logger: Logger = Logger().get_logger()
-        self.features: Features = Features()
+        self.feature_extractor: FeatureExtractor = FeatureExtractor(number_of_processes)
         self.database: AbstractDatabase = MongoDbDatabase(
             self.logger, database_uri, database_name
         )
 
     def run(self):
+        self.database.connect()
         while not self.shutdown_event.is_set() or not self.message_queue.empty():
             try:
                 message = self.message_queue.get_nowait()
@@ -53,27 +66,19 @@ class Extractor(threading.Thread):
                 list(domains_dict.items()), columns=["domain_name", "return_code"]
             )
 
-            # Split into two DataFrames based on 'Return_Code'
-            df_return_code_3 = df[df["return_code"] == 3].drop(columns=["return_code"])
+            # Start timing feature extraction
+            start_time = time.time()
 
-            df_other_return_codes = df[df["return_code"] != 3].drop(
-                columns=["return_code"]
-            )
+            df = self.feature_extractor.extract_features(df)
 
-            self.features.get_lexical(df_return_code_3)
+            # End timing and calculate elapsed time
+            elapsed_time = time.time() - start_time
+            print(f"Feature extraction took {elapsed_time:.2f} seconds.")
 
-            self.features.get_lexical_and_external(df_other_return_codes)
+            print(df.head())
 
-            print(df_return_code_3.head())
+            self.database.insert_dataframe(df)
 
-            print(df_other_return_codes.head())
-
-            self.database.insert_dataframe(df_return_code_3)
-
-            self.database.insert_dataframe(df_other_return_codes)
         except ValueError as e:
             self.logger.error(f"Error processing message: {e}")
             return
-
-    def lexical_features(df: DataFrame) -> DataFrame:
-        pass

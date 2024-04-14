@@ -21,12 +21,11 @@
 import queue
 import threading
 import time
-from typing import List
 
-from src.utils.arguments import Arguments
 from src.extractor import Extractor
 from src.logging.logger import Logger
 from src.rabbitmq_consumer import RabbitMQConsumer
+from src.utils.arguments import Arguments
 
 
 class Processor:
@@ -53,12 +52,13 @@ class Processor:
         args: Arguments = Arguments(self.logger).parse_args()
         self.shutdown_event: threading.Event = threading.Event()
         self.message_queue: queue.Queue = queue.Queue(args.queue_size)
-        self.extractors: List[Extractor] = [
-            Extractor(
-                self.message_queue, self.shutdown_event, args.database, args.dbname
-            )
-            for _ in range(args.threads)
-        ]
+        self.extractor: Extractor = Extractor(
+            self.message_queue,
+            self.shutdown_event,
+            args.database,
+            args.dbname,
+            args.processes,
+        )
         self.consumer: RabbitMQConsumer = RabbitMQConsumer(
             args.rabbitmq, args.queue, self.message_queue, self.shutdown_event
         )
@@ -67,10 +67,9 @@ class Processor:
         """
         Start the processing loop.
 
-        Starts Extractors and RabbitMQConsumer, and enters the main processing loop.
+        Starts Extractor and RabbitMQConsumer, and enters the main processing loop.
         """
-        for extractor in self.extractors:
-            extractor.start()
+        self.extractor.start()
         self.consumer.start()
 
         self.logger.info("Application is running. Press CTRL+C to exit.\n")
@@ -81,8 +80,7 @@ class Processor:
             self.logger.info("Interrupted by user, initiating shutdown...\n")
             self.shutdown_event.set()
 
-        for extractor in self.extractors:
-            extractor.join()
+        # maybe exit threads
         self.logger.info("Processor has exited.")
 
 
