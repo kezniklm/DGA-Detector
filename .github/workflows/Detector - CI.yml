@@ -24,7 +24,12 @@ jobs:
       - name: Install build essentials and CMake
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake bison flex libbison-dev
+          sudo apt-get install -y build-essential bison flex libbison-dev
+
+      - name: Install specific version of CMake
+        uses: lukka/get-cmake@latest
+        with:
+          cmake-version: '3.29.2'
 
       - name: Install vcpkg and dependencies
         shell: bash
