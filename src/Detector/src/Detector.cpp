@@ -193,7 +193,7 @@ void Detector::InitializeComponents(const int argc, const char **argv)
     }
     catch (const exception &e)
     {
-        global_logger_ptr->Critical(std::string("Error: ") + e.what() + std::string("The entered size is too huge\n"));
+        global_logger_ptr->Critical(std::string("Error: ") + e.what());
         throw;
     }
 }
