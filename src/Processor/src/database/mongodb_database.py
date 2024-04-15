@@ -16,6 +16,7 @@
  """
 
 import time
+from datetime import datetime
 from typing import Union
 
 import pandas as pd
@@ -51,7 +52,7 @@ class MongoDbDatabase(AbstractDatabase):
         logger: Logger,
         uri: str,
         db_name: str,
-        collection_name: str = "Results",
+        collection_name: str = "Result",
         max_retries: int = 3,
         delay: int = 5,
     ) -> None:
@@ -61,7 +62,7 @@ class MongoDbDatabase(AbstractDatabase):
         Args:
             uri (str): The URI of the MongoDB server.
             db_name (str): The name of the database.
-            collection_name (str, optional): The name of the collection within the database. Defaults to Results.
+            collection_name (str, optional): The name of the collection within the database. Defaults to Result.
             max_retries (int, optional): The maximum number of connection retry attempts. Defaults to 3.
             delay (int, optional): The delay (in seconds) between connection retry attempts. Defaults to 5.
             logger: The logger instance for logging operation messages.
@@ -75,6 +76,12 @@ class MongoDbDatabase(AbstractDatabase):
         self.client: MongoClient = None
         self.db: Database = None
         self.collection: Collection = None
+
+    def __del__(self) -> None:
+        """
+        Destructor method to ensure that the MongoDB connection is properly closed when the object is destroyed.
+        """
+        self.close()
 
     def connect(self) -> None:
         """
@@ -104,18 +111,16 @@ class MongoDbDatabase(AbstractDatabase):
         if self.client is None or self.db is None or self.collection is None:
             raise RuntimeError("Database connection is not established.")
 
-    def insert_dataframe(self, data: Union[pd.DataFrame, dict]) -> None:
+    def _transform_data(self, data: Union[pd.DataFrame, dict]) -> list:
         """
-        Insert data into the MongoDB collection from a Pandas DataFrame or dictionary.
+        Transforms the input data into a list of documents matching the structure of ResultEntity.
 
         Args:
-            data (Union[pd.DataFrame, dict]): The data to insert.
+            data (Union[pd.DataFrame, dict]): The data to transform.
 
-        Raises:
-            ValueError: If the provided data is not a Pandas DataFrame or a dictionary.
+        Returns:
+            list: A list of dictionaries formatted according to the ResultEntity structure.
         """
-
-        self._ensure_connected()
 
         if isinstance(data, pd.DataFrame):
             documents = data.to_dict("records")
@@ -124,11 +129,78 @@ class MongoDbDatabase(AbstractDatabase):
         else:
             raise ValueError("Data must be a pandas DataFrame or a dictionary")
 
-        try:
-            if documents:
-                result = self.collection.insert_many(documents)
-                self.logger.info(f"Inserted {len(result.inserted_ids)} documents.")
-            else:
-                self.logger.info("No data to insert.")
-        except Exception as e:
-            self.logger.error(f"An error occurred while inserting documents: {e}")
+        # Transform each document to match the Result structure
+        transformed_documents = []
+        for doc in documents:
+            transformed_doc = {
+                "Detected": doc.get("Detected", datetime.now()),
+                "DidBlacklistHit": doc.get("DidBlacklistHit", False),
+                "DangerousProbabilityValue": doc.get("DangerousProbabilityValue", 0),
+                "DangerousBoolValue": doc.get("DangerousBoolValue", False),
+                "DomainName": doc["domain_name"],
+            }
+            transformed_documents.append(transformed_doc)
+
+        return transformed_documents
+
+    def handle_connection_failure(func):
+        """Decorator to handle reconnection on connection failures."""
+
+        def wrapper(*args, **kwargs):
+            self = args[0]
+            try:
+                return func(*args, **kwargs)
+            except (errors.ConnectionFailure, errors.NetworkTimeout) as e:
+                self.logger.error(
+                    f"Operation failed due to connection issue: {e}, attempting to reconnect..."
+                )
+                self.connect()
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    @handle_connection_failure
+    def insert_dataframe(
+        self, data: Union[pd.DataFrame, dict], batch_size: int = 1000
+    ) -> None:
+        """
+        Inserts transformed data into the MongoDB collection from a Pandas DataFrame or dictionary, in batches.
+        Wrapped with automatic reconnection.
+        """
+        self._ensure_connected()
+
+        transformed_documents = self._transform_data(data)
+        total_documents = len(transformed_documents)
+        inserted_count = 0
+
+        for start_idx in range(0, total_documents, batch_size):
+            end_idx = start_idx + batch_size
+            batch = transformed_documents[start_idx:end_idx]
+            try:
+                if batch:
+                    result = self.collection.insert_many(batch, ordered=False)
+                    inserted_count += len(result.inserted_ids)
+            except Exception as e:
+                self.logger.error(
+                    f"An error occurred while inserting batch {start_idx // batch_size + 1}: {e}"
+                )
+
+        if inserted_count:
+            self.logger.info(f"Total inserted documents: {inserted_count}")
+        else:
+            self.logger.info("No data was inserted.")
+
+    def close(self) -> None:
+        """
+        Explicitly closes the MongoDB client connection.
+        """
+        if self.client:
+            try:
+                self.client.close()
+                self.logger.info("MongoDB connection closed successfully.")
+            except Exception as e:
+                self.logger.error(f"Failed to close MongoDB connection: {e}")
+            finally:
+                self.client = None
+                self.db = None
+                self.collection = None
