@@ -20,9 +20,16 @@
 #include <string>
 #include <string_view>
 
+#ifdef _WIN32
+#include "amqp.h"
+#include "amqp_framing.h"
+#include "amqp_tcp_socket.h"
+#else
 #include "rabbitmq-c/amqp.h"
 #include "rabbitmq-c/framing.h"
 #include "rabbitmq-c/tcp_socket.h"
+#endif
+
 #include "IMessagePublisher.hpp"
 
 /**
