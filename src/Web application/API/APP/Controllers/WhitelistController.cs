@@ -133,7 +133,7 @@ public class WhitelistController(
         try
         {
             List<WhitelistModel> results =
-                await whitelistFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
+                await whitelistFacade.GetEntriesPerPageAsync(page, max, filter, startDate, endDate);
             return Ok(results);
         }
         catch (Exception ex)

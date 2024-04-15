@@ -111,7 +111,7 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
         try
         {
             List<ResultModel> results =
-                await resultFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
+                await resultFacade.GetEntriesPerPageAsync(page, max, filter, startDate, endDate);
             return Ok(results);
         }
         catch (Exception ex)

@@ -141,7 +141,7 @@ public class BlacklistController(
                 "Fetching blacklist entries with pagination. Max: {Max}, Page: {Page}, Filter: {Filter}", max, page,
                 filter);
             List<BlacklistModel> entries =
-                await blacklistFacade.GetEntriesPerPageAsync(max, page, filter, startDate, endDate);
+                await blacklistFacade.GetEntriesPerPageAsync(page, max, filter, startDate, endDate);
             return Ok(entries);
         }
         catch (Exception ex)
