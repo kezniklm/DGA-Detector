@@ -47,5 +47,6 @@ class Evaluator:
 
         @return A pandas DataFrame containing the predicted values.
         """
-        predictions = self.model.predict(data)
-        return predictions
+        # predictions = self.model.predict(data)
+        # return predictions
+        pass
