@@ -37,7 +37,7 @@ class Processor:
     Attributes:
         shutdown_event (threading.Event): A threading event to signal shutdown.
         message_queue (queue.Queue): A queue to store incoming messages.
-        extractors (List[Extractor]): A list of Extractor instances for processing messages.
+        extractor (Extractor): A Extractor instance for processing messages.
         consumer (RabbitMQConsumer): A RabbitMQConsumer instance for consuming messages.
         logger (Logger): A logger instance for logging events.
     """
@@ -72,15 +72,14 @@ class Processor:
         self.extractor.start()
         self.consumer.start()
 
-        self.logger.info("Application is running. Press CTRL+C to exit.\n")
+        self.logger.info("Application is running. Press CTRL+C to exit.")
         try:
             while not self.shutdown_event.is_set():
                 time.sleep(10)
         except KeyboardInterrupt:
-            self.logger.info("Interrupted by user, initiating shutdown...\n")
+            self.logger.info("Interrupted by user, initiating shutdown...")
             self.shutdown_event.set()
 
-        # maybe exit threads
         self.logger.info("Processor has exited.")
 
 

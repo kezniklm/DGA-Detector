@@ -1,3 +1,22 @@
+"""
+ * @file constants.py
+ * @brief Configuration data for security-related feature extraction and analysis tasks.
+ *
+ * This file contains essential data used in security operations, particularly for identifying and mitigating phishing attempts and domain abuses. It includes lists of keywords often used in phishing, scores indicating the abuse likelihood of top-level domains, character sets for processing strings, and mappings for n-gram analyses. This configuration supports various security functions such as email scanning, URL analysis, and data validation processes.
+ *
+ * The main functionalities of this file include:
+ * - Providing a constant list of keywords associated with phishing attempts to be used across various security checks.
+ * - Mapping top-level domains to their abuse scores to assess the risk associated with different domain names.
+ * - Defining character sets for consonants, vowels, and hexadecimal characters to support various text processing tasks.
+ * - Offering a simple mapping of n-gram names to their numerical counterparts for use in text analysis and feature extraction.
+ *
+ * @version 1.0
+ * @date 2024-03-22
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @copyright Copyright (c) 2024
+ *
+"""
+
 PHISHING_KEYWORDS = [
     "account",
     "action",
@@ -45,8 +64,12 @@ PHISHING_KEYWORDS = [
     "vm",
     "web",
 ]
+"""List of common keywords used in phishing emails.
 
-# Source: https://www.scoutdns.com/most-abused-top-level-domains-list-october-scoutdns/
+This list includes various words that are commonly found in phishing attempts.
+These keywords are often used to trigger urgency or relate to sensitive user information.
+"""
+
 TLD_ABUSE_SCORES = {
     "com": 0.6554,
     "net": 0.1040,
@@ -79,10 +102,31 @@ TLD_ABUSE_SCORES = {
     "top": 0.0009,
     "stream": 0.0007,
 }
+"""Dictionary mapping top-level domains to their abuse scores.
+
+These scores represent the relative likelihood of abuse occurring from domains using these top-level domains,
+based on data from ScoutDNS. A higher score indicates a higher observed rate of malicious activities.
+
+Source: https://www.scoutdns.com/most-abused-top-level-domains-list-october-scoutdns/
+"""
 
 CONSONANTS = "bcdfghjklmnpqrstvwxyz"
+"""String of all consonants in the alphabet.
+
+Used for various operations where distinguishing between consonants and vowels is necessary.
+"""
+
 VOWELS = "aeiouy"
+"""String of all vowels in the alphabet.
+
+Used for various operations where distinguishing between vowels and consonants is necessary.
+"""
+
 HEX_CHARACTERS = "0123456789ABCDEFabcdef"
+"""String of all hexadecimal characters.
+
+Used in operations requiring hexadecimal validation or processing.
+"""
 
 NGRAM_MAPPING = {
     "bi": 2,
@@ -90,3 +134,7 @@ NGRAM_MAPPING = {
     "tetra": 4,
     "penta": 5,
 }
+"""Dictionary mapping n-gram prefixes to their numerical values.
+
+Used to translate n-gram text prefixes like 'bi', 'tri', etc., into their corresponding numerical values.
+"""
