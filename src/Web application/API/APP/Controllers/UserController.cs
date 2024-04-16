@@ -47,6 +47,12 @@ public class UserController(UserManager<User> userManager) : ControllerBase
         user.PhotoUrl = model.PhotoUrl;
         user.SubscribedToNotifications = model.SubscribedToNotifications;
 
+        if (model.SecurityAnswer is not null && model.SecurityQuestion is not null)
+        {
+            user.SecurityQuestion = model.SecurityQuestion;
+            user.SecurityAnswer = model.SecurityAnswer;
+        }
+
         IdentityResult result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {

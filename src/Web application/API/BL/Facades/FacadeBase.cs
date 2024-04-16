@@ -36,7 +36,7 @@ internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> reposit
         return _mapper.Map<List<TModel>>(entities);
     }
 
-    private IEnumerable<TEntity> FilterEntitiesByDate(IEnumerable<TEntity> entities, DateTime startTime,
+    private static IEnumerable<TEntity> FilterEntitiesByDate(IEnumerable<TEntity> entities, DateTime startTime,
         DateTime endTime)
     {
         List<TEntity> filteredEntities = new();
