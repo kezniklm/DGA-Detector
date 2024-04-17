@@ -1,4 +1,25 @@
-﻿using Common.Exceptions;
+﻿/**
+ * @file ResultRepositoryTests.cs
+ *
+ * @brief Contains unit tests for the ResultRepository class.
+ *
+ * This file contains unit tests for the ResultRepository class, which is responsible for handling data operations related to ResultEntity objects. It tests various functionalities of the repository, including retrieving all entities, inserting new entities, updating existing entities, removing entities, searching by name, and handling exceptions.
+ *
+ * The main functionalities tested in this file include:
+ * - Retrieving all ResultEntity entities asynchronously.
+ * - Inserting a new ResultEntity asynchronously and verifying its ID.
+ * - Updating an existing ResultEntity asynchronously and verifying its ID.
+ * - Removing a ResultEntity asynchronously.
+ * - Searching for ResultEntity entities by name asynchronously.
+ * - Handling exceptions such as duplicate key errors and entity not found errors.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ */
+
+using Common.Exceptions;
 using DAL.Entities;
 using DAL.Repositories;
 using MongoDB.Bson;
@@ -8,6 +29,9 @@ using Xunit;
 
 namespace DAL.Tests;
 
+/// <summary>
+///     Contains unit tests for the ResultRepository class.
+/// </summary>
 public class ResultRepositoryTests
 {
     private readonly ApiDbContext _dbContext;
@@ -16,6 +40,9 @@ public class ResultRepositoryTests
     private readonly Mock<IMongoDatabase> _mockDatabase;
     private readonly RepositoryBase<ResultEntity> _repository;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ResultRepositoryTests" /> class.
+    /// </summary>
     public ResultRepositoryTests()
     {
         _mockClient = new Mock<IMongoClient>();
@@ -28,6 +55,9 @@ public class ResultRepositoryTests
         _repository = new RepositoryBase<ResultEntity>(_dbContext);
     }
 
+    /// <summary>
+    ///     Tests the GetAllAsync method.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsAllEntities()
     {
@@ -51,6 +81,9 @@ public class ResultRepositoryTests
         Assert.Equal(testEntities.Count, results.Count);
     }
 
+    /// <summary>
+    ///     Tests the InsertAsync method.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_AddsNewEntity_ReturnsId()
     {
@@ -68,6 +101,9 @@ public class ResultRepositoryTests
         _mockCollection.Verify();
     }
 
+    /// <summary>
+    ///     Tests the UpdateAsync method.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_UpdatesEntity_ReturnsId()
     {
@@ -86,6 +122,9 @@ public class ResultRepositoryTests
         Assert.Equal(id, resultId);
     }
 
+    /// <summary>
+    ///     Tests the RemoveAsync method when deleting an existing entity.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_DeletesEntity_Successfully()
     {
@@ -105,6 +144,9 @@ public class ResultRepositoryTests
             Times.Once);
     }
 
+    /// <summary>
+    ///     Tests the RemoveAsync method when an entity to delete does not exist.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_ThrowsInvalidDeleteException_WhenEntityDoesNotExist()
     {
@@ -119,6 +161,9 @@ public class ResultRepositoryTests
         await Assert.ThrowsAsync<InvalidDeleteException>(async () => await _repository.RemoveAsync(id));
     }
 
+    /// <summary>
+    ///     Tests the SearchByNameAsync method when entities with matching names exist.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsMatchingEntities_WhenNameMatches()
     {
@@ -141,6 +186,9 @@ public class ResultRepositoryTests
         Assert.NotEmpty(results);
     }
 
+    /// <summary>
+    ///     Tests the GetAllAsync method when the collection is empty.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList_WhenCollectionIsEmpty()
     {
@@ -163,6 +211,9 @@ public class ResultRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Tests the InsertAsync method when attempting to insert a duplicate entity.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_ThrowsException_WhenEntityExists()
     {
@@ -176,6 +227,9 @@ public class ResultRepositoryTests
         await Assert.ThrowsAsync<MongoException>(() => _repository.InsertAsync(testEntity));
     }
 
+    /// <summary>
+    ///     Tests the SearchByNameAsync method when no matching entities are found.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsEmptyList_WhenNoMatches()
     {
@@ -198,6 +252,9 @@ public class ResultRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Tests the UpdateAsync method when attempting to update a non-existing entity.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_ReturnsNull_WhenEntityDoesNotExist()
     {
@@ -215,11 +272,17 @@ public class ResultRepositoryTests
         Assert.Null(resultId);
     }
 
+    /// <summary>
+    ///     Tests the GetMaxOrGetAllAsync method when the provided maximum value is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenMaxIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _repository.GetLimitOrGetAllAsync(-1, 0));
 
+    /// <summary>
+    ///     Tests the GetMaxOrGetAllAsync method when the provided page value is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenPageIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>

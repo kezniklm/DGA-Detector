@@ -1,4 +1,24 @@
-﻿using Common.Exceptions;
+﻿/**
+ * @file BlacklistRepositoryTests.cs
+ *
+ * @brief Unit tests for the BlacklistRepository class.
+ *
+ * This file contains unit tests for the BlacklistRepository class. The BlacklistRepository class is responsible for managing operations related to blacklisted entities in the database.
+ *
+ * The main functionalities tested in this file include:
+ * - Retrieving all entities successfully.
+ * - Adding a new entity and verifying its ID.
+ * - Updating an existing entity and verifying its ID.
+ * - Deleting an entity successfully.
+ * - Handling exceptions when performing database operations.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ */
+
+using Common.Exceptions;
 using DAL.Entities;
 using DAL.Repositories;
 using MongoDB.Bson;
@@ -8,6 +28,9 @@ using Xunit;
 
 namespace DAL.Tests;
 
+/// <summary>
+///     Unit tests for the BlacklistRepository class.
+/// </summary>
 public class BlacklistRepositoryTests
 {
     private readonly ApiDbContext _dbContext;
@@ -16,6 +39,9 @@ public class BlacklistRepositoryTests
     private readonly Mock<IMongoDatabase> _mockDatabase;
     private readonly RepositoryBase<BlacklistEntity> _repository;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="BlacklistRepositoryTests" /> class.
+    /// </summary>
     public BlacklistRepositoryTests()
     {
         _mockClient = new Mock<IMongoClient>();
@@ -28,6 +54,9 @@ public class BlacklistRepositoryTests
         _repository = new RepositoryBase<BlacklistEntity>(_dbContext);
     }
 
+    /// <summary>
+    ///     Test method to verify that GetAllAsync returns all entities successfully.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsAllEntities()
     {
@@ -51,6 +80,9 @@ public class BlacklistRepositoryTests
         Assert.Equal(testEntities.Count, results.Count);
     }
 
+    /// <summary>
+    ///     Test method to verify that InsertAsync adds a new entity and returns its ID.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_AddsNewEntity_ReturnsId()
     {
@@ -68,6 +100,9 @@ public class BlacklistRepositoryTests
         _mockCollection.Verify();
     }
 
+    /// <summary>
+    ///     Test method to verify that UpdateAsync updates an existing entity and returns its ID.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_UpdatesEntity_ReturnsId()
     {
@@ -86,6 +121,9 @@ public class BlacklistRepositoryTests
         Assert.Equal(id, resultId);
     }
 
+    /// <summary>
+    ///     Test method to verify that RemoveAsync deletes an entity successfully.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_DeletesEntity_Successfully()
     {
@@ -105,6 +143,9 @@ public class BlacklistRepositoryTests
             Times.Once);
     }
 
+    /// <summary>
+    ///     Test method to verify that RemoveAsync throws InvalidDeleteException when the entity does not exist.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_ThrowsInvalidDeleteException_WhenEntityDoesNotExist()
     {
@@ -119,6 +160,9 @@ public class BlacklistRepositoryTests
         await Assert.ThrowsAsync<InvalidDeleteException>(async () => await _repository.RemoveAsync(id));
     }
 
+    /// <summary>
+    ///     Test method to verify that SearchByNameAsync returns matching entities when the name matches.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsMatchingEntities_WhenNameMatches()
     {
@@ -147,6 +191,9 @@ public class BlacklistRepositoryTests
         Assert.NotEmpty(results);
     }
 
+    /// <summary>
+    ///     Test method to verify that GetAllAsync returns an empty list when the collection is empty.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList_WhenCollectionIsEmpty()
     {
@@ -169,6 +216,9 @@ public class BlacklistRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Test method to verify that InsertAsync throws an exception when the entity already exists.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_ThrowsException_WhenEntityExists()
     {
@@ -182,6 +232,9 @@ public class BlacklistRepositoryTests
         await Assert.ThrowsAsync<MongoException>(() => _repository.InsertAsync(testEntity));
     }
 
+    /// <summary>
+    ///     Test method to verify that SearchByNameAsync returns an empty list when there are no matches.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsEmptyList_WhenNoMatches()
     {
@@ -204,6 +257,9 @@ public class BlacklistRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Test method to verify that UpdateAsync returns null when the entity does not exist.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_ReturnsNull_WhenEntityDoesNotExist()
     {
@@ -221,11 +277,17 @@ public class BlacklistRepositoryTests
         Assert.Null(resultId);
     }
 
+    /// <summary>
+    ///     Test method to verify that GetMaxOrGetAllAsync throws ArgumentOutOfRangeException when max is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenMaxIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _repository.GetLimitOrGetAllAsync(-1, 0));
 
+    /// <summary>
+    ///     Test method to verify that GetMaxOrGetAllAsync throws ArgumentOutOfRangeException when page is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenPageIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>

@@ -1,4 +1,25 @@
-﻿using Common.Exceptions;
+﻿/**
+ * @file WhitelistRepositoryTests.cs
+ *
+ * @brief Contains unit tests for the WhitelistRepository class.
+ *
+ * This file contains unit tests for the WhitelistRepository class, which is responsible for handling data operations related to whitelisted entities. It tests various functionalities of the repository, including adding, updating, deleting, and querying whitelist entities.
+ *
+ * The main functionalities tested in this file include:
+ * - Retrieving all whitelist entities asynchronously.
+ * - Inserting a new whitelist entity asynchronously.
+ * - Updating an existing whitelist entity asynchronously.
+ * - Removing a whitelist entity asynchronously.
+ * - Searching for whitelist entities by name asynchronously.
+ * - Handling exceptions such as duplicate key errors and entity not found errors.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ */
+
+using Common.Exceptions;
 using DAL.Entities;
 using DAL.Repositories;
 using MongoDB.Bson;
@@ -8,6 +29,9 @@ using Xunit;
 
 namespace DAL.Tests;
 
+/// <summary>
+///     Test class for testing the functionality of the WhitelistRepository.
+/// </summary>
 public class WhitelistRepositoryTests
 {
     private readonly ApiDbContext _dbContext;
@@ -16,6 +40,9 @@ public class WhitelistRepositoryTests
     private readonly Mock<IMongoDatabase> _mockDatabase;
     private readonly RepositoryBase<WhitelistEntity> _repository;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="WhitelistRepositoryTests" /> class.
+    /// </summary>
     public WhitelistRepositoryTests()
     {
         _mockClient = new Mock<IMongoClient>();
@@ -28,6 +55,9 @@ public class WhitelistRepositoryTests
         _repository = new RepositoryBase<WhitelistEntity>(_dbContext);
     }
 
+    /// <summary>
+    ///     Tests the GetAllAsync method of the repository to ensure it returns all entities.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsAllEntities()
     {
@@ -51,6 +81,9 @@ public class WhitelistRepositoryTests
         Assert.Equal(testEntities.Count, results.Count);
     }
 
+    /// <summary>
+    ///     Tests the InsertAsync method of the repository to ensure it adds a new entity and returns its ID.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_AddsNewEntity_ReturnsId()
     {
@@ -68,6 +101,9 @@ public class WhitelistRepositoryTests
         _mockCollection.Verify();
     }
 
+    /// <summary>
+    ///     Tests the UpdateAsync method of the repository to ensure it updates an existing entity and returns its ID.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_UpdatesEntity_ReturnsId()
     {
@@ -86,6 +122,9 @@ public class WhitelistRepositoryTests
         Assert.Equal(id, resultId);
     }
 
+    /// <summary>
+    ///     Tests the RemoveAsync method of the repository to ensure it deletes an entity successfully.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_DeletesEntity_Successfully()
     {
@@ -105,6 +144,9 @@ public class WhitelistRepositoryTests
             Times.Once);
     }
 
+    /// <summary>
+    ///     Tests the RemoveAsync method of the repository to ensure it throws an exception when the entity does not exist.
+    /// </summary>
     [Fact]
     public async Task RemoveAsync_ThrowsInvalidDeleteException_WhenEntityDoesNotExist()
     {
@@ -119,6 +161,9 @@ public class WhitelistRepositoryTests
         await Assert.ThrowsAsync<InvalidDeleteException>(async () => await _repository.RemoveAsync(id));
     }
 
+    /// <summary>
+    ///     Tests the SearchByNameAsync method of the repository to ensure it returns matching entities when name matches.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsMatchingEntities_WhenNameMatches()
     {
@@ -147,6 +192,9 @@ public class WhitelistRepositoryTests
         Assert.NotEmpty(results);
     }
 
+    /// <summary>
+    ///     Tests the GetAllAsync method of the repository to ensure it returns an empty list when the collection is empty.
+    /// </summary>
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList_WhenCollectionIsEmpty()
     {
@@ -169,6 +217,9 @@ public class WhitelistRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Tests the InsertAsync method of the repository to ensure it throws an exception when the entity already exists.
+    /// </summary>
     [Fact]
     public async Task InsertAsync_ThrowsException_WhenEntityExists()
     {
@@ -182,6 +233,9 @@ public class WhitelistRepositoryTests
         await Assert.ThrowsAsync<MongoException>(() => _repository.InsertAsync(testEntity));
     }
 
+    /// <summary>
+    ///     Tests the SearchByNameAsync method of the repository to ensure it returns an empty list when no matches are found.
+    /// </summary>
     [Fact]
     public async Task SearchByNameAsync_ReturnsEmptyList_WhenNoMatches()
     {
@@ -204,6 +258,9 @@ public class WhitelistRepositoryTests
         Assert.Empty(results);
     }
 
+    /// <summary>
+    ///     Tests the UpdateAsync method of the repository to ensure it returns null when the entity does not exist.
+    /// </summary>
     [Fact]
     public async Task UpdateAsync_ReturnsNull_WhenEntityDoesNotExist()
     {
@@ -221,11 +278,17 @@ public class WhitelistRepositoryTests
         Assert.Null(resultId);
     }
 
+    /// <summary>
+    ///     Tests the GetMaxOrGetAllAsync method of the repository to ensure it throws an exception when max is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenMaxIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _repository.GetLimitOrGetAllAsync(-1, 0));
 
+    /// <summary>
+    ///     Tests the GetMaxOrGetAllAsync method of the repository to ensure it throws an exception when page is invalid.
+    /// </summary>
     [Fact]
     public async Task GetMaxOrGetAllAsync_ThrowsArgumentOutOfRangeException_WhenPageIsInvalid() =>
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>

@@ -1,4 +1,27 @@
-﻿using BL.Facades.Interfaces;
+﻿/**
+ * @file WhitelistController.cs
+ *
+ * @brief Defines the controller for managing whitelists in the application.
+ *
+ * This file contains the implementation of the WhitelistController class, which provides endpoints for managing whitelists in the application. It handles CRUD operations for whitelists, including retrieval, creation, update, and deletion. The controller also provides pagination and filtering options for fetching whitelists with specified criteria.
+ *
+ * The main functionalities of this controller include:
+ * - Retrieving all whitelists.
+ * - Retrieving a specific whitelist by ID.
+ * - Creating a new whitelist entry.
+ * - Moving a result to the whitelist and deleting it from the results list.
+ * - Updating an existing whitelist entry.
+ * - Deleting a whitelist entry.
+ * - Retrieving whitelists with pagination and optional filtering.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using BL.Facades.Interfaces;
 using BL.Models.Result;
 using BL.Models.Whitelist;
 using Common.Exceptions;
@@ -7,6 +30,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace APP.Controllers;
 
+/// <summary>
+///     Controller for managing whitelist operations.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 [Authorize]
@@ -16,6 +42,9 @@ public class WhitelistController(
     ILogger<WhitelistController> logger)
     : ControllerBase
 {
+    /// <summary>
+    ///     Retrieves all whitelists.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IList<WhitelistModel>>> GetAll()
     {
@@ -31,6 +60,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Retrieves a whitelist by ID.
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<ActionResult<WhitelistModel>> Get(string id)
     {
@@ -52,6 +84,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Creates a new whitelist entry.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<string>> Create(WhitelistModel whitelist)
     {
@@ -67,6 +102,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Moves a result to a new whitelist entry.
+    /// </summary>
     [HttpPost("MoveResultToWhitelist")]
     public async Task<ActionResult<string>> MoveResultToWhitelist(ResultModel resultModel)
     {
@@ -85,6 +123,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Updates an existing whitelist entry.
+    /// </summary>
     [HttpPatch]
     public async Task<ActionResult<string>> Update(WhitelistModel whitelist)
     {
@@ -106,6 +147,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Deletes a whitelist entry by ID.
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {
@@ -126,6 +170,9 @@ public class WhitelistController(
         }
     }
 
+    /// <summary>
+    ///     Retrieves whitelists with pagination and optional filtering.
+    /// </summary>
     [HttpGet("{max:int}/{page:int}/{filter?}")]
     public async Task<ActionResult<IList<WhitelistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter,
         DateTime? startDate, DateTime endDate)

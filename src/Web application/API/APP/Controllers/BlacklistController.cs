@@ -1,4 +1,27 @@
-﻿using BL.Facades.Interfaces;
+﻿/**
+ * @file BlacklistController.cs
+ *
+ * @brief Provides endpoints for managing blacklist entries.
+ *
+ * This file contains the implementation of the BlacklistController class, which provides HTTP endpoints for managing blacklist entries. It handles CRUD operations for blacklisted items, including fetching, creating, updating, and deleting entries. Additionally, it supports pagination and filtering of blacklist entries.
+ *
+ * The main functionalities of this controller include:
+ * - Retrieving all blacklist entries.
+ * - Retrieving a blacklist entry by its ID.
+ * - Creating a new blacklist entry.
+ * - Moving a result to the blacklist.
+ * - Updating an existing blacklist entry.
+ * - Deleting a blacklist entry.
+ * - Retrieving blacklist entries with pagination and filtering.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using BL.Facades.Interfaces;
 using BL.Models.Blacklist;
 using BL.Models.Result;
 using Common.Exceptions;
@@ -7,6 +30,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace APP.Controllers;
 
+/// <summary>
+///     Controller for managing blacklist operations.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 [Authorize]
@@ -16,6 +42,9 @@ public class BlacklistController(
     ILogger<BlacklistController> logger)
     : ControllerBase
 {
+    /// <summary>
+    ///     Gets all blacklist entries.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IList<BlacklistModel>>> GetAll()
     {
@@ -32,6 +61,9 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Gets a specific blacklist entry by ID.
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<ActionResult<BlacklistModel>> Get(string id)
     {
@@ -54,6 +86,9 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Creates a new blacklist entry.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<string>> Create(BlacklistModel blacklist)
     {
@@ -70,6 +105,9 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Moves a result to a new blacklist entry.
+    /// </summary>
     [HttpPost("MoveResultToBlacklist")]
     public async Task<ActionResult<string>> MoveResultToBlacklist(ResultModel resultModel)
     {
@@ -88,6 +126,9 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Updates a blacklist entry.
+    /// </summary>
     [HttpPatch]
     public async Task<ActionResult<string>> Update([FromBody] BlacklistModel blacklist)
     {
@@ -110,6 +151,10 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Deletes a blacklist entry by ID.
+    /// </summary>
+    /// <param name="id">The ID of the blacklist entry to delete.</param>
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {
@@ -131,6 +176,14 @@ public class BlacklistController(
         }
     }
 
+    /// <summary>
+    ///     Gets blacklist entries with pagination and optional filtering.
+    /// </summary>
+    /// <param name="max">Maximum number of entries per page.</param>
+    /// <param name="page">Page number.</param>
+    /// <param name="filter">Optional filter string.</param>
+    /// <param name="startDate">Optional start date for filtering.</param>
+    /// <param name="endDate">End date for filtering.</param>
     [HttpGet("{max:int}/{page:int}/{filter?}")]
     public async Task<ActionResult<IList<BlacklistModel>>> GetWithPaginationAndFilter(int max, int page, string? filter,
         DateTime? startDate, DateTime endDate)

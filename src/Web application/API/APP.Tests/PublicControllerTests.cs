@@ -1,24 +1,61 @@
-﻿using System.Net;
+﻿/**
+ * @file PublicControllerTests.cs
+ *
+ * @brief Contains unit tests for the PublicController class.
+ *
+ * This file contains unit tests for the PublicController class. The PublicController is responsible for handling public API endpoints related to blacklists, whitelists, and domain statistics. These tests validate the behavior of various endpoints by sending HTTP requests and asserting the returned results.
+ *
+ * The main functionalities of this file include:
+ * - Testing the correct behavior of endpoints related to blacklist operations.
+ * - Testing the correct behavior of endpoints related to statistics retrieval.
+ * - Ensuring that endpoints return expected HTTP status codes and response formats.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using System.Net;
 using System.Net.Http.Json;
 using Xunit;
 
 namespace APP.Tests;
 
+/// <summary>
+///     Contains unit tests for the <see cref="PublicController" /> class.
+/// </summary>
+/// <remarks>
+///     This class contains unit tests for the <see cref="PublicController" /> class. It utilizes XUnit for testing and the
+///     <see cref="HttpClient" /> for sending HTTP requests to API endpoints. The tests validate the behavior of various
+///     endpoints related to blacklists, whitelists, and domain statistics.
+/// </remarks>
 [Collection("APP.Tests")]
 public class PublicControllerTests : IAsyncLifetime
 {
     private readonly ApiApplicationFactory<Program> _application;
     private readonly HttpClient _client;
 
+    /// <summary>
+    ///     Constructs an instance of the <see cref="PublicControllerTests" /> class.
+    /// </summary>
+    /// <param name="application">The API application factory used for testing.</param>
     public PublicControllerTests(ApiApplicationFactory<Program> application)
     {
         _application = application;
         _client = _application.CreateClient();
     }
 
+    /// <inheritdoc />
     public async Task InitializeAsync() => await _application?.SeedDatabaseAsync()!;
+
+    /// <inheritdoc />
     public async Task DisposeAsync() => await _application.ClearMongoDbDataAsync();
 
+    /// <summary>
+    ///     Tests whether the method GetTotalCountOfBlacklist returns the correct number.
+    /// </summary>
     [Fact]
     public async Task GetTotalCountOfBlacklist_ReturnsCorrectNumber()
     {
@@ -34,6 +71,9 @@ public class PublicControllerTests : IAsyncLifetime
         Assert.True(count >= 0);
     }
 
+    /// <summary>
+    ///     Tests whether the method FilteredByBlacklist returns the filtered count.
+    /// </summary>
     [Fact]
     public async Task FilteredByBlacklist_ReturnsFilteredCount()
     {
@@ -46,6 +86,9 @@ public class PublicControllerTests : IAsyncLifetime
         Assert.True(count >= 0);
     }
 
+    /// <summary>
+    ///     Tests whether the method GetTotalCount returns the total count.
+    /// </summary>
     [Fact]
     public async Task GetTotalCount_ReturnsTotalCount()
     {
@@ -58,6 +101,9 @@ public class PublicControllerTests : IAsyncLifetime
         Assert.True(count >= 0);
     }
 
+    /// <summary>
+    ///     Tests whether the method NumberOfDomainsToday returns the number of domains.
+    /// </summary>
     [Fact]
     public async Task NumberOfDomainsToday_ReturnsNumberOfDomains()
     {
@@ -70,6 +116,9 @@ public class PublicControllerTests : IAsyncLifetime
         Assert.True(count >= 0);
     }
 
+    /// <summary>
+    ///     Tests whether the method PositiveResultsToday returns the count of positive results.
+    /// </summary>
     [Fact]
     public async Task PositiveResultsToday_ReturnsPositiveResultsCount()
     {
@@ -82,6 +131,9 @@ public class PublicControllerTests : IAsyncLifetime
         Assert.True(count >= 0);
     }
 
+    /// <summary>
+    ///     Tests whether the method GetTotalCountOfWhitelist returns the correct number.
+    /// </summary>
     [Fact]
     public async Task GetTotalCountOfWhitelist_ReturnsCorrectNumber()
     {

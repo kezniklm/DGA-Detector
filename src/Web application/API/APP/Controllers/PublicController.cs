@@ -1,10 +1,37 @@
-﻿using BL.Facades.Interfaces;
+﻿/**
+ * @file PublicController.cs
+ *
+ * @brief Defines API endpoints for public access.
+ *
+ * This file contains the implementation of the PublicController class, which defines API endpoints accessible to the public. It handles operations related to blacklists, whitelists, results, and user password management.
+ *
+ * The main functionalities of this controller include:
+ * - Retrieving the total count of blacklist entries.
+ * - Retrieving the total count of whitelist entries.
+ * - Retrieving the total count of results.
+ * - Filtering results by blacklist.
+ * - Retrieving the number of domains today.
+ * - Retrieving the number of positive results today.
+ * - Resetting user passwords.
+ * - Retrieving security questions for a given email.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using BL.Facades.Interfaces;
 using Common.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APP.Controllers;
 
+/// <summary>
+///     Controller handling public endpoints for fetching counts and resetting passwords.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class PublicController(
@@ -15,6 +42,9 @@ public class PublicController(
     UserManager<User> userManager)
     : ControllerBase
 {
+    /// <summary>
+    ///     Endpoint to get the total count of blacklist entries.
+    /// </summary>
     [HttpGet("blacklist/count")]
     public async Task<ActionResult<long>> GetTotalCountOfBlacklist()
     {
@@ -31,6 +61,9 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to get the total count of whitelist entries.
+    /// </summary>
     [HttpGet("whitelist/count")]
     public async Task<ActionResult<long>> GetTotalCountOfWhiteList()
     {
@@ -46,6 +79,9 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to get the total count of results.
+    /// </summary>
     [HttpGet("results/count")]
     public async Task<ActionResult<long>> GetTotalCount()
     {
@@ -61,6 +97,9 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to get the count of results filtered by blacklist.
+    /// </summary>
     [HttpGet("FilteredByBlacklist")]
     public async Task<ActionResult<long>> FilteredByBlacklist()
     {
@@ -76,6 +115,9 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to get the number of domains detected today.
+    /// </summary>
     [HttpGet("NumberOfDomainsToday")]
     public async Task<ActionResult<long>> NumberOfDomainsToday()
     {
@@ -91,6 +133,9 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to get the number of positive detection results today.
+    /// </summary>
     [HttpGet("PositiveResultsToday")]
     public async Task<ActionResult<long>> PositiveResultsToday()
     {
@@ -106,6 +151,10 @@ public class PublicController(
         }
     }
 
+    /// <summary>
+    ///     Endpoint to reset password for a user.
+    /// </summary>
+    /// <param name="model">Model containing user email, security question, and new password.</param>
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] UserPasswordResetModel model)
     {
@@ -132,11 +181,21 @@ public class PublicController(
         return Ok("Password reset successfully");
     }
 
+    /// <summary>
+    ///     Validates the security question answer provided by the user.
+    /// </summary>
+    /// <param name="user">The user whose security question and answer are being validated.</param>
+    /// <param name="model">Model containing security question and answer provided by the user.</param>
+    /// <returns>True if the security question answer is valid, otherwise false.</returns>
     private bool IsValidSecurityQuestionAnswer(User user, UserPasswordResetModel model) =>
         user is { SecurityQuestion: not null, SecurityAnswer: not null } &&
         user.SecurityQuestion.Equals(model.SecurityQuestion, StringComparison.OrdinalIgnoreCase) &&
         user.SecurityAnswer.Equals(model.SecurityAnswer, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>
+    ///     Endpoint to get the security question associated with a user by email.
+    /// </summary>
+    /// <param name="email">Email of the user.</param>
     [HttpGet("SecurityQuestion/{email}")]
     public async Task<IActionResult> GetSecurityQuestionByEmail(string email)
     {

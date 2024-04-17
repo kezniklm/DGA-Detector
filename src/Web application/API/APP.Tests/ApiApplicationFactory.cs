@@ -1,4 +1,25 @@
-﻿using System.Text;
+﻿/**
+ * @file ApiApplicationFactory.cs
+ *
+ * @brief Provides a factory for creating an API application with integrated MongoDB container for testing purposes.
+ *
+ * This class extends WebApplicationFactory<TEntryPoint> and implements IAsyncLifetime to create an API application instance for testing purposes. It includes functionality to initialize the MongoDB container, register users, authenticate sessions, dispose of resources, and clear MongoDB data between tests.
+ *
+ * The main functionalities of this class include:
+ * - Initializing MongoDB container and client.
+ * - Registering users and authenticating sessions.
+ * - Configuring services and disposing resources.
+ * - Clearing MongoDB data between tests.
+ * - Seeding MongoDB database with test data.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using System.Text;
 using System.Text.Json;
 using DAL;
 using DAL.Entities;
@@ -13,6 +34,10 @@ using Xunit;
 
 namespace APP.Tests;
 
+/// <summary>
+///     Factory for creating a test application with MongoDB setup.
+/// </summary>
+/// <typeparam name="TEntryPoint">The entry point of the application.</typeparam>
 public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, IAsyncLifetime
     where TEntryPoint : class
 {
@@ -20,6 +45,9 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
     private readonly MongoClient? _mongoClient;
     private readonly MongoDbContainer? _mongoDbContainer;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ApiApplicationFactory{TEntryPoint}" /> class.
+    /// </summary>
     public ApiApplicationFactory()
     {
         _mongoDbContainer = new MongoDbBuilder()
@@ -35,14 +63,20 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         _clientWithSession = CreateClient();
     }
 
+    /// <inheritdoc />
     public async Task InitializeAsync()
     {
         await RegisterUserAsync();
         await AuthenticateAndCaptureSessionAsync();
     }
 
+    /// <inheritdoc />
     public new async Task DisposeAsync() => await ClearMongoDbDataAsync();
 
+    /// <summary>
+    ///     Configures the host for the web application.
+    /// </summary>
+    /// <param name="builder">The web host builder.</param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseUrls("http://localhost:5000", "https://localhost:5001");
@@ -66,6 +100,7 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         base.ConfigureWebHost(builder);
     }
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -76,6 +111,10 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    ///     Clears data from the MongoDB database.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ClearMongoDbDataAsync()
     {
         IMongoDatabase? database = _mongoClient?.GetDatabase("Database");
@@ -88,6 +127,10 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         }
     }
 
+    /// <summary>
+    ///     Authenticates and captures the session for testing purposes.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task AuthenticateAndCaptureSessionAsync()
     {
         var loginModel = new { email = "test@user.com", password = "Test123@" };
@@ -102,6 +145,10 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         }
     }
 
+    /// <summary>
+    ///     Registers a user for testing purposes.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task RegisterUserAsync()
     {
         var registerModel = new { email = "test@user.com", password = "Test123@" };
@@ -111,8 +158,15 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         response.EnsureSuccessStatusCode();
     }
 
+    /// <summary>
+    ///     Creates an HTTP client with an authenticated session.
+    /// </summary>
+    /// <returns>The HTTP client with an authenticated session.</returns>
     public HttpClient CreateClientWithSession() => _clientWithSession;
 
+    /// <summary>
+    ///     Ensures that the MongoDB database is created if it does not exist.
+    /// </summary>
     private void EnsureDatabaseCreated()
     {
         IMongoDatabase? database = _mongoClient?.GetDatabase("Database");
@@ -123,17 +177,21 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
         }
     }
 
+    /// <summary>
+    ///     Seeds the MongoDB database with initial data.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SeedDatabaseAsync()
     {
-        // Get the database instance
         IMongoDatabase? database = _mongoClient?.GetDatabase("Database");
 
-        // Define BlacklistEntity seed data with additional entries
         List<BlacklistEntity> blacklistSeeds = new()
         {
             new BlacklistEntity
             {
-                Added = DateTime.UtcNow.AddDays(-10), DomainName = "badwebsite.com", Id = "5f1a5151b5b5b5b5b5b5b5b1"
+                Added = DateTime.UtcNow.AddDays(-10),
+                DomainName = "badwebsite.com",
+                Id = "5f1a5151b5b5b5b5b5b5b5b1"
             },
             new BlacklistEntity
             {
@@ -147,10 +205,8 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DomainName = "phishingwebsite.com",
                 Id = "5f1a5151b5b5b5b5b5b5b5b3"
             }
-            // Add more BlacklistEntity seeds here if needed
         };
 
-        // Define ResultEntity seed data with additional entries
         List<ResultEntity> resultSeeds = new()
         {
             new ResultEntity
@@ -180,10 +236,8 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DomainName = "verybadwebsite.com",
                 Id = "5f1a5151b5b5b5b5b5b5b5b6"
             }
-            // Add more ResultEntity seeds here if needed
         };
 
-        // Define WhitelistEntity seed data with additional entries
         List<WhitelistEntity> whitelistSeeds = new()
         {
             new WhitelistEntity
@@ -194,7 +248,9 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
             },
             new WhitelistEntity
             {
-                Added = DateTime.UtcNow.AddDays(-5), DomainName = "trustedsite.com", Id = "5f1a5151b5b5b5b5b5b5b5b8"
+                Added = DateTime.UtcNow.AddDays(-5),
+                DomainName = "trustedsite.com",
+                Id = "5f1a5151b5b5b5b5b5b5b5b8"
             },
             new WhitelistEntity
             {
@@ -202,10 +258,8 @@ public class ApiApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPo
                 DomainName = "securewebsite.com",
                 Id = "5f1a5151b5b5b5b5b5b5b5b9"
             }
-            // Add more WhitelistEntity seeds here if needed
         };
 
-        // Insert seed data into the database
         if (database != null)
         {
             IMongoCollection<BlacklistEntity>? blacklistCollection =

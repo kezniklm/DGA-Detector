@@ -1,4 +1,28 @@
-﻿using System.Net;
+﻿/**
+ * @file ResultControllerTests.cs
+ *
+ * @brief Contains unit tests for the ResultController class.
+ *
+ * This file contains unit tests for the ResultController class, which is responsible for handling results in the API. The tests cover various scenarios including fetching, creating, updating, and deleting results.
+ *
+ * The main functionalities of this file include:
+ * - Testing the retrieval of all seeded results.
+ * - Testing the retrieval of a single result by ID.
+ * - Testing the creation of a new result.
+ * - Testing the deletion of a result.
+ * - Testing result retrieval with pagination and filtering.
+ * - Testing error handling for non-existent results.
+ * - Testing unauthorized access for unauthenticated users.
+ * - Testing validation for bad and valid results during creation.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+using System.Net;
 using System.Net.Http.Json;
 using BL.Models.Result;
 using MongoDB.Bson;
@@ -6,21 +30,34 @@ using Xunit;
 
 namespace APP.Tests;
 
+/// <summary>
+///     Test class for the ResultController.
+/// </summary>
 [Collection("APP.Tests")]
 public class ResultControllerTests : IAsyncLifetime
 {
     private readonly ApiApplicationFactory<Program> _application;
     private readonly HttpClient _client;
 
+    /// <summary>
+    ///     Constructor initializing the test class.
+    /// </summary>
+    /// <param name="application">An instance of ApiApplicationFactory.</param>
     public ResultControllerTests(ApiApplicationFactory<Program> application)
     {
         _application = application;
         _client = _application.CreateClientWithSession();
     }
 
+    /// <inheritdoc />
     public async Task InitializeAsync() => await _application?.SeedDatabaseAsync()!;
+
+    /// <inheritdoc />
     public async Task DisposeAsync() => await _application.ClearMongoDbDataAsync();
 
+    /// <summary>
+    ///     Tests the GetAll method to ensure it returns all seeded results.
+    /// </summary>
     [Fact]
     public async Task GetAll_ReturnsAllSeededResults()
     {
@@ -34,6 +71,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(3, results.Count);
     }
 
+    /// <summary>
+    ///     Tests the GetById method to ensure it returns a single result by ID.
+    /// </summary>
     [Fact]
     public async Task GetById_ReturnsSingleResult()
     {
@@ -50,6 +90,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(expectedId, result.Id);
     }
 
+    /// <summary>
+    ///     Tests the Create method to ensure it adds a new result.
+    /// </summary>
     [Fact]
     public async Task Create_AddsNewResult()
     {
@@ -71,6 +114,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(newResult.Id, createdId);
     }
 
+    /// <summary>
+    ///     Tests the Delete method to ensure it removes a result.
+    /// </summary>
     [Fact]
     public async Task Delete_RemovesResult()
     {
@@ -86,6 +132,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.NotFound, fetchResponse.StatusCode);
     }
 
+    /// <summary>
+    ///     Tests the GetWithPaginationAndFilter method to ensure it returns filtered results.
+    /// </summary>
     [Fact]
     public async Task GetWithPaginationAndFilter_ReturnsFilteredResults()
     {
@@ -103,7 +152,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.NotNull(paginatedResults);
     }
 
-
+    /// <summary>
+    ///     Tests the Get method to ensure it returns a 404 status code for a non-existent result.
+    /// </summary>
     [Fact]
     public async Task Get_Returns404ForNonExistentResult()
     {
@@ -117,6 +168,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    /// <summary>
+    ///     Tests the Delete method to ensure it returns a 400 status code for a non-existent result.
+    /// </summary>
     [Fact]
     public async Task Delete_Returns400ForNonExistentResult()
     {
@@ -130,6 +184,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    /// <summary>
+    ///     Tests the GetAll method to ensure it returns an unauthorized status code for an unauthenticated user.
+    /// </summary>
     [Fact]
     public async Task GetAll_ReturnsUnauthorizedForUnauthenticatedUser()
     {
@@ -143,6 +200,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    /// <summary>
+    ///     Tests the Create method to ensure it returns a bad request status code for a bad result.
+    /// </summary>
     [Fact]
     public async Task Create_ReturnsBadRequestForBadResult()
     {
@@ -153,6 +213,9 @@ public class ResultControllerTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    /// <summary>
+    ///     Tests the Create method to ensure it returns an OK status code for a valid result.
+    /// </summary>
     [Fact]
     public async Task Create_ReturnsOkForValidResult()
     {
