@@ -30,6 +30,7 @@ import tldextract
 
 from .constants import CONSONANTS, HEX_CHARACTERS, NGRAM_MAPPING, PHISHING_KEYWORDS
 from .utils import (
+    build_automatons,
     compute_kl_for_domain,
     consecutive_chars,
     count_subdomains,
@@ -68,16 +69,18 @@ class FeatureExtractor:
 
     def initialise_feature_extractor(self) -> None:
         """Load n-gram data from files and prepare frequency and probability data structures for feature extraction."""
-        self.ngram_freq_dga = load_ngram_data("data/ngram_freq_dga.json")
-        self.ngram_freq_benign = load_ngram_data("data/ngram_freq.json")
-        self.ngram_prob_dga = ngram_frequency_to_probability(self.ngram_freq_dga)
-        self.ngram_prob_benign = ngram_frequency_to_probability(self.ngram_freq_benign)
+        ngram_freq_dga = load_ngram_data("data/ngram_freq_dga.json")
+        ngram_freq_benign = load_ngram_data("data/ngram_freq.json")
+
+        self.ngram_aho_corasick_automatons = build_automatons(ngram_freq_dga)
+        self.ngram_prob_dga = ngram_frequency_to_probability(ngram_freq_dga)
+        self.ngram_prob_benign = ngram_frequency_to_probability(ngram_freq_benign)
         self.ngram_set_dga = {
-            n: set(self.ngram_freq_dga[f"{n}gram_freq"].keys())
+            n: set(ngram_freq_dga[f"{n}gram_freq"].keys())
             for n in ["bi", "tri", "penta"]
         }
         self.ngram_set_benign = {
-            n: set(self.ngram_freq_benign[f"{n}gram_freq"].keys())
+            n: set(ngram_freq_benign[f"{n}gram_freq"].keys())
             for n in ["bi", "tri", "penta"]
         }
 
@@ -363,16 +366,20 @@ class FeatureExtractor:
         """
         df = df.copy(True)
         df["lex_dga_bigram_matches"] = df["tmp_concat_subdomains"].apply(
-            find_ngram_matches, args=(self.ngram_freq_dga["bigram_freq"],)
+            find_ngram_matches,
+            args=(self.ngram_aho_corasick_automatons["bigram_freq"],),
         )  # Count of bigram matches with DGA model
         df["lex_dga_trigram_matches"] = df["tmp_concat_subdomains"].apply(
-            find_ngram_matches, args=(self.ngram_freq_dga["trigram_freq"],)
+            find_ngram_matches,
+            args=(self.ngram_aho_corasick_automatons["trigram_freq"],),
         )  # Count of trigram matches with DGA model
         df["lex_dga_tetragram_matches"] = df["tmp_concat_subdomains"].apply(
-            find_ngram_matches, args=(self.ngram_freq_dga["tetragram_freq"],)
+            find_ngram_matches,
+            args=(self.ngram_aho_corasick_automatons["tetragram_freq"],),
         )  # Count of tetragram matches with DGA model
         df["lex_dga_pentagram_matches"] = df["tmp_concat_subdomains"].apply(
-            find_ngram_matches, args=(self.ngram_freq_dga["pentagram_freq"],)
+            find_ngram_matches,
+            args=(self.ngram_aho_corasick_automatons["pentagram_freq"],),
         )  # Count of pentagram matches with DGA model
 
         for n, ngram_set in self.ngram_set_benign.items():

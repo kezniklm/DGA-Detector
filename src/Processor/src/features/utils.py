@@ -25,6 +25,7 @@ from collections import Counter
 from itertools import groupby
 from typing import Optional
 
+import ahocorasick
 import numpy as np
 import tldextract
 
@@ -179,19 +180,38 @@ def longest_consonant_seq(domain: str) -> int:
     return max_sequence_length
 
 
-def find_ngram_matches(text: str, ngrams: dict) -> int:
+def find_ngram_matches(text: str, automaton: ahocorasick.Automaton):
     """
-    Counts the number of occurrences of n-grams from a dictionary in a given text.
+    Uses a precompiled Aho-Corasick automaton to count unique n-gram matches in the text.
+    The search is case-insensitive.
 
-    @param text Text in which to find n-grams.
-    @param ngrams Dictionary of n-grams to match.
-    @return Number of matches found.
+    @param text: Text in which to find n-grams.
+    @param automaton: Precompiled Aho-Corasick automaton.
+    @return: Number of unique matches found.
     """
-    matches = 0
-    for ngram in ngrams:
-        if ngram in text:
-            matches += 1
-    return matches
+    matched_ngrams = set()
+    for _, found_ngram in automaton.iter(text.lower()):  # Search in lowercased text
+        matched_ngrams.add(found_ngram)
+    return len(matched_ngrams)
+
+
+def build_automatons(
+    ngram_freqs: dict[str, dict[str, int]]
+) -> dict[str, ahocorasick.Automaton]:
+    """
+    Builds and returns a dictionary of Aho-Corasick automatons for each n-gram type provided.
+
+    @param ngram_freqs: Dictionary where keys are n-gram types (e.g., "bigram_freq") and values are dictionaries of n-grams.
+    @return: Dictionary of Aho-Corasick automatons for each n-gram type.
+    """
+    automatons = {}
+    for ngram_type, ngrams in ngram_freqs.items():
+        automaton = ahocorasick.Automaton()
+        for ngram in ngrams:
+            automaton.add_word(ngram.lower(), ngram.lower())
+        automaton.make_automaton()
+        automatons[ngram_type] = automaton
+    return automatons
 
 
 def modified_jaccard_index(set1: set, set2: set) -> float:
