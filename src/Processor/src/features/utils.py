@@ -239,57 +239,23 @@ def generate_ngrams(text: str, n: int) -> set[str]:
     return {text[i : i + n] for i in range(len(text) - n + 1)}
 
 
-def compute_kl_for_domain(
-    domain: str, benign_ngrams: dict, dga_ngrams: dict
-) -> tuple[float, float, float, float]:
-    """
-    Computes the KL divergence between frequency distributions of n-grams in a domain name against benign and DGA profiles.
+def calculate_normalized_entropy(text: str) -> Optional[float]:
+    """Calculate the normalized entropy of the input string.
 
-    @param domain Domain name to analyze.
-    @param benign_ngrams N-gram frequencies considered benign.
-    @param dga_ngrams N-gram frequencies associated with DGA.
-    @return Tuple of KL divergences (benign bigrams, benign trigrams, DGA bigrams, DGA trigrams).
-    """
-    head, _ = domain.split(".", 1)
-    bigrams = generate_ngrams(head, 2)
-    trigrams = generate_ngrams(head, 3)
+    The function computes the frequency of each character in the string
+    and then calculates the entropy based on these frequencies using the
+    Shannon entropy formula. Normalization is achieved by dividing the entropy
+    by the log base 2 of the number of unique characters in the string, which is the
+    maximum possible entropy when each character appears with equal probability.
 
-    bigram_freqs = frequencies_to_probabilities(Counter(bigrams))
-    trigram_freqs = frequencies_to_probabilities(Counter(trigrams))
+    Args:
+        text (str): The input string.
 
-    kl_benign_2 = kl_divergence(bigram_freqs, benign_ngrams["bigram_freq"])
-    kl_benign_3 = kl_divergence(trigram_freqs, benign_ngrams["trigram_freq"])
-    kl_dga_2 = kl_divergence(bigram_freqs, dga_ngrams["bigram_freq"])
-    kl_dga_3 = kl_divergence(trigram_freqs, dga_ngrams["trigram_freq"])
-
-    return kl_benign_2, kl_benign_3, kl_dga_2, kl_dga_3
-
-
-def kl_divergence(p: dict, q: dict) -> float:
-    """
-    Computes the Kullback-Leibler divergence between two probability distributions.
-
-    @param p Probability distribution as a dictionary.
-    @param q Another probability distribution as a dictionary.
-    @return KL divergence value as a float.
-    """
-    p_keys = list(p.keys())
-    # Avoid log(0) by adding a small epsilon
-    p_values = np.array([p.get(k, 1e-10) for k in p_keys])
-    q_values = np.array([q.get(k, 1e-10) for k in p_keys])
-    return np.sum(p_values * np.log(p_values / q_values))
-
-
-def get_normalized_entropy(text: str) -> Optional[float]:
-    """
-    Computes the normalized entropy of a string.
-
-    @param text The string to compute entropy for.
-    @return Normalized entropy as a float, or None if the text is empty.
+    Returns:
+        float: The normalized entropy of the string, or None if the string is empty.
     """
     text_len = len(text)
     if text_len == 0:
-        # return None
         return 0
 
     freqs = {}
