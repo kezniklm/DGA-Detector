@@ -1,19 +1,322 @@
-﻿#root {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+main {
+  background: url("./assets/Hero.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  overflow-x: hidden;
+  flex-grow: 1;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  padding: 46px 0;
 }
 
-tr:nth-child(even) {
-    background: #F2F2F2;
+.Content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-tr:nth-child(odd) {
-    background: #FFF;
+.Content-Body {
+  flex-grow: 1;
+  display: flex;
+  padding: 0 76px;
+  gap: 50px;
+  align-items: center;
+}
+ 
+
+h1 {
+  font-weight: 700;
+  /* font-size: 90px; */
+  font-size: max(5vw, 32px);
+  line-height: 1;
 }
 
-th, td {
-    padding-left: 1rem;
-    padding-right: 1rem;
+.FormHeading {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: max(2vw, 24px);
+  line-height: 1;
 }
+
+.PopupSubheading {
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: max(1.5vw, 18px);
+  line-height: 1;
+}
+
+.PopupHeading {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: max(1.7vw, 20px);
+  line-height: 1;
+
+  background-color: #ffffff10;
+  padding: 15px 30px;
+  border-radius: 100px;
+  width: fit-content;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.Form {
+  display: flex;
+  gap: 50px;
+  align-items: flex-start;
+  margin: 0 auto;
+}
+
+.Form > img {
+  border-radius: 100%;
+  display: block;
+  aspect-ratio: 1;
+  width: 12vw;
+  min-width: 100px;
+  margin-top: 3%;
+  object-fit: cover;
+}
+
+.InputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.InputGroup > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.InputGroup > div small {
+  text-align: right;
+  color: #df2626;
+}
+
+.InputGroup > div a {
+  color: #3ed5dd;
+  text-decoration: none;
+  width: fit-content;
+}
+.InputGroup > div a:hover {
+  text-decoration: underline;
+}
+
+.InputGroup > div select,
+.InputGroup > div input {
+  padding: 10px;
+  border-radius: 8px;
+  min-width: 300px;
+  width: 30vw;
+  font-size: 20px;
+  background-color: #ffffff20;
+  border: 1px solid #ffffff30;
+  outline: none;
+}
+
+.InputGroup > div select option{
+  background-color: #222;
+  font-size: 0.8em;
+}
+
+
+.InputGroup > div label {
+  color: #9f9f9f;
+  font-size: 14px;
+}
+
+.InputGroup > div label.bigLabel {
+  color: #fff;
+  font-size: 18px;
+  padding-bottom: 5px;
+}
+
+.InputGroup > div.check {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+
+.InputGroup > div.check input {
+  min-width: 0;
+  width: fit-content;
+  margin-top: 5px;
+  margin-left: 10px;
+  transform: scale(1.3);
+}
+
+.InputGroup hr {
+  opacity: 0.5;
+  border-top: none;
+}
+
+.loading {
+  width: 100%;
+  text-align: center;
+}
+
+.topBar{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.topBar button{
+  white-space: nowrap;
+}
+
+.pageBar,
+.filterBar{
+  background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    padding: 5px;
+    border-radius: 15px;
+
+    display: flex;
+    gap: 10px;
+}
+
+.filterBar input,
+.filterBar select{
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #555;
+  font-size: 16px;
+}
+
+.filterBar input{
+  width: auto;
+  max-width: 10vw;
+  min-width: 100px;
+}
+
+.filterBar input.datetime{
+  min-width: 240px;
+}
+
+.pageBar button{
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #555;
+  font-size: 16px;
+  width: 40px;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.pageBar p{
+  margin: auto;
+  font-size: 16px;
+}
+
+.pageBar button:not(:disabled):hover{
+  background-color: #777; 
+}
+
+
+
+@media (max-width: 1500px) {
+  
+  h1 {
+    font-size: max(4vw, 26px);
+  }
+
+  .Content-Body {
+    padding: 0 40px;
+    gap: 30px;
+  }
+
+  .Content{
+    gap: 0px;
+  }
+
+  .filterBar input,
+  .filterBar select{
+    padding: 5px 5px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  main {
+    padding: 30px 0;
+  }
+
+  .filterBar input,
+  .filterBar select{
+    padding: 6px 5px;
+    font-size: 12px;
+  }
+  
+  .pageBar button{
+    padding: 6px 5px;
+    font-size: 12px;
+    width: 30px;
+  }
+
+  .filterBar input.datetime{
+    min-width: 150px;
+  }
+}
+
+
+.UpdatePage{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: auto;
+  height: auto;
+  z-index: 100;
+  background-color: #111;
+  padding: 40px 60px;
+  border-radius: 25px;
+  box-shadow: 0 0 30vw 25vw #00000060;
+  border: 1px solid #222;
+}
+
+.BtnGroups{
+  display: flex;
+  flex-direction: row !important;
+  gap: 10px !important;
+  margin: 0 auto;
+}
+
+.flexBetween{
+  display: flex;
+  flex-direction: row !important;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+
+
+/* @media (max-width: 1000px) {
+  .InputGroup > div select,
+  .InputGroup > div input {
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 300px;
+    width: 30vw;
+    font-size: 6px;
+  }
+} */
