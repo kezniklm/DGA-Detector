@@ -31,13 +31,12 @@ import tldextract
 from .constants import CONSONANTS, HEX_CHARACTERS, NGRAM_MAPPING, PHISHING_KEYWORDS
 from .utils import (
     build_automatons,
-    compute_kl_for_domain,
+    calculate_normalized_entropy,
     consecutive_chars,
     count_subdomains,
     find_ngram_matches,
     generate_ngrams,
     get_lengths_of_parts,
-    get_normalized_entropy,
     get_tld_abuse_score,
     load_ngram_data,
     longest_consonant_seq,
@@ -161,6 +160,15 @@ class FeatureExtractor:
                 min(get_lengths_of_parts(x)) if len(get_lengths_of_parts(x)) > 0 else 0
             )
         )  # Length of the shortest part of the domain (subdomain or second-level domain)
+        df["lex_avg_part_len"] = df["tmp_part_lengths"].apply(
+            lambda x: sum(x) / len(x) if len(x) > 0 else 0
+        )
+        df["lex_stdev_part_lens"] = df["tmp_part_lengths"].apply(
+            lambda x: calculate_normalized_entropy(x) if len(x) > 0 else 0
+        )
+        df["lex_longest_part_len"] = df["tmp_part_lengths"].apply(
+            lambda x: max(x) if len(x) > 0 else 0
+        )
         return df
 
     def extract_tld_features(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -191,7 +199,7 @@ class FeatureExtractor:
 
         df["lex_sld_len"] = df["tmp_sld"].apply(len)  # Length of SLD
         df["lex_sld_norm_entropy"] = df["tmp_sld"].apply(
-            get_normalized_entropy
+            calculate_normalized_entropy
         )  # Normalized entropy of the SLD
         df["lex_sld_digit_count"] = (
             df["tmp_sld"]
@@ -304,15 +312,12 @@ class FeatureExtractor:
         df["lex_begins_with_digit"] = df["domain_name"].apply(
             lambda x: 1 if x[0].isdigit() else 0
         )  # Check if the domain starts with a digit
-        df["lex_www_flag"] = df["domain_name"].apply(
-            lambda x: 1 if (x.split("."))[0] == "www" else 0
-        )  # Check if the domain starts with www
         df["lex_sub_max_consonant_len"] = df["tmp_concat_subdomains"].apply(
             longest_consonant_seq
         )  # Maximum length of consecutive consonants in subdomains
         df["lex_sub_norm_entropy"] = df["tmp_concat_subdomains"].apply(
             # Normalized entropy of concatenated subdomains
-            get_normalized_entropy
+            calculate_normalized_entropy
         )
         df["lex_sub_digit_count"] = (
             df["tmp_concat_subdomains"]
@@ -396,18 +401,5 @@ class FeatureExtractor:
                     generate_ngrams(domain, n_int), ngram_set
                 )
             )  # Modified Jaccard index for n-grams with DGA model
-
-        df[
-            [
-                "kl_benign_bigrams",
-                "kl_benign_trigrams",
-                "kl_dga_bigrams",
-                "kl_dga_trigrams",
-            ]
-        ] = df["domain_name"].apply(
-            lambda x: pd.Series(
-                compute_kl_for_domain(x, self.ngram_prob_benign, self.ngram_prob_dga)
-            )
-        )  # KL divergence for bigrams and trigrams comparing benign and DGA models
 
         return df
