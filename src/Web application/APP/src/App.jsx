@@ -11,7 +11,6 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import NotFound from "./components/NotFound";
 import ForgotPassword from "./components/ForgotPassword";
-import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,8 +19,8 @@ import API_URL from "../config";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isUserUpdate, setIsUserUpdate] = useState(null); // Initialize isUpdate state
-
+  const [isUserUpdate, setIsUserUpdate] = useState(null); 
+  
   const handleLogin = (userData) => {
     sessionStorage.setItem("isLoggedIn", JSON.stringify(true));
     setIsLoggedIn(true);
@@ -55,7 +54,6 @@ function App() {
           pauseOnHover
           theme="dark"
         />
-        {/* <button onClick={notify}>Notify!</button> */}
         <Navbar
           handleLogout={handleLogout}
           isLoggedIn={isLoggedIn}

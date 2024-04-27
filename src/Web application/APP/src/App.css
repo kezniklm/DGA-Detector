@@ -1,5 +1,5 @@
 main {
-  background: url("./assets/Hero.png");
+  background: url("./assets/background.png");
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
@@ -272,7 +272,7 @@ p {
   }
 
   .filterBar input.datetime{
-    min-width: 150px;
+    min-width: 180px;
   }
 }
 
@@ -307,16 +307,3 @@ p {
   gap: 20px;
   flex-wrap: wrap;
 }
-
-
-
-/* @media (max-width: 1000px) {
-  .InputGroup > div select,
-  .InputGroup > div input {
-    padding: 10px;
-    border-radius: 8px;
-    min-width: 300px;
-    width: 30vw;
-    font-size: 6px;
-  }
-} */
