@@ -61,3 +61,7 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+training/DGA-Detector-Model-Selection.ipynb linguist-vendored
+training/DGA-Detector-Parameter-Tuning.ipynb linguist-vendored
+
