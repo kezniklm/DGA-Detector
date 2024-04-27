@@ -26,7 +26,7 @@ import useAuth from "../utils/useAuth";
  * @function ProtectedRoute
  * @brief Renders a protected route component.
  *
- * This component checks if the user is authenticated using the `useAuth` hook. If the user is authenticated, 
+ * This component checks if the user is authenticated using the `useAuth` hook. If the user is authenticated,
  * it renders the specified component. If not, it redirects the user to the login page.
  *
  * @param {Object} props - The properties passed to the ProtectedRoute component, which include:

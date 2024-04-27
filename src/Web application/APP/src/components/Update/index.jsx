@@ -1,16 +1,16 @@
 /**
  * @file index.jsx
- * 
+ *
  * @brief Provides a React component for updating domain data.
- * 
+ *
  * This file contains the implementation of the `Update` functional component which renders a form to handle domain data updates.
  * It includes fields that are conditionally rendered based on the component's props. Utilizes Formik for form management.
- * 
+ *
  * The main functionalities of this file include:
  * - Rendering a form with inputs for domain name, dangerous probability, and blacklist status.
  * - Handling form submission with a simulated delay for asynchronous processing.
  * - Conditional display of form fields based on the 'result' prop.
- * 
+ *
  * @author Matej Keznikl
  * @version 1.0
  * @date 2024-04-27

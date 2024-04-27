@@ -74,18 +74,19 @@ export default function Whitelist() {
     const handleUpdate = async (values) => {
         const currentDate = new Date().toISOString();
         try {
-            await fetch(`${API_URL}/whitelist`, {
-                method: "PATCH",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    domainName: values.domainName,
-                    added: currentDate,
-                    id: updateOpen.id,
-                }),
-            });
+            await fetch(`${API_URL}/whitelist`,
+                {
+                    method: "PATCH",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        domainName: values.domainName,
+                        added: currentDate,
+                        id: updateOpen.id,
+                    }),
+                });
             handleFilter();
         } catch (error) {
             toast.error(`Error Updating: ${error.message}`);
@@ -107,18 +108,19 @@ export default function Whitelist() {
     const handleAdd = async (values) => {
         const currentDate = new Date().toISOString();
         try {
-            await fetch(`${API_URL}/whitelist`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    domainName: values.domainName,
-                    added: currentDate,
-                    id: "",
-                }),
-            });
+            await fetch(`${API_URL}/whitelist`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        domainName: values.domainName,
+                        added: currentDate,
+                        id: "",
+                    }),
+                });
             handleFilter();
         } catch (error) {
             toast.error(`Error Adding: ${error.message}`);
@@ -131,13 +133,14 @@ export default function Whitelist() {
      */
     const fetchData = async () => {
         try {
-            const response = await fetch(`${API_URL}/whitelist`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(`${API_URL}/whitelist`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
             if (!response.ok) {
                 throw new Error("Failed to fetch data");
             }
@@ -164,13 +167,14 @@ export default function Whitelist() {
      */
     const confirmDelete = async () => {
         try {
-            await fetch(`${API_URL}/whitelist/${idToDelete}`, {
-                method: "DELETE",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            await fetch(`${API_URL}/whitelist/${idToDelete}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
             setShowDeleteConfirm(false);
             handleFilter();
         } catch (error) {
@@ -202,13 +206,14 @@ export default function Whitelist() {
         const currentDate = new Date().toISOString();
 
         try {
-            await fetch(`${API_URL}/whitelist/${iddToMove}`, {
-                method: "DELETE",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            await fetch(`${API_URL}/whitelist/${iddToMove}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
             setShowDeleteConfirm(false);
             handleFilter();
         } catch (error) {
@@ -216,18 +221,19 @@ export default function Whitelist() {
         }
 
         try {
-            await fetch(`${API_URL}/blacklist`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    domainName: deletedItem.domainName,
-                    added: currentDate,
-                    id: "",
-                }),
-            });
+            await fetch(`${API_URL}/blacklist`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        domainName: deletedItem.domainName,
+                        added: currentDate,
+                        id: "",
+                    }),
+                });
             handleFilter();
         } catch (error) {
             toast.error(`Error Adding: ${error.message}`);
@@ -324,13 +330,14 @@ export default function Whitelist() {
         const url = `${API_URL}/whitelist/${maxNum}/${pageNum}/${filterName}${startDateStr}${endDateStr}`;
 
         try {
-            const response = await fetch(url, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(url,
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
             if (!response.ok) {
                 throw new Error("Failed to fetch data");
             }
@@ -344,121 +351,115 @@ export default function Whitelist() {
 
     // Effect to refresh data on filters change
     useLayoutEffect(() => {
-        handleFilter();
-    }, [startDate, endDate, filterName, maxNum, pageNum]);
+            handleFilter();
+        },
+        [startDate, endDate, filterName, maxNum, pageNum]);
 
     // Main component render
     return (
         <section className="Content">
             <div className="Content-Body">
                 <div style={{ width: "100%" }}>
-                    {loading ? (
-                        <div className="loading">Loading...</div>
-                    ) : (
-                        <>
-                            <div className="topBar">
-                                <Button
-                                    type="button"
-                                    small
-                                    onClick={handleAddClick}
-                                >
-                                    Add Item +
-                                </Button>
-                                <div className="filterBar">
-                                    <select
-                                        onChange={handleMaxChange}
-                                        value={maxNum}
-                                    >
-                                        <option value="1">1</option>
-                                        <option value="10">10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                    <input
-                                        type="text"
-                                        value={filterName}
-                                        onChange={handleFilterName}
-                                        placeholder="Search"
-                                    />
-                                    <input
-                                        type="datetime-local"
-                                        className="datetime"
-                                        value={startDate}
-                                        onChange={handleStartDateChange}
-                                    />
-                                    <input
-                                        type="datetime-local"
-                                        className="datetime"
-                                        value={endDate}
-                                        onChange={handleEndDateChange}
-                                    />
-                                </div>
-                                <div className="pageBar">
-                                    <button
-                                        onClick={handlePagePrev}
-                                        disabled={pageNum <= 1}
-                                    >
-                                        {"<"}
-                                    </button>
-                                    <p>{pageNum}</p>
-                                    <button
-                                        onClick={handlePageNext}
-                                        disabled={!(data.length > 0)}
-                                    >
-                                        {">"}
-                                    </button>
-                                </div>
-                                <Button
-                                    type="button"
-                                    small
-                                    trans
-                                    onClick={clearFilter}
-                                >
-                                    Clear
-                                </Button>
-                            </div>
-                            <Table
-                                data={data}
-                                result={false}
-                                onDelete={handleDelete}
-                                onUpdate={handleUpdateClick}
-                                onMove={handleMove}
-                                type={"whitelist"}
-                            />
-                            <p>
-                                Showing {Math.min(maxNum, data.length)} entries,
-                                on page {pageNum}{" "}
-                            </p>
-                        </>
-                    )}
+                    {loading
+                        ? (
+                            <div className="loading">Loading...</div>
+                        )
+                        : (
+                            <>
+<div className="topBar">
+    <Button
+        type="button"
+        small
+        onClick={handleAddClick}>
+        Add Item +
+    </Button>
+    <div className="filterBar">
+        <select
+            onChange={handleMaxChange}
+            value={maxNum}>
+            <option value="1">1</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <input
+            type="text"
+            value={filterName}
+            onChange={handleFilterName}
+            placeholder="Search"/>
+        <input
+            type="datetime-local"
+            className="datetime"
+            value={startDate}
+            onChange={handleStartDateChange}/>
+        <input
+            type="datetime-local"
+            className="datetime"
+            value={endDate}
+            onChange={handleEndDateChange}/>
+    </div>
+    <div className="pageBar">
+        <button
+            onClick={handlePagePrev}
+            disabled={pageNum <= 1}>
+            {"<"}
+        </button>
+        <p>{pageNum}</p>
+        <button
+            onClick={handlePageNext}
+            disabled={!(data.length > 0)}>
+            {">"}
+        </button>
+    </div>
+    <Button
+        type="button"
+        small
+        trans
+        onClick={clearFilter}>
+        Clear
+    </Button>
+</div>
+<Table
+    data={data}
+    result={false}
+    onDelete={handleDelete}
+    onUpdate={handleUpdateClick}
+    onMove={handleMove}
+    type={"whitelist"}/>
+<p>
+    Showing {Math.min(maxNum, data.length)} entries,
+    on page {pageNum}{" "}
+</p>
+</>
+                        )}
                 </div>
-                {updateOpen.open && (
+                {updateOpen.open &&
+                (
                     <Update
                         data={data[updateOpen.index]}
                         handleUpdatePopup={handleUpdateClick}
-                        handleUpdate={handleUpdate}
-                    />
+                        handleUpdate={handleUpdate}/>
                 )}
-                {addOpen && (
+                {addOpen &&
+                (
                     <Add
                         handleAddClick={handleAddClick}
-                        handleAdd={handleAdd}
-                    />
+                        handleAdd={handleAdd}/>
                 )}
-                {showDeleteConfirm && (
+                {showDeleteConfirm &&
+                (
                     <ConfirmPopup
                         message="Are you sure you want to delete?"
                         onConfirm={confirmDelete}
-                        onCancel={cancelDelete}
-                    />
+                        onCancel={cancelDelete}/>
                 )}
-                {showMoveConfirm && (
+                {showMoveConfirm &&
+                (
                     <ConfirmPopup
                         message="Are you sure you want to move to Blacklist?"
                         onConfirm={confirmMove}
-                        onCancel={cancelMove}
-                    />
+                        onCancel={cancelMove}/>
                 )}
             </div>
         </section>

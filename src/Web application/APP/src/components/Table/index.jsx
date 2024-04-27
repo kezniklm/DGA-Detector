@@ -2,14 +2,14 @@
  * @file index.jsx
  *
  * @brief React component for displaying data in a tabular format.
- * 
+ *
  * This file contains the implementation of the Table component, which is used to display data in a tabular format in a React application.
- * 
+ *
  * The main functionalities of this component include:
  * - Displaying data in a table based on the provided props.
  * - Sorting columns in ascending or descending order.
  * - Handling row update, delete, and move actions.
- * 
+ *
  * @author Matej Keznikl
  * @version 1.0
  * @date 2024-04-27
