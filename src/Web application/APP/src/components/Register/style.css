@@ -1,0 +1,20 @@
+/**
+ * @file style.css
+ *
+ * @brief Provides styles for registering components.
+ *
+ * This file contains the CSS styles for registering components in a web application. It defines styles for input fields and select elements within a registration form.
+ *
+ * The main functionalities of this file include:
+ * - Defining styles for input fields and select elements.
+ * - Ensuring a minimum width of 440 pixels for input fields and select elements within the .register component.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.register .InputGroup > div input,
+.register .InputGroup > div select { min-width: 440px; }

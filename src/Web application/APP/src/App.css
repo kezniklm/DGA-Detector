@@ -1,309 +1,309 @@
-main {
-  background: url("./assets/background.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 100%;
-  overflow-x: hidden;
-  flex-grow: 1;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
+/**
+ * @file style.css
+ *
+ * @brief Provides styling for a web application interface.
+ *
+ * This file contains CSS rules for styling various elements of a web application interface. It includes definitions for layout properties, typography, forms, and responsive design adjustments. The main functionalities of this stylesheet include:
+ * - Structuring and styling the main layout and content areas.
+ * - Defining typographic styles for headings, paragraphs, and form elements.
+ * - Implementing responsive design features for adaptability to different screen sizes.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
 
-  display: flex;
-  flex-direction: column;
-  padding: 46px 0;
+main {
+    background: url("./assets/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100vh;
+    overflow: hidden;
+    overflow-x: hidden;
+
+    padding: 46px 0;
+    width: 100%;
+    width: 100%;
 }
 
 .Content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 20px;
 }
 
 .Content-Body {
-  flex-grow: 1;
-  display: flex;
-  padding: 0 76px;
-  gap: 50px;
-  align-items: center;
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    gap: 50px;
+    padding: 0 76px;
 }
  
 
 h1 {
-  font-weight: 700;
-  /* font-size: 90px; */
-  font-size: max(5vw, 32px);
-  line-height: 1;
+    font-size: max(5vw, 32px);
+    font-weight: 700;
+    line-height: 1;
 }
 
 .FormHeading {
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: max(2vw, 24px);
-  line-height: 1;
+    font-size: max(2vw, 24px);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .PopupSubheading {
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: max(1.5vw, 18px);
-  line-height: 1;
+    font-size: max(1.5vw, 18px);
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .PopupHeading {
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: max(1.7vw, 20px);
-  line-height: 1;
+    background-color: #ffffff10;
+    border-radius: 100px;
+    font-size: max(1.7vw, 20px);
+    font-weight: 700;
+    line-height: 1;
 
-  background-color: #ffffff10;
-  padding: 15px 30px;
-  border-radius: 100px;
-  width: fit-content;
-  margin: 0 auto;
-  margin-bottom: 40px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    margin-bottom: 40px;
+    padding: 15px 30px;
+    text-align: center;
+    width: fit-content;
 }
 
 p {
-  font-size: 16px;
-  line-height: 24px;
+    font-size: 16px;
+    line-height: 24px;
 }
 
 .Form {
-  display: flex;
-  gap: 50px;
-  align-items: flex-start;
-  margin: 0 auto;
+    align-items: flex-start;
+    display: flex;
+    gap: 50px;
+    margin: 0 auto;
 }
 
 .Form > img {
-  border-radius: 100%;
-  display: block;
-  aspect-ratio: 1;
-  width: 12vw;
-  min-width: 100px;
-  margin-top: 3%;
-  object-fit: cover;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    display: block;
+    margin-top: 3%;
+    min-width: 100px;
+    object-fit: cover;
+    width: 12vw;
 }
 
 .InputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .InputGroup > div {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .InputGroup > div small {
-  text-align: right;
-  color: #df2626;
+    color: #df2626;
+    text-align: right;
 }
 
 .InputGroup > div a {
-  color: #3ed5dd;
-  text-decoration: none;
-  width: fit-content;
+    color: #3ed5dd;
+    text-decoration: none;
+    width: fit-content;
 }
-.InputGroup > div a:hover {
-  text-decoration: underline;
-}
+
+.InputGroup > div a:hover { text-decoration: underline; }
 
 .InputGroup > div select,
 .InputGroup > div input {
-  padding: 10px;
-  border-radius: 8px;
-  min-width: 300px;
-  width: 30vw;
-  font-size: 20px;
-  background-color: #ffffff20;
-  border: 1px solid #ffffff30;
-  outline: none;
+    background-color: #ffffff20;
+    border: 1px solid #ffffff30;
+    border-radius: 8px;
+    font-size: 20px;
+    min-width: 300px;
+    outline: none;
+    padding: 10px;
+    width: 30vw;
 }
 
-.InputGroup > div select option{
-  background-color: #222;
-  font-size: 0.8em;
+.InputGroup > div select option {
+    background-color: #222;
+    font-size: 0.8em;
 }
 
 
 .InputGroup > div label {
-  color: #9f9f9f;
-  font-size: 14px;
+    color: #9f9f9f;
+    font-size: 14px;
 }
 
 .InputGroup > div label.bigLabel {
-  color: #fff;
-  font-size: 18px;
-  padding-bottom: 5px;
+    color: #fff;
+    font-size: 18px;
+    padding-bottom: 5px;
 }
 
 .InputGroup > div.check {
-  display: flex;
-  flex-direction: row;
-  gap: 3px;
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
 }
 
 .InputGroup > div.check input {
-  min-width: 0;
-  width: fit-content;
-  margin-top: 5px;
-  margin-left: 10px;
-  transform: scale(1.3);
+    margin-left: 10px;
+    margin-top: 5px;
+    min-width: 0;
+    transform: scale(1.3);
+    width: fit-content;
 }
 
 .InputGroup hr {
-  opacity: 0.5;
-  border-top: none;
+    border-top: none;
+    opacity: 0.5;
 }
 
 .loading {
-  width: 100%;
-  text-align: center;
+    text-align: center;
+    width: 100%;
 }
 
-.topBar{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  margin-top: 10px;
-}
-
-.topBar button{
-  white-space: nowrap;
-}
-
-.pageBar,
-.filterBar{
-  background-color: #ffffff10;
-    border: 1px solid #ffffff20;
-    padding: 5px;
-    border-radius: 15px;
-
+.topBar {
+    align-items: center;
     display: flex;
     gap: 10px;
+    margin-top: 10px;
+    width: fit-content;
+}
+
+.topBar button { white-space: nowrap; }
+
+.pageBar,
+.filterBar {
+    background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 15px;
+    display: flex;
+
+    gap: 10px;
+    padding: 5px;
 }
 
 .filterBar input,
-.filterBar select{
-  padding: 10px 10px;
-  border-radius: 10px;
-  border: none;
-  background-color: #555;
-  font-size: 16px;
+.filterBar select {
+    background-color: #555;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 10px 10px;
 }
 
-.filterBar input{
-  width: auto;
-  max-width: 10vw;
-  min-width: 100px;
+.filterBar input {
+    max-width: 10vw;
+    min-width: 100px;
+    width: auto;
 }
 
-.filterBar input.datetime{
-  min-width: 240px;
+.filterBar input.datetime { min-width: 240px; }
+
+.pageBar button {
+    background-color: #555;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 10px;
+    transition: all .3s ease;
+    width: 40px;
 }
 
-.pageBar button{
-  padding: 10px 10px;
-  border-radius: 10px;
-  border: none;
-  background-color: #555;
-  font-size: 16px;
-  width: 40px;
-  cursor: pointer;
-  transition: all .3s ease;
+.pageBar p {
+    font-size: 16px;
+    margin: auto;
 }
 
-.pageBar p{
-  margin: auto;
-  font-size: 16px;
-}
-
-.pageBar button:not(:disabled):hover{
-  background-color: #777; 
-}
+.pageBar button:not(:disabled):hover { background-color: #777; }
 
 
 
 @media (max-width: 1500px) {
-  
-  h1 {
-    font-size: max(4vw, 26px);
-  }
+    h1 { font-size: max(4vw, 26px); }
 
-  .Content-Body {
-    padding: 0 40px;
-    gap: 30px;
-  }
+    .Content-Body {
+        gap: 30px;
+        padding: 0 40px;
+    }
 
-  .Content{
-    gap: 0px;
-  }
+    .Content { gap: 0px; }
 
-  .filterBar input,
-  .filterBar select{
-    padding: 5px 5px;
-    border-radius: 10px;
-    font-size: 12px;
-  }
+    .filterBar input,
+    .filterBar select {
+        border-radius: 10px;
+        font-size: 12px;
+        padding: 5px 5px;
+    }
 
-  main {
-    padding: 30px 0;
-  }
+    main { padding: 30px 0; }
 
-  .filterBar input,
-  .filterBar select{
-    padding: 6px 5px;
-    font-size: 12px;
-  }
-  
-  .pageBar button{
-    padding: 6px 5px;
-    font-size: 12px;
-    width: 30px;
-  }
+    .filterBar input,
+    .filterBar select {
+        font-size: 12px;
+        padding: 6px 5px;
+    }
 
-  .filterBar input.datetime{
-    min-width: 180px;
-  }
+    .pageBar button {
+        font-size: 12px;
+        padding: 6px 5px;
+        width: 30px;
+    }
+
+    .filterBar input.datetime { min-width: 180px; }
 }
 
 
-.UpdatePage{
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.UpdatePage {
+    background-color: #111;
+    border: 1px solid #222;
+    border-radius: 25px;
+    box-shadow: 0 0 30vw 25vw #00000060;
 
-  width: auto;
-  height: auto;
-  z-index: 100;
-  background-color: #111;
-  padding: 40px 60px;
-  border-radius: 25px;
-  box-shadow: 0 0 30vw 25vw #00000060;
-  border: 1px solid #222;
+    height: auto;
+    left: 50%;
+    padding: 40px 60px;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    z-index: 100;
 }
 
-.BtnGroups{
-  display: flex;
-  flex-direction: row !important;
-  gap: 10px !important;
-  margin: 0 auto;
+.BtnGroups {
+    display: flex;
+    flex-direction: row !important;
+    gap: 10px !important;
+    margin: 0 auto;
 }
 
-.flexBetween{
-  display: flex;
-  flex-direction: row !important;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
+.flexBetween {
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
 }

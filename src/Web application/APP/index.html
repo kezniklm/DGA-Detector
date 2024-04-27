@@ -1,17 +1,35 @@
+<!--
+@file index.html
+
+@brief Provides the HTML structure for the DGA-Detector application.
+
+This file contains the HTML code necessary for setting up the user interface of the DGA-Detector application.
+It includes links to necessary CSS and JS files, and sets up the basic structure with a `div` element for app content.
+
+The main functionalities of this file include:
+- Linking to external stylesheets for DataTables to format tables.
+- Including jQuery and DataTables script for interactive table functionality.
+- Setting up a responsive viewport for mobile devices.
+
+@author Matej Keznikl
+@version 1.0
+@date 2024-04-15
+@copyright Copyright (c) 2024
+-->
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css"/>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>DGA-Detector</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-  </body>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+</body>
 </html>
