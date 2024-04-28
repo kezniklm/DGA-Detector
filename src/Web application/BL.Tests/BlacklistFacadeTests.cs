@@ -273,7 +273,7 @@ public class BlacklistFacadeTests
     ///     Test method to confirm that DeleteAsync completes successfully when an entry is removed.
     /// </summary>
     [Fact]
-    public async Task DeleteAsync_SuccessfulDeletion_ReturnsTaskCompleted()
+    public Task DeleteAsync_SuccessfulDeletion_ReturnsTaskCompleted()
     {
         // Arrange
         string id = "1";
@@ -284,6 +284,7 @@ public class BlacklistFacadeTests
 
         // Assert
         Assert.True(deleteOperation.IsCompletedSuccessfully);
+        return Task.CompletedTask;
     }
 
     /// <summary>

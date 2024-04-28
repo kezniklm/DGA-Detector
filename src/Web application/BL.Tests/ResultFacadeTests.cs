@@ -278,7 +278,7 @@ public class ResultFacadeTests
     ///     Test method to ensure that the DeleteAsync method successfully completes the deletion task.
     /// </summary>
     [Fact]
-    public async Task DeleteAsync_SuccessfulDeletion_ReturnsTaskCompleted()
+    public Task DeleteAsync_SuccessfulDeletion_ReturnsTaskCompleted()
     {
         // Arrange
         string id = "1";
@@ -289,6 +289,7 @@ public class ResultFacadeTests
 
         // Assert
         Assert.True(deleteOperation.IsCompletedSuccessfully);
+        return Task.CompletedTask;
     }
 
     /// <summary>
