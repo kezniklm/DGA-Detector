@@ -28,7 +28,7 @@ namespace BL.Facades;
 /// <summary>
 ///     Facade class for managing results.
 /// </summary>
-internal class ResultFacade(IResultRepository repository, IMapper mapper)
+public class ResultFacade(IResultRepository repository, IMapper mapper)
     : FacadeBase<ResultModel, ResultEntity>(repository, mapper), IResultFacade
 {
     /// <summary>

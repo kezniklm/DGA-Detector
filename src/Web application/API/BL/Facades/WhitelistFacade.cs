@@ -28,7 +28,7 @@ namespace BL.Facades;
 /// <summary>
 ///     Facade for managing whitelist-related operations.
 /// </summary>
-internal class WhitelistFacade(IRepository<WhitelistEntity> repository, IMapper mapper)
+public class WhitelistFacade(IRepository<WhitelistEntity> repository, IMapper mapper)
     : FacadeBase<WhitelistModel, WhitelistEntity>(repository, mapper), IWhitelistFacade
 {
     private readonly IMapper _mapper = mapper;
