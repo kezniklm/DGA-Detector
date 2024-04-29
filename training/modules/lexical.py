@@ -220,7 +220,6 @@ def ngram_frequency_to_probability(freq_dict: dict) -> dict:
 _ngram_freq_dga = load_ngram_data("ngram_freq_dga.json")
 _ngram_freq_benign = load_ngram_data("ngram_freq.json")
 _ngram_aho_corasick_automatons_dga = build_automatons(_ngram_freq_dga)
-_ngram_aho_corasick_automatons_benign = build_automatons(_ngram_freq_benign)
 _ngram_set_dga = {
     n: set(_ngram_freq_dga[f"{n}gram_freq"].keys()) for n in ["bi", "tri", "penta"]
 }
