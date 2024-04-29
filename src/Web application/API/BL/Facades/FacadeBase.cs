@@ -31,7 +31,7 @@ namespace BL.Facades;
 /// </summary>
 /// <typeparam name="TModel">The type of the model.</typeparam>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
-internal abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> repository, IMapper mapper)
+public abstract class FacadeBase<TModel, TEntity>(IRepository<TEntity> repository, IMapper mapper)
     where TModel : class, IModel
     where TEntity : class, IEntity
 {

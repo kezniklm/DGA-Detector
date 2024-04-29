@@ -112,6 +112,12 @@ public class ResultController(IResultFacade resultFacade, ILogger<ResultControll
     {
         try
         {
+            ResultModel? resultFromDb = await resultFacade.GetByIdAsync(result.Id);
+            if (resultFromDb != null)
+            {
+                result.Detected = resultFromDb.Detected;
+            }
+
             string? updatedResult = await resultFacade.CreateOrUpdateAsync(result);
             if (updatedResult is null)
             {

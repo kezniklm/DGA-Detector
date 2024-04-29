@@ -29,7 +29,7 @@ namespace BL.Facades;
 /// <summary>
 ///     Facade for managing blacklist operations.
 /// </summary>
-internal class BlacklistFacade(IRepository<BlacklistEntity> repository, IMapper mapper)
+public class BlacklistFacade(IRepository<BlacklistEntity> repository, IMapper mapper)
     : FacadeBase<BlacklistModel, BlacklistEntity>(repository, mapper), IBlacklistFacade
 {
     private readonly IMapper _mapper = mapper;

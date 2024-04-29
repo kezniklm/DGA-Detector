@@ -1,0 +1,75 @@
+/**
+ * @file style.css
+ *
+ * @brief Defines styles for button components.
+ *
+ * This file contains the styling rules for buttons used within the application. It defines various classes to modify the appearance of buttons, such as size, color, and transition effects.
+ *
+ * The main functionalities of this file include:
+ * - Defining base styles for buttons, including background, border, padding, and transition effects.
+ * - Providing additional classes to modify button appearance, such as `.small` and `.warning`.
+ * - Implementing media queries for responsiveness, adjusting button styles based on viewport width.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.Button {
+    background: linear-gradient(to right, #0a767b, #00a7d6);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    outline: none;
+    padding: 24px 40px;
+    text-align: center;
+    transition: all .1s ease;
+}
+
+.Button.small {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 auto;
+    padding: 16px 32px;
+
+    text-align: center;
+    width: fit-content;
+}
+
+.Button.warning { background: linear-gradient(to right, #e50808, #d60000); }
+
+
+.Button.trans {
+    background: transparent;
+    background-color: #3376b820;
+    border: 1px solid #3376b8;
+}
+
+.Button.trans:hover { background-color: #3376b860; }
+
+
+.Button.trans.warning {
+    background: transparent;
+    background-color: #df262620;
+    border: 1px solid #df2626;
+}
+
+.Button.trans.warning:hover { background-color: #df262660; }
+
+
+@media (max-width: 1500px) {
+    .Button {
+        font-size: 18px;
+        padding: 16px 32px;
+    }
+
+    .Button.small {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}

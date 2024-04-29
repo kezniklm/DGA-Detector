@@ -1,0 +1,26 @@
+/**
+ * @file style.css
+ *
+ * @brief Contains styling rules for the API interface.
+ *
+ * This file provides CSS rules for styling various components of the API interface. It includes rules for handling the appearance of elements, such as alignment, display properties, and margins.
+ *
+ * The main functionalities of this file include:
+ * - Defining styles for elements with the "notFound" class.
+ * - Aligning items centered horizontally and vertically.
+ * - Setting flexbox properties for layout management.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.notFound {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto;
+}

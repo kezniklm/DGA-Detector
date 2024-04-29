@@ -1,0 +1,160 @@
+/**
+ * @file style.css
+ *
+ * @brief Contains styles for table component.
+ *
+ * This file contains CSS styles for customizing the appearance of tables used within the application. It includes styles for table containers, headers, cells, buttons, and hover effects.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.dt-container { width: 100%; }
+
+.dataTable {
+    background: #11111190;
+    border-radius: 10px;
+    line-height: 1;
+    width: 100% !important;
+}
+
+.dataTable thead { background: #11111190; }
+
+.dataTable td { border: 1px solid rgba(0, 0, 0, 0.25) !important; }
+
+.dataTable th:not(:nth-of-type(1), :nth-of-type(2)) { text-align: right !important; }
+
+.dataTable td:not(:nth-of-type(1), :nth-of-type(2)) { text-align: right; }
+
+.dataTable td:nth-of-type(1),
+.dataTable td:nth-of-type(2) { text-align: left; }
+
+.dataTable tr:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.dt-layout-row {
+    background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 20px;
+    margin: 10px 0;
+    padding: 10px 10px;
+}
+
+.dt-layout-row:nth-of-type(1) { display: none !important; }
+
+.dt-layout-row select option { color: #000 !important; }
+
+.MoveBtn,
+.UpdateBtn,
+.DeleteBtn {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    outline: none;
+    padding: 4px 10px;
+}
+
+.MoveBtn,
+.UpdateBtn,
+.DeleteBtn {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: .9rem;
+    outline: none;
+    padding: 4px 10px;
+    transition: all .1s ease;
+    white-space: nowrap;
+}
+
+.MoveBtn {
+    background-color: #3376b820;
+    border: 1px solid #3376b8;
+}
+
+.MoveBtn:hover { background-color: #3376b860; }
+
+.UpdateBtn {
+    background-color: #33b86c20;
+    border: 1px solid #33b86c;
+}
+
+.UpdateBtn:hover { background-color: #33b86c60; }
+
+.DeleteBtn {
+    background-color: #df262620;
+    border: 1px solid #df2626;
+}
+
+.DeleteBtn:hover { background-color: #df262660; }
+
+.customTable {
+    background: #11111190;
+    border-collapse: collapse;
+    border-radius: 10px;
+    line-height: 1;
+    overflow: hidden;
+    position: relative;
+    width: 100% !important;
+}
+
+.customTable thead { background: #11111190; }
+
+.customTable th {
+    padding: 20px 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.customTable td {
+    border: 1px solid rgba(0, 0, 0, 0.25) !important;
+    padding: 10px;
+    text-align: left;
+}
+
+.customTable th { width: calc((100% - 330px) / 4); }
+
+.customTable th span.dir {
+    display: inline-block;
+    min-width: 30px;
+}
+
+.customTable td { width: calc((100% - 330px) / 4); }
+
+.customTable .smallButton {
+    min-width: 100px;
+    width: 100px !important;
+}
+
+.customTable .bigButton {
+    min-width: 230px;
+    width: 230px !important;
+}
+
+.customTable th:not(:nth-of-type(1), :nth-of-type(2)) { text-align: right !important; }
+
+.customTable td:not(:nth-of-type(1), :nth-of-type(2)) { text-align: right; }
+
+.customTable tbody tr:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+
+.customTableWrapper {
+    background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 60vh;
+
+    margin: 10px 0;
+    padding: 10px 10px;
+}
+
+.BodyWrapper {
+    border-radius: 10px;
+    flex-grow: 1;
+    overflow: auto;
+}

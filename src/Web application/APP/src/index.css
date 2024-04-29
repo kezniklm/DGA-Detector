@@ -1,68 +1,118 @@
+/**
+ * @file index.css
+ *
+ * @brief CSS styles for application using Titillium Web font.
+ *
+ * This CSS file defines styles for a web application utilizing the Titillium Web font family from Google Fonts. It sets up basic page aesthetics, including font smoothing, default font family, background color, and system-wide colors. 
+ *
+ * The styles target various font weights and styles across different elements to ensure visual consistency and readability. The primary color and other properties like font-weight and line-height are set to enhance the user interface.
+ *
+ * Usage:
+ * - Root: Sets the foundational styles and color schemes.
+ * - Universal Selector (*): Ensures consistent box-sizing across all elements.
+ * - Body: Establishes minimum size requirements and base margins.
+ * - Classes (.titillium-web-*-italic, .titillium-web-regular, etc.): Provide specific font styles and weights.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-15
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    background-color: #171717;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+    color: rgba(255, 255, 255, 1);
+    color-scheme: light dark;
+    font-family: "Titillium Web", sans-serif;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    --main:#3ED5DD;
+
+    font-synthesis: none;
+    font-weight: 400;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+    margin: 0;
+    min-height: 100vh;
+    min-width: 320px;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.titillium-web-extralight {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 200;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.titillium-web-light {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 300;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.titillium-web-regular {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.titillium-web-semibold {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.titillium-web-bold {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.titillium-web-black {
+    font-family: "Titillium Web", sans-serif;
+    font-style: normal;
+    font-weight: 900;
+}
+
+.titillium-web-extralight-italic {
+    font-family: "Titillium Web", sans-serif;
+    font-style: italic;
+    font-weight: 200;
+}
+
+.titillium-web-light-italic {
+    font-family: "Titillium Web", sans-serif;
+    font-style: italic;
+    font-weight: 300;
+}
+
+.titillium-web-regular-italic {
+    font-family: "Titillium Web", sans-serif;
+    font-style: italic;
+    font-weight: 400;
+}
+
+.titillium-web-semibold-italic {
+    font-family: "Titillium Web", sans-serif;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.titillium-web-bold-italic {
+    font-family: "Titillium Web", sans-serif;
+    font-style: italic;
+    font-weight: 700;
 }

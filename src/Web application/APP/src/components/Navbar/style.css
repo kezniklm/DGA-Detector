@@ -1,0 +1,137 @@
+/**
+ * @file style.css
+ *
+ * @brief Stylesheet for the navbar component.
+ *
+ * This file contains CSS styles for the navbar component, including styling for the logo, navigation links, and dropdown menu.
+ *
+ * The main functionalities of this file include:
+ * - Styling the logo and navigation links for the navbar.
+ * - Providing responsive design for different screen sizes.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.Navbar {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 76px;
+    position: relative;
+    z-index: 200;
+}
+
+.Navbar .logo {
+    color: #fff;
+    font-size: 38px;
+    font-size: max(2.2vw, 20px);
+    font-weight: 300;
+    line-height: 60px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.Navbar .logo span { color: var(--main); }
+
+.Navbar nav {
+    align-items: flex-start;
+    background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 20px;
+    display: flex;
+
+    font-weight: 400;
+    gap: 30px;
+    height: 50px;
+    padding: 0px 30px;
+    position: relative;
+    z-index: 300;
+}
+
+.Navbar nav .LinkItem {
+    align-items: flex-start;
+    display: flex;
+
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.Navbar nav .LinkItem a {
+    align-items: center;
+    color: #fff;
+    display: flex;
+    font-size: 16px;
+    gap: 8px;
+
+    line-height: 30px;
+    opacity: .6;
+    position: relative;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.Navbar nav .LinkItem a img {
+    aspect-ratio: 1;
+    border-radius: 100%;
+    display: block;
+    object-fit: cover;
+    width: 30px;
+}
+
+.Navbar nav .LinkItem.active a,
+.Navbar nav .LinkItem:hover a { opacity: 1; }
+
+.Navbar nav .LinkItem .DropDown {
+    background: #fff;
+    border-radius: 10px;
+    color: #000;
+    display: none;
+    flex-direction: column;
+    gap: 0px;
+    padding: 10px;
+    position: absolute;
+
+    right: 0px;
+    top: 100%;
+    width: 150px;
+    z-index: 400;
+}
+
+.Navbar nav .LinkItem:hover .DropDown { display: flex; }
+
+.Navbar nav .LinkItem .DropDown a {
+    color: #000;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    opacity: .6;
+    padding: 10px 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+
+.Navbar nav .LinkItem .DropDown a:hover { opacity: 1; }
+
+@media (max-width: 1500px) {
+    .Navbar .logo { line-height: 50px; }
+
+    .Navbar nav {
+        gap: 20px;
+        height: 50px;
+    }
+  
+    
+    .Navbar nav .LinkItem a img { width: 24px; }
+
+    .Navbar { padding: 0 40px; }
+
+    .Navbar nav .LinkItem a { font-size: 14px; }
+}

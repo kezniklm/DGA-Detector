@@ -1,0 +1,124 @@
+/**
+ * @file style.css
+ *
+ * @brief CSS file for styling the component homepage.
+ *
+ * This file contains styles for the component homepage, including body layout, text formatting, images, buttons, and footer.
+ *
+ * The main functionalities of this file include:
+ * - Defining the layout and styling of the homepage body.
+ * - Setting the appearance and behavior of text elements within the body.
+ * - Styling and positioning images displayed on the homepage.
+ * - Formatting buttons and defining their behavior.
+ * - Styling the footer section of the homepage.
+ *
+ * @author Matej Keznikl
+ * @version 1.0
+ * @date 2024-04-27
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+.Homepage-Body { padding-right: 150px; }
+
+.Homepage-Body-detail {
+    align-items: flex-start;
+    display: flex;
+    flex: 1 0 70%;
+    flex-direction: column;
+    gap: 40px;
+    height: 100%;
+    justify-content: center;
+}
+
+.Homepage-Body-detail h1 { max-width: 14ch; }
+
+.Homepage-Body-detail p { max-width: 64ch; }
+
+.Homepage-Body-image { flex: 0 0 30%; }
+
+.Homepage-Body-image img {
+    aspect-ratio: 1;
+    display: block;
+    height: auto;
+    object-fit: contain;
+    width: 100%;
+}
+
+.Homepage-footer {
+    display: flex;
+    gap: 30px;
+    padding: 0 76px;
+}
+
+.Homepage-Button { padding: 0 76px; }
+
+.Homepage-footer > div {
+    align-items: center;
+    background-color: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 30px;
+    color: #ffffff80;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    font-size: 18px;
+    
+    justify-content: center;
+    line-height: 20px;
+    padding: 25px 30px;
+    text-align: center;
+}
+
+.Homepage-footer > div b {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    padding-top: 5px;
+}
+
+
+@media (max-width: 1500px) {
+    .Homepage-Button { padding: 0 50px; }
+
+    .Homepage-Body { padding-right: 100px; }
+
+    .Homepage-Body-detail { gap: 20px; }
+
+    .Homepage-Button button {
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        padding: 16px 32px;
+    }
+
+    .Homepage-footer {
+        gap: 20px;
+        padding: 0 50px;
+    }
+
+    .Homepage-Body { padding-right: 50px; }
+
+    .Homepage-Body-detail {
+        flex: 1 0 70%;
+        gap: 10px;
+    }
+
+    .Homepage-Button button {
+        font-size: 14px;
+        margin-bottom: 20px;
+        padding: 15px 30px;
+    }
+
+    .Homepage-footer { padding: 0 40px; }
+
+    .Homepage-Button { padding: 0 40px; }
+
+    .Homepage-footer > div {
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 18px;
+        padding: 10px 15px;
+    }
+}
