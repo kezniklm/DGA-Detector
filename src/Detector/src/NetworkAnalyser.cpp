@@ -262,3 +262,19 @@ void NetworkAnalyser::SetBpfFilter() const
 
     pcap_freecode(&fp);
 }
+
+/**
+ * @brief Getter for the pcap handle.
+ *
+ * Provides read-only access to the internal pcap handle used for capturing packets.
+ * @return The pcap handle.
+ */
+pcap_t *NetworkAnalyser::GetHandle() const { return handle_; }
+
+/**
+ * @brief Getter for the packet queue pointer.
+ *
+ * Provides read-only access to the packet queue used for storing captured packets.
+ * @return The pointer to the packet queue.
+ */
+IQueue<DetectorPacket> *NetworkAnalyser::GetPacketQueue() const { return queue_; }

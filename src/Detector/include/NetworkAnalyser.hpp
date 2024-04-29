@@ -72,12 +72,31 @@ public:
      */
     void StopCapture() const;
 
+    /**
+     * @brief Getter for the pcap handle.
+     *
+     * Provides read-only access to the internal pcap handle used for capturing packets.
+     * @return The pcap handle.
+     */
+    pcap_t *GetHandle() const;
+
+    /**
+     * @brief Getter for the packet queue pointer.
+     *
+     * Provides read-only access to the packet queue used for storing captured packets.
+     * @return The pointer to the packet queue.
+     */
+    IQueue<DetectorPacket> *GetPacketQueue() const;
+
 private:
     /** Pcap handle for packet capture */
     pcap_t *handle_;
 
     /** Pointer to the packet queue */
     IQueue<DetectorPacket> *queue_;
+
+    /** Allows access from NetworkAnalyserTests class */
+    friend class NetworkAnalyserTests;
 
     /**
      * @brief Creates a pcap handle for capturing network traffic.

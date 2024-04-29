@@ -12,6 +12,7 @@ target_sources(DetectorTests PRIVATE
     ArgumentsTests.cpp
     DomainValidatorTests.cpp
     FilterTests.cpp
+    NetworkAnalyserTests.cpp
     PublisherTests.cpp
 )
 
@@ -33,4 +34,5 @@ target_include_directories(DetectorTests PRIVATE
 add_test(NAME ArgumentsTests COMMAND DetectorTests --gtest_filter=ArgumentsTests*)
 add_test(NAME DomainValidatorTests COMMAND DetectorTests --gtest_filter=DomainValidatorTests*)
 add_test(NAME FilterTests COMMAND DetectorTests --gtest_filter=FilterTests*)
+add_test(NAME NetworkAnalyserTests COMMAND DetectorTests --gtest_filter=NetworkAnalyser*)
 add_test(NAME PublisherTests COMMAND DetectorTests --gtest_filter=PublisherTests*)
