@@ -54,5 +54,5 @@ jobs:
       - name: Run Tests (optional)
         shell: bash
         run: |
-          ./DetectorTests
+          sudo ./DetectorTests
         working-directory: src/Detector/build/tests
