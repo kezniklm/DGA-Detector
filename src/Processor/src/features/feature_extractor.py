@@ -103,9 +103,12 @@ class FeatureExtractor:
         sys.stderr = open(os.devnull, "w")
 
         try:
-            with Pool(processes=self.num_processes) as pool:
-                results = pool.map(self._apply_features, df_split)
-                df_features = pd.concat(results)
+            if (len(df) > self.num_processes):
+                with Pool(processes=self.num_processes) as pool:
+                    results = pool.map(self._apply_features, df_split)
+                    df_features = pd.concat(results)
+            else:
+                df_features = self._apply_features(df)
         finally:
             # Restore stdout and stderr
             sys.stdout.close()

@@ -135,8 +135,8 @@ class MongoDbDatabase(AbstractDatabase):
             transformed_doc = {
                 "Detected": doc.get("Detected", datetime.now()),
                 "DidBlacklistHit": doc.get("DidBlacklistHit", False),
-                "DangerousProbabilityValue": doc.get("DangerousProbabilityValue", 0),
-                "DangerousBoolValue": doc.get("DangerousBoolValue", False),
+                "DangerousProbabilityValue": doc.get("predict_prob", 0),
+                "DangerousBoolValue": doc.get("binary_pred", False),
                 "DomainName": doc["domain_name"],
             }
             transformed_documents.append(transformed_doc)

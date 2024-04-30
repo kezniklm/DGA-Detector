@@ -20,7 +20,12 @@
  *
 """
 
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import json
+import logging
 import queue
 import threading
 import time
@@ -28,11 +33,13 @@ import warnings
 from queue import Queue
 from threading import Event
 
+import tensorflow as tf
 from pandas import DataFrame
 
 from .database.abstract_database import AbstractDatabase
 from .database.mongodb_database import MongoDbDatabase
-from .evaluator.evaluator import Evaluator
+from .evaluator.abstract_evaluator import Evaluator
+from .evaluator.lightgbm_evaluator import LightGBMEvaluator
 from .features.feature_extractor import FeatureExtractor
 from .logging.logger import Logger
 
@@ -83,7 +90,7 @@ class Extractor(threading.Thread):
         self.database: AbstractDatabase = MongoDbDatabase(
             self.logger, database_uri, database_name
         )
-        self.evaluator: Evaluator = Evaluator()
+        self.lightgbm_evaluator: Evaluator = LightGBMEvaluator()
 
     def run(self) -> None:
         """Main execution point for the thread, handling message processing in a loop."""
@@ -120,12 +127,7 @@ class Extractor(threading.Thread):
                 list(domains_dict.items()), columns=["domain_name", "return_code"]
             )
 
-            start_time = time.time()
-
             df = self.feature_extractor.extract_features(df)
-
-            elapsed_time = time.time() - start_time
-            print(f"Feature extraction took {elapsed_time:.2f} seconds.")
 
             df_return_code_3 = df[df["return_code"] == 3].drop(columns=["return_code"])
 
@@ -133,8 +135,11 @@ class Extractor(threading.Thread):
                 columns=["return_code"]
             )
 
-            result = self.evaluator.evaluate(df)  # TODO
-
+            df_return_code_3 = self.lightgbm_evaluator.evaluate(df_return_code_3)
+            df_other_return_codes = self.lightgbm_evaluator.evaluate(
+                df_other_return_codes
+            )
+            
             self.database.insert_dataframe(df_return_code_3)
 
             self.database.insert_dataframe(df_other_return_codes)
@@ -142,3 +147,20 @@ class Extractor(threading.Thread):
         except ValueError as e:
             self.logger.error(f"Error processing message: {e}")
             return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
