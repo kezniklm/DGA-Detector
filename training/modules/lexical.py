@@ -187,7 +187,7 @@ def build_automatons(
     for ngram_type, ngrams in ngram_freqs.items():
         automaton = ahocorasick.Automaton()
         for ngram in ngrams:
-            automaton.add_word(ngram.lower(), ngram.lower())
+            automaton.add_word(ngram, ngram)
         automaton.make_automaton()
         automatons[ngram_type] = automaton
     return automatons
@@ -373,7 +373,7 @@ def find_ngram_matches(text: str, automaton: ahocorasick.Automaton):
     @return: Number of unique matches found.
     """
     matched_ngrams = set()
-    for _, found_ngram in automaton.iter(text.lower()):
+    for _, found_ngram in automaton.iter(text):
         matched_ngrams.add(found_ngram)
     return len(matched_ngrams)
 
