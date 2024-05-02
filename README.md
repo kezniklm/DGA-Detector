@@ -14,7 +14,7 @@ Each component plays a vital role in the detection and analysis process, contrib
 
 ### 1. Detector
 
-The Detector is implemented in C++ and serves as the core mechanism for analyzing network traffic. It is responsible for identifying suspicious patterns that may indicate the presence of DGA-generated domains. Detailed instructions and source code for the Detector can be found in the `src/detector` directory.
+The Detector is implemented in C++ and serves as the core mechanism for analyzing network traffic. It is responsible for identifying suspicious patterns that may indicate the presence of DGA-generated domains. Detailed instructions and source code for the Detector can be found in the `src/Detector` directory.
 
 ### 2. Processor
 
@@ -23,6 +23,13 @@ The Processor module, developed in Python, handles the subsequent processing ste
 ### 3. Web Application
 
 The Web Application provides a user-friendly interface for interacting with the detection results. Built with ASP.NET API for the backend and React JS for the frontend, it offers convenient visualization and management of detected DGA-generated domains. Navigate to the `src/Web application` directory for comprehensive guidelines on setting up and utilizing the Web Application.
+
+## Additional Components
+### Training
+Within the `src/training` directory, you will find resources dedicated to machine learning model selection, tuning, and evaluation. These files are essential for choosing the best classifiers for accurately detecting DGA-generated domains.
+
+### Tests
+The `src/tests` directory contains tests that cover the entire DGA-Detector system. These tests ensure the reliability and effectiveness of all components, from the Detector to the Web Application.
 
 ## Usage
 
