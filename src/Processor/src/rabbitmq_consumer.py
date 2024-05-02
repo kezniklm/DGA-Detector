@@ -98,6 +98,7 @@ class RabbitMQConsumer(threading.Thread):
         params = pika.URLParameters(self.connection_string)
         connection = pika.BlockingConnection(params)
         channel = connection.channel()
+        channel.basic_qos(prefetch_count=1)
         channel.queue_declare(queue=self.queue_name, durable=True)
 
         def callback(ch, method, properties, body):
@@ -105,11 +106,12 @@ class RabbitMQConsumer(threading.Thread):
             if not self.shutdown_event.is_set():
                 self.message_queue.put(body)
                 self.logger.debug(f"Message received and put into queue: {body}")
+                ch.basic_ack(delivery_tag=method.delivery_tag)
             else:
                 ch.stop_consuming()
 
         channel.basic_consume(
-            queue=self.queue_name, on_message_callback=callback, auto_ack=True
+            queue=self.queue_name, on_message_callback=callback, auto_ack=False
         )
 
         try:
@@ -125,3 +127,5 @@ class RabbitMQConsumer(threading.Thread):
             if connection.is_open:
                 connection.close()
                 self.logger.info("RabbitMQ connection closed.")
+
+
