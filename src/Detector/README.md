@@ -67,6 +67,14 @@ For more details on the `Logger` class, refer to the [Logger.hpp](include/Logger
 - [MongoDB C++ Driver](http://mongocxx.org/) - For interacting with MongoDB
 - [rabbitmq-c](https://github.com/alanxz/rabbitmq-c) - RabbitMQ client library
 - [CMake](https://cmake.org/) - Build system
+- [PcapPlusPlus](https://pcapplusplus.github.io/) - Used for packet capturing and analysis
+- [libuv](https://github.com/libuv/libuv) - Cross-platform asynchronous I/O
+- [nlohmann/json](https://github.com/nlohmann/json) - JSON library for modern C++
+- [cxxopts](https://github.com/jarro2783/cxxopts) - Lightweight C++ command line option parser
+- [MPMCQueue](https://github.com/rigtorp/MPMCQueue) - Multi-producer, multi-consumer lock-free queue
+- [librabbitmq](https://github.com/alanxz/rabbitmq-c) - RabbitMQ C client library
+- [Google Test](https://github.com/google/googletest) - Testing framework for C++
+- [POCO](https://pocoproject.org/) - C++ class libraries for network-centric, portable applications
 
 ## Author
 
