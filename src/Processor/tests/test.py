@@ -17,14 +17,13 @@
 """
 
 import unittest
-from typing import TestSuite
 
 import arguments_tests
 import evaluator_tests
 import feature_extraction_tests
 
 
-def suite() -> TestSuite:
+def suite() -> unittest.TestSuite:
     """
     Construct a test suite containing all test cases from various modules.
 
