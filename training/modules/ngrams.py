@@ -1,8 +1,22 @@
-import json
-import pandas as pd
-from nltk import ngrams, FreqDist
+"""
+ * @file ngrams.py
+ * @brief This module provides tools for n-gram analysis of domain names.
+ * @details This module is part of the 'dr-playground' repository available under the MIT License. It includes functionalities for extracting domain names, generating n-grams, and analyzing their frequency.
+ *
+ * Source: GitHub Repository 'dr-playground' by OviOvocny
+ * URL: https://github.com/OviOvocny/dr-playground
+ * License: MIT
+ * Original Author: Petr Pouč (https://github.com/surViVeCZ)
+ * Date: 2024/05/03
+ *
+"""
 
+import json
+
+import pandas as pd
 import tldextract
+from nltk import FreqDist, ngrams
+
 
 def remove_tld(domain: str) -> str:
     """Function removes tld from
@@ -19,6 +33,7 @@ def remove_tld(domain: str) -> str:
     sld = ext.domain
     result = subdomain + "." + sld if subdomain else sld
     return result
+
 
 class NgramsAnalyzer:
     """
@@ -49,7 +64,7 @@ class NgramsAnalyzer:
         """
         Extract the domain names from the DataFrame.
         """
-        self.domain_names = self.df['domain_name'].tolist()
+        self.domain_names = self.df["domain_name"].tolist()
 
     def generate_ngrams(self):
         """
@@ -102,7 +117,7 @@ class NgramsAnalyzer:
         """
         tetragram_freq_dist = FreqDist(self.all_pentagrams)
         return tetragram_freq_dist.most_common(n)
-    
+
     def get_most_common_pentagrams(self, n):
         """
         Get the n most common all_pentagrams.
@@ -114,7 +129,9 @@ class NgramsAnalyzer:
         tetragram_freq_dist = FreqDist(self.all_pentagrams)
         return tetragram_freq_dist.most_common(n)
 
-    def save_to_json(self, bigram_data, trigram_data, tetragram_data, pentagram_data, filename):
+    def save_to_json(
+        self, bigram_data, trigram_data, tetragram_data, pentagram_data, filename
+    ):
         """
         Save the bigram, trigram, and tetragram data to a JSON file.
         Args:
@@ -125,15 +142,22 @@ class NgramsAnalyzer:
             filename (str): Name of the JSON file to save.
         """
         data = {
-            'bigram_freq': bigram_data,
-            'trigram_freq': trigram_data,
-            'tetragram_freq': tetragram_data, # Added for tetragrams
-            'pentagram_freq': pentagram_data  # Added for pentagrams
+            "bigram_freq": bigram_data,
+            "trigram_freq": trigram_data,
+            "tetragram_freq": tetragram_data,  # Added for tetragrams
+            "pentagram_freq": pentagram_data,  # Added for pentagrams
         }
-        with open(filename, 'w') as file:
+        with open(filename, "w") as file:
             json.dump(data, file)
 
-    def analyze_ngrams(self, outfile, bigram_n=10000, trigram_n=10000, tetragram_n=10000, pentagram_n=10000):
+    def analyze_ngrams(
+        self,
+        outfile,
+        bigram_n=10000,
+        trigram_n=10000,
+        tetragram_n=10000,
+        pentagram_n=10000,
+    ):
         """
         Analyze the ngrams and save the results to a JSON file.
         Args:
@@ -154,16 +178,26 @@ class NgramsAnalyzer:
         most_common_pentagrams = self.get_most_common_pentagrams(pentagram_n)
 
         # Convert to dictionaries for better manipulation
-        bigram_dict = {(''.join(bigram)): count for bigram, count in most_common_bigrams}
-        trigram_dict = {(''.join(trigram)): count for trigram, count in most_common_trigrams}
-        tetragram_dict = {(''.join(tetragram)): count for tetragram, count in most_common_tetragrams}
-        pentagram_dict = {(''.join(pentagram)): count for pentagram, count in most_common_pentagrams}
+        bigram_dict = {
+            ("".join(bigram)): count for bigram, count in most_common_bigrams
+        }
+        trigram_dict = {
+            ("".join(trigram)): count for trigram, count in most_common_trigrams
+        }
+        tetragram_dict = {
+            ("".join(tetragram)): count for tetragram, count in most_common_tetragrams
+        }
+        pentagram_dict = {
+            ("".join(pentagram)): count for pentagram, count in most_common_pentagrams
+        }
 
         # Save frequency distributions to a single JSON file
-        self.save_to_json(bigram_dict, trigram_dict, tetragram_dict, pentagram_dict, outfile)
+        self.save_to_json(
+            bigram_dict, trigram_dict, tetragram_dict, pentagram_dict, outfile
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Number of avaliable symbols:
     # 2*26 letters + 10 digits + 1 dash + 1 dot = 64
@@ -182,11 +216,23 @@ if __name__ == '__main__':
     #
     # NOTE: Choose the n-gram count as 1-50% of possible ngrams.
     #       Higher numbers would make the feature useless.
-    analyzer = NgramsAnalyzer('floor/01-Raw-data/Benign/Benign.parquet')
-    
-    analyzer.analyze_ngrams('ngram_freq.json',
-                            bigram_n=1000, trigram_n=5000, tetragram_n=10000, pentagram_n=50000)
-    
-    analyzer = NgramsAnalyzer('floor/01-Raw-data/DGA/01-Proportion-pick/01-Proportion-pick.parquet')
-    analyzer.analyze_ngrams('ngram_freq_dga.json',
-                            bigram_n=1000, trigram_n=5000, tetragram_n=10000, pentagram_n=50000)
+    analyzer = NgramsAnalyzer("floor/01-Raw-data/Benign/Benign.parquet")
+
+    analyzer.analyze_ngrams(
+        "ngram_freq.json",
+        bigram_n=1000,
+        trigram_n=5000,
+        tetragram_n=10000,
+        pentagram_n=50000,
+    )
+
+    analyzer = NgramsAnalyzer(
+        "floor/01-Raw-data/DGA/01-Proportion-pick/01-Proportion-pick.parquet"
+    )
+    analyzer.analyze_ngrams(
+        "ngram_freq_dga.json",
+        bigram_n=1000,
+        trigram_n=5000,
+        tetragram_n=10000,
+        pentagram_n=50000,
+    )
