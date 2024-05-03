@@ -17,8 +17,13 @@ Before running the Processor, ensure you have the following installed:
    git clone https://github.com/kezniklm/DGA-Detector.git
    cd DGA-Detector/src/Processor
    ```
+2. **Create and activate a virtual environment**:
+   ```
+   python -m venv venv
+   source venv/bin/activate (on Windows use venv\Scripts\activate)
+   ```
 
-2. **Install Python dependencies**:
+3. **Install Python dependencies**:
    ```
    pip install -r requirements.txt
    ```
