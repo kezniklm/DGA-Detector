@@ -1,0 +1,23 @@
+name: Processor - CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  processor-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11.7'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      working-directory: src/Processor
+    - name: Run Python unit tests
+      run: python test.py
+      working-directory: src/Processor/tests
