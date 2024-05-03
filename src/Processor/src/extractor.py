@@ -95,11 +95,11 @@ class Extractor(threading.Thread):
     def run(self) -> None:
         """Main execution point for the thread, handling message processing in a loop."""
         self.database.connect()
+
         while not self.shutdown_event.is_set() or not self.message_queue.empty():
             try:
                 message = self.message_queue.get()
                 self.process_message(message)
-                self.message_queue.task_done()
             except queue.Empty:
                 time.sleep(1)
                 continue
@@ -139,7 +139,7 @@ class Extractor(threading.Thread):
             df_other_return_codes = self.lightgbm_evaluator.evaluate(
                 df_other_return_codes
             )
-            
+
             self.database.insert_dataframe(df_return_code_3)
 
             self.database.insert_dataframe(df_other_return_codes)
@@ -147,6 +147,8 @@ class Extractor(threading.Thread):
         except ValueError as e:
             self.logger.error(f"Error processing message: {e}")
             return
+
+
 
 
 
