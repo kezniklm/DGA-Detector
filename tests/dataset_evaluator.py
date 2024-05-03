@@ -18,12 +18,17 @@
  *
 """
 
+import argparse
+from typing import Dict, List, Union
+
 import pandas as pd
 from pymongo import MongoClient
 from sklearn.metrics import confusion_matrix
 
 
-def run_analysis(dataset_path, db_name, collection_name, batch_size=200000):
+def run_analysis(
+    dataset_path: str, db_name: str, collection_name: str, batch_size: int = 200000
+) -> None:
     """
     Perform a domain analysis by comparing a list of domain names from a dataset
     against records in a MongoDB collection, and calculate the confusion matrix
@@ -50,7 +55,7 @@ def run_analysis(dataset_path, db_name, collection_name, batch_size=200000):
         print(f"Failed to connect to MongoDB: {e}")
         return
 
-    def process_batch(domains):
+    def process_batch(domains: List[str]) -> Dict[str, Union[bool, None]]:
         """
         Query the MongoDB collection for a batch of domain names and store the results
         in a dictionary keyed by domain name.
@@ -100,8 +105,42 @@ def run_analysis(dataset_path, db_name, collection_name, batch_size=200000):
     print(conf_matrix)
 
 
-run_analysis(
-    "00-Dataset-test-without-Blacklist-Whitelist/00-Dataset-not-in-Blacklist-Whitelist.parquet",
-    "Database",
-    "Result",
-)
+def parse_arguments() -> argparse.Namespace:
+    """
+    Parse command-line arguments.
+
+    @return: Parsed arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description="Domain analysis module using MongoDB and confusion matrix calculations."
+    )
+    parser.add_argument(
+        "dataset_path",
+        type=str,
+        default="../00-Dataset-test-without-Blacklist-Whitelist/00-Dataset-not-in-Blacklist-Whitelist.parquet",
+        help="Path to the parquet file containing the dataset.",
+    )
+    parser.add_argument(
+        "db_name",
+        type=str,
+        default="Database",
+        help="Name of the MongoDB database to use.",
+    )
+    parser.add_argument(
+        "collection_name",
+        type=str,
+        default="Result",
+        help="Name of the MongoDB collection to query.",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=200000,
+        help="Number of records to process in each batch (default is 200,000).",
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    run_analysis(args.dataset_path, args.db_name, args.collection_name, args.batch_size)
