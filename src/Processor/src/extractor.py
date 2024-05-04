@@ -33,7 +33,6 @@ import warnings
 from queue import Queue
 from threading import Event
 
-import tensorflow as tf
 from pandas import DataFrame
 
 from .database.abstract_database import AbstractDatabase
@@ -147,6 +146,7 @@ class Extractor(threading.Thread):
         except ValueError as e:
             self.logger.error(f"Error processing message: {e}")
             return
+
 
 
 
