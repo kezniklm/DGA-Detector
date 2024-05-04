@@ -137,11 +137,9 @@ def parse_arguments() -> argparse.Namespace:
         description="Send DNS responses for domain names from a dataset."
     )
     parser.add_argument(
-        "dataset_path",
+        "--dataset_path",
         type=str,
-        nargs="?",
         help="Path to the Parquet dataset file",
-        default="../00-Dataset-test-without-Blacklist-Whitelist/00-Dataset-not-in-Blacklist-Whitelist.parquet",
     )
     parser.add_argument(
         "--batch-size",
