@@ -101,8 +101,10 @@ def run_analysis(
         true_labels[: len(valid_predictions)], valid_predictions, labels=[1, 0]
     )
 
-    print("Confusion Matrix:")
-    print(conf_matrix)
+    print("Resulting Confusion Matrix:\n")
+    print("               Predicted Positive | Predicted Negative")
+    print("Actual Positive      {:<14} | {:<14}".format(conf_matrix[0][0], conf_matrix[0][1]))
+    print("Actual Negative      {:<14} | {:<14}".format(conf_matrix[1][0], conf_matrix[1][1]))
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -115,26 +117,28 @@ def parse_arguments() -> argparse.Namespace:
         description="Domain analysis module using MongoDB and confusion matrix calculations."
     )
     parser.add_argument(
-        "dataset_path",
+        "--dataset_path",
         type=str,
-        default="../00-Dataset-test-without-Blacklist-Whitelist/00-Dataset-not-in-Blacklist-Whitelist.parquet",
         help="Path to the parquet file containing the dataset.",
     )
     parser.add_argument(
         "db_name",
         type=str,
+        nargs="?",
         default="Database",
         help="Name of the MongoDB database to use.",
     )
     parser.add_argument(
         "collection_name",
         type=str,
+        nargs="?",
         default="Result",
         help="Name of the MongoDB collection to query.",
     )
     parser.add_argument(
         "--batch_size",
         type=int,
+        nargs="?",
         default=200000,
         help="Number of records to process in each batch (default is 200,000).",
     )
