@@ -35,7 +35,6 @@ The training component of the DGA-Detector system focuses on preparing and optim
     - `DGA-Detector-Best-Classifiers.ipynb`: Focuses on evaluating and selecting the best classifiers.
     - `DGA-Detector-Model-Selection.ipynb`: Explores various model architectures and their performances.
     - `DGA-Detector-Parameter-Tuning.ipynb`: Dedicated to tuning model parameters to optimize performance.
-    - 
 ## Additional Scripts
 - **Details**: There are various utility scripts within the repository that assist with tasks such as data preprocessing, analysis, and other ancillary functions. These scripts are not directly involved in model training but support the process.
 
