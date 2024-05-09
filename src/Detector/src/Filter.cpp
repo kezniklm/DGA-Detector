@@ -38,6 +38,8 @@ Filter::Filter(IQueue<DetectorPacket> *packet_queue, IQueue<DNSPacketInfo> *dns_
  */
 void Filter::ProcessPacket() const
 {
+    pcpp::Logger::getInstance().suppressLogs();
+    
     struct DetectorPacket packet
     {
     };

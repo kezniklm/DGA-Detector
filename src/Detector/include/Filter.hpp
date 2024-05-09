@@ -23,6 +23,7 @@
 #include "DnsLayer.h"
 #include "DNSPacketInfo.hpp"
 #include "IPv4Layer.h"
+#include <Logger.h>
 #include "Packet.h"
 #include "PayloadLayer.h"
 #include "PcapPlusPlusVersion.h"
