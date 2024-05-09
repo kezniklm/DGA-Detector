@@ -77,9 +77,11 @@ class LightGBMEvaluator(Evaluator):
 
         probabilities = self.model.predict_proba(data.drop(columns=["domain_name"]))
 
-        positive_class_probabilities = probabilities[:, 1]
+        positive_class_probabilities = probabilities[:, 1] * 100
 
-        binary_predictions = positive_class_probabilities >= 0.5
+        positive_class_probabilities = np.round(positive_class_probabilities, 4)
+
+        binary_predictions = positive_class_probabilities >= 50
 
         return pd.DataFrame(
             {

@@ -181,18 +181,6 @@ export default function Profile({ isLoggedIn, isUserUpdate, setIsUserUpdate }) {
                                             value={formik.values.photoUrl || ""}/>
                                         <ErrorMessage name="photoUrl" component="small"/>
                                     </div>
-
-                                    <div className="check">
-                                        <label className="label" htmlFor="subscribedToNotifications">
-                                            Subscribe to get email notifications
-                                        </label>
-                                        <Field
-                                            type="checkbox"
-                                            name="subscribedToNotifications"
-                                            id="notifications"/>
-                                        <ErrorMessage name="subscribedToNotifications" component="small"/>
-                                    </div>
-
                                     <hr/>
                                     <div>
                                         <Link to={"/ChangePassword"}>Change password</Link>

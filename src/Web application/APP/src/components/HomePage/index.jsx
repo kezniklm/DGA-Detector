@@ -242,7 +242,7 @@ export default function HomePage({ isLoggedIn, handleLogin }) {
                 <b>{positives}</b>{" "}
             </div>
             <div>
-                Filtered by blacklist <br/> <b>{filtered}</b>{" "}
+                Filtered by Blacklist <br/> <b>{filtered}</b>{" "}
             </div>
             <div>
                 Number of entries in <br/>
