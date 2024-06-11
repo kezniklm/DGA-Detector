@@ -117,7 +117,7 @@ private:
             }
 
             const auto filter = bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("element",
+                bsoncxx::builder::basic::kvp("DomainName",
                                              bsoncxx::builder::basic::make_document(
                                                  bsoncxx::builder::basic::kvp("$in", elements_array))));
 
@@ -131,12 +131,16 @@ private:
 
             for (auto &&doc : cursor)
             {
-                std::string element = bsoncxx::to_string(doc["element"].type());
-                // Use the element string as needed
-                results[element] = true;
-                if (list_name == "Blacklist")
+                auto element = doc["DomainName"];
+                if (element && element.type() == bsoncxx::type::k_utf8)
                 {
-                    HandleBlacklistHit(element);
+                    std::string domain_name = std::string(element.get_string());
+                    
+                    results[domain_name] = true;
+                    if (list_name == "Blacklist")
+                    {
+                        HandleBlacklistHit(domain_name);
+                    }
                 }
             }
 
@@ -209,7 +213,7 @@ private:
 
         const auto bson_date_time = bsoncxx::types::b_date(std::chrono::duration_cast<std::chrono::milliseconds>(kNow.time_since_epoch()));
 
-        auto collection = db_["Results"];
+        auto collection = db_["Result"];
 
         bsoncxx::builder::basic::document document{};
         document.append(
