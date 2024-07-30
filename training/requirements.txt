@@ -309,7 +309,7 @@ ruamel.yaml @ file:///C:/ci_311/ruamel.yaml_1676439214109/work
 s3fs @ file:///C:/b/abs_24vbfcawyu/croot/s3fs_1701294224436/work
 scikeras==0.13.0
 scikit-image @ file:///C:/b/abs_f7z1pjjn6f/croot/scikit-image_1707346180040/work
-scikit-learn==1.4.2
+scikit-learn==1.5.0
 scikit-learn-intelex==2024.2.0
 scipy==1.11.4
 Scrapy @ file:///C:/ci_311/scrapy_1678502587780/work
